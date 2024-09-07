@@ -1,16 +1,49 @@
-import { Col, Row, Card, Statistic, Table } from "antd";
+import React, { useState } from 'react';
+import './index.css';
 import {
-  AuditOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UploadOutlined,
   UserOutlined,
-  PieChartOutlined,
-  StockOutlined,
-} from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
+  VideoCameraOutlined,
+} from '@ant-design/icons';
+import { Button, Layout, Menu, theme } from 'antd';
 
-export default function index() {
+const { Header, Sider, Content } = Layout;
+
+const App: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
   return (
-    <>
- 
-    </>
+      <Layout>
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+            }}
+          />
+        </Header>
+        <Content
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 550,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          Content
+        </Content>
+      </Layout>
   );
-}
+};
+
+export default App;
