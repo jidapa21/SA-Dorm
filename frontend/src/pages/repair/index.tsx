@@ -92,7 +92,6 @@ export default function index() {
   ];*/
   return (
     <>
-      <br />
       <Card>
         <h2>แจ้งซ่อม</h2>
         <Divider />
@@ -102,30 +101,13 @@ export default function index() {
           //onFinish={onFinish}
           autoComplete="off"
         >
-          <h3>ผู้รับบริการ B191563</h3>
-          <h3>กานต์รวี</h3>
-          <h3>นภารัตน์</h3>
+          
+          <div className='name-text'>
+            <div>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</div>
+            <div>อาคาร  4  ห้อง  414A</div>
+          </div>
         </Form>
-      </Card>
-      <div className="container">
-        <div className="background">
-          <div className="flex-form">
-            <div className='name-text info-box'>
-              <div className='name-text flex1'>
-                <div>ผู้รับบริการ</div>
-                <div>B191563</div>
-                <div>กานต์รวี</div>
-                <div>นภารัตน์</div>
-              </div>
-              <div className='name-text flex1'>
-                <div>อาคาร</div>
-                <div>4</div>
-                <div>ห้อง</div>
-                <div>414A</div>
-              </div>
-            </div>
-            <br />
-            <br />
+      
             <Form
               name="basic"
               layout="vertical"
@@ -253,9 +235,7 @@ export default function index() {
                 </Col>
               </Row>
             </Form>
-          </div>
-        </div>
-      </div >
+            </Card>
     </>
   );
 }

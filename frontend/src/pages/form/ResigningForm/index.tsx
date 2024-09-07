@@ -5,9 +5,10 @@ import {
   Form,
   Input,
   Radio,
-  Divider,
   Row,
   Col,
+  Card,
+  Divider,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
@@ -31,27 +32,21 @@ export default function Index() {
 
   return (
     <>
-      <br />
-      <div className='title-1-flex'>
-        <div className='text-1'>แบบฟอร์มลาออกหอพัก</div>
-      </div>
-      <br />
-      <Divider />
-      <br />
-      <div className="container">
-        <div className="background">
-          <div className="flex-form">
-            <div className='name-text info-box title-1-flex'>
-              <div className='flex1'>
-                <div>ผู้ทำเรื่อง</div>
-                <div>B191563</div>
-                <div>กานต์รวี</div>
-                <div>นภารัตน์</div>
-              </div>
+    <Card>
+        <h2>แบบฟอร์มลาออกหอพัก</h2>
+        <Divider />
+        <Form
+          name="basic"
+          layout="vertical"
+          //onFinish={onFinish}
+          autoComplete="off"
+        >
+          <h3>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</h3>
+          <h3>อาคาร  4  ห้อง  414A</h3>
+        </Form>
               <div className='flex1'>
                 <div>วันที่ปัจจุบัน: {formattedDate}</div>
               </div>
-            </div>
 
 
             <Form
@@ -108,9 +103,7 @@ export default function Index() {
                 </Col>
               </Row>
             </Form>
-          </div>
-        </div>
-      </div>
+            </Card>
     </>
   );
 }
