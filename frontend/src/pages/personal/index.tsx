@@ -1,65 +1,78 @@
-import { EditOutlined } from "@ant-design/icons";
-import { Link, useNavigate,useParams } from "react-router-dom";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
-import { GetPersonalById } from "../../services/https/index";
-//import { SignInInterface } from "../../interfaces/SignIn";
+import { ListStudents, ListPersonal, ListAddress } from "../../services/https/index";
 import { PersonalInterface } from "../../interfaces/Personal";
-//import { AddressInterface } from "../../interfaces/Address";
-//import { FamilyInterface } from "../../interfaces/Family";
-//import { OtherInformationInteface } from "../../interfaces/Other";
+import { StudentInterface } from "../../interfaces/Student";
+import { AddressInterface } from "../../interfaces/Address";
 import { Space, Table, Button, Col, Row, Divider, message, Card } from "antd";
 import dayjs from "dayjs";
 
-//interface CombinedData extends PersonalInterface, SignInInterface, AddressInterface, FamilyInterface ,OtherInformationInteface{} // Combining both interfaces
+interface CombinedData extends PersonalInterface, StudentInterface ,AddressInterface{} // Combining both interfaces
 
 function Personal() {
   const navigate = useNavigate();
-  //const [data, setData] = useState<CombinedData[]>([]);
-  const [personal, setPersonal] = useState<PersonalInterface | null>(null); // เปลี่ยนเป็น null สำหรับนักเรียนคนเดียว
-  //const { id } = useParams<{ id: any }>(); // ตรวจสอบว่า id เป็นประเภท string
+  const [data, setData] = useState<CombinedData[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
+  
+  const getData = async () => {
+    try {
+      const [personalRes, studentRes, addressRes] = await Promise.all([
+        ListPersonal(),
+        ListStudents(),
+        ListAddress(),
+      ]);
+  
+      if (personalRes.status === 200 && studentRes.status === 200 && addressRes.status === 200) {
+        console.log("Personal Response:", personalRes);
+        console.log("Student Response:", studentRes);
+        console.log("Address Response:", addressRes);
+  
+        // ใช้ Student เป็นหลักในการเชื่อมโยงข้อมูล
+        const combinedData = studentRes.data.map((student: StudentInterface) => {
+          const matchingPersonal = personalRes.data.find((personal: PersonalInterface) => personal.StudentID === student.StudentID);
+          const matchingAddress = addressRes.data.find((address: AddressInterface) => address.StudentID === student.StudentID);
+          
+          return {
+            ...student,             // ข้อมูลจาก Student เป็นหลัก
+            ...matchingPersonal,    // เพิ่มข้อมูล Personal ที่เชื่อมโยง
+            ...matchingAddress      // เพิ่มข้อมูล Address ที่เชื่อมโยง
+          };
+        });
+  
+        setData(combinedData);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch data",
+      });
+    }
+  };  
 
-  const getPersonalById = async (id: string) => {
-    console.log("Fetching student with id:", id); // ตรวจสอบค่าของ id
-    let res = await GetPersonalById(id);
-    if (res.status == 200) {
-      setPersonal(res.data);
-    } else {
-      setPersonal(null);
-      messageApi.open({
-        type: "error",
-        content: res.data.error,
-      });
-    }
-  };
   useEffect(() => {
-    // ดึง ID ของนักเรียนที่ล็อกอินอยู่จาก localStorage
-    const studentId = localStorage.getItem('id'); // ใช้ localStorage เพื่อดึง ID ของนักเรียน
-    if (studentId) {
-      getPersonalById(studentId);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "Student ID not found.",
-      });
-    }
+    getData();
   }, []);
 
-  const columns: ColumnsType<PersonalInterface> = [
-    /*
-    {
+  const columns: ColumnsType<CombinedData> = [
+    /*{
       title: "ลำดับ",
       dataIndex: "ID",
       key: "id",
     },*/
     {
-      //title: "ข้อมูลนักศึกษา",
-      //key: "student_info",
+      title: "ข้อมูลนักศึกษา",
+      key: "student_info",
       render: (record) => (
         <>
           <div className="card" style={{ marginTop: 10, padding: 0 }}>
-            <Card
+          <Card
               style={{ color: "#001d66" }}
               type="inner"
               title={<span style={{ color: "#061178" }}>1. ข้อมูลส่วนตัวนักศึกษา</span>}
@@ -70,7 +83,7 @@ function Personal() {
                     <td style={{ backgroundColor: "#f0f0f0" }}>ชื่อเล่น</td>
                     <td>{record.Nickname}</td>
                     <td style={{ backgroundColor: "#f0f0f0" }}>วันเกิด</td>
-                    <td>{dayjs(record.Birthday).format("dddd DD MMM YYYY")}</td>
+                    <td>{dayjs(record.birthday).format("dddd DD MMM YYYY")}</td>
                   </tr>
                   <tr>
                     <td>รหัสบัตรประชาชน</td>
@@ -230,10 +243,8 @@ function Personal() {
           แก้ไขข้อมูล
         </Button>
       ),
-      
       colSpan: 0,
-    },
-    */
+    },*/
   ];
 
   return (
@@ -241,17 +252,16 @@ function Personal() {
       {contextHolder}
       <Row>
         <Col span={12}>
-          <h2>ข้อมูลส่วนตัว</h2>
+          <h2>ข้อมูลนักศึกษา</h2>
         </Col>
         <Col span={12} style={{ textAlign: "end", alignSelf: "center" }}>
           <Space>
             <Link to="/personal/create">
-              <Button type="primary" icon={<EditOutlined />}>
-                เปลี่ยนแปลงข้อมูล
+              <Button type="primary" icon={<PlusOutlined />}>
+                สร้างข้อมูล
               </Button>
             </Link>
           </Space>
-        
         </Col>
       </Row>
       <Divider />
@@ -260,7 +270,7 @@ function Personal() {
         <Table
           rowKey="ID"
           columns={columns}
-        dataSource={personal ? [personal] : []} //
+          dataSource={data}
           style={{ width: "100%", overflow: "scroll" }}
           pagination={false}
         />

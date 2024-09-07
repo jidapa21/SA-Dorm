@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"dormitory.com/dormitory/config"
+	"dormitory.com/dormitory/controller/address"
 	"dormitory.com/dormitory/controller/admin"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -16,7 +17,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// สำหรับสร้าง Server
 const PORT = "8000"
 
 func main() {
@@ -38,10 +38,13 @@ func main() {
 		router.GET("/list-student", student.ListStudent)
 		router.GET("/get-student/:id", student.GetStudent)
 		router.DELETE("/delete-student/:id", student.DeleteStudent)
+		router.POST("/create-personal", personal.CreatePersonal)
 		router.GET("/get-personal/:id", personal.GetPersonal)
 		router.PUT("/update-personal/:id", personal.UpdatePersonal)
 		router.POST("/create-personal-detail", personaldetails.CreatePersonalDetails)
 		router.GET("/list-personal", personal.ListPersonal)
+		router.GET("/list-address", address.ListAddress)
+		//router.GET("/list-personal-detail", personaldetails.ListPersonalDetails)
 
 	}
 	r.GET("/genders", genders.GetAll)
@@ -68,23 +71,3 @@ func CORSMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-/*
-import (
-	"github.com/jidapa21/SA_Dormitory/ReportProblem/backend/entity"
-	"gorm.io/gorm"
-	"gorm.io/driver/sqlite"
-)
-func main() {
-
-	db, err := gorm.Open(sqlite.Open("dorm-entity.db"), &gorm.Config{})
-	if err != nil {
-		panic("failed to connect database")
-	}
-
-	// Migrate the schema
-	db.AutoMigrate(&entity.Student{}, &entity.Dorm{}, &entity.Room{},
-                 &entity.Admin{}, &entity.Repairing{}, &entity.DelayedPaymentForm{},
-                 &entity.En_ExitingForm{}, &entity.ResigningForm{}, &entity.CurrentAddress{}, )
-}
-*/
