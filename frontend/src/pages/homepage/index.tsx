@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
 
-const { Header, Sider, Content } = Layout;
+const {Content } = Layout;
 
 const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -19,18 +19,6 @@ const App: React.FC = () => {
 
   return (
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-            }}
-          />
-        </Header>
         <Content
           style={{
             margin: '24px 16px',
@@ -40,7 +28,7 @@ const App: React.FC = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          Content
+          จ่ายค่าน้ำ ค่าไฟ ด้วยจ้าาา 
         </Content>
       </Layout>
   );

@@ -108,7 +108,7 @@ body {
     right: 30px;
 }
 
-.text-7 {
+  .text-7 {
     display: block;
     font-size: 15px;
     position: absolute;
@@ -128,14 +128,3 @@ body {
   text-align: center;
 }
 
-
-.barcode {
-  width: 200px;
-  height: 40px;
-  color: #000; /* lineColor */
-}
-
-.barcode canvas {
-  display: block;
-  margin: 0 auto;
-}

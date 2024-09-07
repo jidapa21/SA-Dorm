@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 //import { NavLink ,Link} from 'react-router-dom';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, message, Upload, Modal, Table, QRCode, Space } from 'antd';
@@ -15,7 +15,7 @@ const Index: React.FC = () => {
 
   const [text] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const barcodeRef = useRef<HTMLCanvasElement>(null);
+
 
   const showModal = () => {
     setIsModalOpen(true);
