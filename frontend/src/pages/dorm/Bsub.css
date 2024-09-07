@@ -1,0 +1,135 @@
+.container-sub {
+    display: flex; 
+    justify-content: center; 
+    align-items: start;
+    height: 100vh;
+}
+
+.background-sub {
+    box-shadow: 0px 0px 10px #bfbfbf;
+    padding: 20px; 
+    width: 900px;
+    border-radius: 15px;
+    transition: all 0.5s; 
+    display: grid;
+}
+
+.grid-sub {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 0.2fr 0.4fr 0.8fr 0.5fr 0.2fr;
+    grid-template-rows: auto;
+    column-gap: 3px;
+    row-gap: 5px;
+}
+
+.item-sub {
+    border-radius: 15px;
+    background-color: #ffffff;
+    border: 1px solid #1b0ba7;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.item-sub1 {
+    font-size: 25px;
+    grid-column: 1 / span 5;
+    color: rgb(0, 0, 0);
+    border-radius: 15px;
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-width: 100px;
+    justify-self: center;
+    width: 25%;
+}
+
+.flex-sub {
+    display: flex;
+    gap: 5px; 
+}
+
+.confirmButton {
+    border: 15px;
+    border-radius: 30px;
+    background-color: #1b0ba7;
+    color: #ffffff;
+    width: 150px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 250px;
+    bottom: 60px;
+    font-size: 17px;
+    box-shadow: 0px 0px 5px #000000;
+}
+
+.text-sub1 {
+    display: flex;
+    color: rgb(0, 0, 0);
+    font-size: 20px;
+    position: absolute;
+    right: 80px;
+    top: 60px;
+    color: #ff0000;
+}
+
+.text-sub2 {
+    display: flex;
+    color: #222222;
+    font-size: 50px;
+    margin-left: 50px;
+}
+
+.box-1 {
+    background-color: #bfbfbf;
+    padding: 15px; 
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    align-items: center;
+    font-size: 21px;
+    color: #222222;
+    display: flex;
+    margin-left: 250px;
+}
+
+.box-2 {
+    background-color: rgb(255, 255, 255);
+    padding: 20px; 
+    border-radius: 15px;
+    font-size: 20px;
+}
+
+.grid-list {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 0.2fr 0.4fr 0.8fr 0.5fr 0.2fr 0.3fr;
+    grid-template-rows: auto;
+    column-gap: 3px;
+    row-gap: 5px;
+}
+
+.item-list1 {
+    font-size: 25px;
+    grid-column: 1 / span 6;
+    color: rgb(0, 0, 0);
+    border-radius: 15px;
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    border-width: 100px;
+
+    justify-self: center;
+    width: 25%;
+}
+
+.top {
+    margin-top: 40px;
+}
+
+.color {
+    color: #1b0ba7;
+}
