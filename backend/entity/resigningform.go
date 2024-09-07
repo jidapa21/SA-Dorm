@@ -13,11 +13,11 @@ type ResigningForm struct {
     Status			string
 
     // StudentID ทำหน้าที่เป็น FK
-    Student_ID	uint
-    Student		Student `gorm:"foreignKey:StudentID"`
+    ReservationID	uint
+    Reservation		Student `gorm:"foreignKey:ReservationID"`
 
     // AdminID ทำหน้าที่เป็น FK
-    Admin_ID	uint
+    AdminID	uint
     Admin		Admin `gorm:"foreignKey:AdminID"`
 
 }

@@ -3,10 +3,12 @@ package entity
 import "gorm.io/gorm"
 
 type Dorm struct {
-    gorm.Model
-    Type            string
-    Dorm_Gender     string
+	gorm.Model
+	Type 		string
 
-    // 1 หอพัก มีได้หลายห้อง
-    Rooms       []Room `gorm:"foreignKey:DormID"`
+	GenderID *uint
+	Gender   Gender `gorm:"foriegnKey:GenderID"`
+	
+	Rooms []Room `gorm:"foreignKey:DormID"`
+	Reservations []Reservation `gorm:"foreignKey:DormID"`
 }

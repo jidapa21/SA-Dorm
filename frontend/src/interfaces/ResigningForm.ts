@@ -5,4 +5,6 @@ export interface ResigningFormInterface {
     Because_Of?:		string;
 	Accommodation?:	    string;
     Status?:			string;
+    AdminID?:           string;
+    ReservationID?:         string;
 }

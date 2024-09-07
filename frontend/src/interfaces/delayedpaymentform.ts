@@ -6,4 +6,6 @@ export interface DelayedPaymentFormInterface {
     Because_Of?:        string;
     Due_Date?:          Date;
     Status?:            string;
+    AdminID?:           string;
+    ReservationID?:     string;
 }

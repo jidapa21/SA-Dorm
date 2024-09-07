@@ -11,7 +11,7 @@ import {
   Modal, 
   message
 } from "antd";
-import { PlusOutlined, UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { Link, useNavigate } from "react-router-dom";
 import { RepairInterface } from "./../../interfaces/repairing";

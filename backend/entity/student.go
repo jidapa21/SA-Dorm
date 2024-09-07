@@ -7,14 +7,16 @@ import (
 
 type Student struct {
     gorm.Model
-    S_ID        string
-    Password    string
-    First_Name  string
-    Last_Name   string
-    Year        uint
-    Birthday    time.Time
-    Gender      string
-    Major       string
+    SID      string    `json:"s_id"`
+	Password  string    `json:"password"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
+	Birthday  time.Time `json:"birthday"`
+	Year      uint      `json:"year"`
+	Major     string    `json:"major"`
+
+	GenderID uint     `json:"gender_id"`
+	Gender   *Genders `gorm:"foreignKey: gender_id" json:"gender"`
 
     // RoomID ทำหน้าที่เป็น FK
     Room_ID     uint

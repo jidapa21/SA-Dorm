@@ -6,7 +6,7 @@ type Repairing struct {
     gorm.Model
     Subject          string
     Detail           string
-    Image            []byte // ใช้ []byte แทน blob
+    Image            string `gorm:"type:longtext"`
     Location_Details string
     Contact          string
     Time_Slot        string
@@ -14,10 +14,10 @@ type Repairing struct {
     Status           string
 
     // StudentID ทำหน้าที่เป็น FK
-    Student_ID  uint
-    Student     Student `gorm:"foreignKey:StudentID"`
+    ReservationID  uint
+    Reservation     Student `gorm:"foreignKey:ReservationID"`
 
     // AdminID ทำหน้าที่เป็น FK
-    Admin_ID    uint
+    AdminID    uint
     Admin       Admin `gorm:"foreignKey:AdminID"`
 }

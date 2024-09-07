@@ -5,4 +5,6 @@ export interface En_ExitingFormInterface {
     Because_Of?:		string;
 	Date_Reques?:		Date;
     Status?:			string;
+    AdminID?:           string;
+    ReservationID?:         string;
 }
