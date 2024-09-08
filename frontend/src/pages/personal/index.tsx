@@ -2,62 +2,75 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
-import { ListStudents, ListPersonal, ListAddress } from "../../services/https/index";
+import { GetAddressById ,GetStudentsById,GetPersonalById,GetOtherById,GetFamilyById} from "../../services/https/index";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { StudentInterface } from "../../interfaces/Student";
 import { AddressInterface } from "../../interfaces/Address";
+import { FamilyInterface } from "../../interfaces/Family";
+import { OtherInteface } from "../../interfaces/Other";
 import { Space, Table, Button, Col, Row, Divider, message, Card } from "antd";
 import dayjs from "dayjs";
 
-interface CombinedData extends PersonalInterface, StudentInterface ,AddressInterface{} // Combining both interfaces
+interface CombinedData extends PersonalInterface, StudentInterface ,AddressInterface, FamilyInterface, OtherInteface{} // Combining both interfaces
 
 function Personal() {
   const navigate = useNavigate();
-  const [data, setData] = useState<CombinedData[]>([]);
+  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
   const [messageApi, contextHolder] = message.useMessage();
-  
-  const getData = async () => {
+
+  const getStudentData = async (id: string) => {
     try {
-      const [personalRes, studentRes, addressRes] = await Promise.all([
-        ListPersonal(),
-        ListStudents(),
-        ListAddress(),
+      // Fetch all related data by student ID
+      const [studentRes,personalRes,addressRes,familyRes,otherRes ] = await Promise.all([
+        GetStudentsById(id),
+        GetPersonalById(id),
+        GetAddressById(id),
+        GetFamilyById(id),
+        GetOtherById(id),
       ]);
-  
-      if (personalRes.status === 200 && studentRes.status === 200 && addressRes.status === 200) {
-        console.log("Personal Response:", personalRes);
-        console.log("Student Response:", studentRes);
-        console.log("Address Response:", addressRes);
-  
-        // ใช้ Student เป็นหลักในการเชื่อมโยงข้อมูล
-        const combinedData = studentRes.data.map((student: StudentInterface) => {
-          const matchingPersonal = personalRes.data.find((personal: PersonalInterface) => personal.StudentID === student.StudentID);
-          const matchingAddress = addressRes.data.find((address: AddressInterface) => address.StudentID === student.StudentID);
-          
-          return {
-            ...student,             // ข้อมูลจาก Student เป็นหลัก
-            ...matchingPersonal,    // เพิ่มข้อมูล Personal ที่เชื่อมโยง
-            ...matchingAddress      // เพิ่มข้อมูล Address ที่เชื่อมโยง
-          };
-        });
-  
-        setData(combinedData);
+
+      if (
+        studentRes.status === 200  ||
+        personalRes.status === 200 ||
+        addressRes.status === 200 ||
+        familyRes.status === 200 ||
+        otherRes.status === 200
+      ) {
+        // Combine data into a single object
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+          ...personalRes.data,
+          ...addressRes.data,
+          ...familyRes.data,
+          ...otherRes.data,
+        };
+        setStudentData(combinedData);
       } else {
         messageApi.open({
           type: "error",
           content: "Error fetching data",
         });
+        setStudentData(null);
       }
     } catch (error) {
       messageApi.open({
         type: "error",
-        content: "Failed to fetch data",
+        content: "Failed to fetch student data.",
+      });
+      setStudentData(null);
+    }
+  };
+  useEffect(() => {
+    // Fetch student ID from localStorage
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      getStudentData(studentId);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Student ID not found.",
       });
     }
-  };  
-
-  useEffect(() => {
-    getData();
   }, []);
 
   const columns: ColumnsType<CombinedData> = [
@@ -75,27 +88,27 @@ function Personal() {
           <Card
               style={{ color: "#001d66" }}
               type="inner"
-              title={<span style={{ color: "#061178" }}>1. ข้อมูลส่วนตัวนักศึกษา</span>}
+              title ={<span style={{ color: "#061178" }}>1. ข้อมูลส่วนตัวนักศึกษา</span>}
             >
               <table className="info-table">
                 <tbody>
                   <tr>
                     <td style={{ backgroundColor: "#f0f0f0" }}>ชื่อเล่น</td>
-                    <td>{record.Nickname}</td>
+                    <td>{record.student_id}</td>
                     <td style={{ backgroundColor: "#f0f0f0" }}>วันเกิด</td>
                     <td>{dayjs(record.birthday).format("dddd DD MMM YYYY")}</td>
                   </tr>
                   <tr>
                     <td>รหัสบัตรประชาชน</td>
-                    <td>{record.CitizenID}</td>
+                    <td>{record.citizen_id}</td>
                     <td>หมายเลขโทรศัพท์มือถือ</td>
-                    <td>{record.Phone}</td>
+                    <td>{record.phone}</td>
                   </tr>
                   <tr>
                     <td style={{ backgroundColor: "#f0f0f0" }}>สัญชาติ</td>
-                    <td>{record.Nationality}</td>
+                    <td>{record.nationality}</td>
                     <td style={{ backgroundColor: "#f0f0f0" }}>เชื้อชาติ</td>
-                    <td>{record.Race}</td>
+                    <td>{record.race}</td>
                   </tr>
                   <tr>
                     <td>ศาสนา</td>
@@ -167,9 +180,10 @@ function Personal() {
                   </tr>
                   <tr>
                     <td>สถานภาพครอบครัว</td>
-                    <td>{record.FamilyStatusID}</td>
+                    <td>{record.family_status_id}</td> 
                     <td>ผู้ปกครอง</td>
-                    <td>{record.GuardiansID}</td>
+                    {/*<td>{record?.guardian?.guardian}</td>*/}
+                    <td>{record.guardian_id}</td>
                   </tr>
                   <tr>
                     <td style={{ backgroundColor: '#f0f0f0' }}>หรือผู้ปกครอง ชื่อ/สกุล</td>
@@ -268,9 +282,9 @@ function Personal() {
 
       <div style={{ marginTop: -10 }}>
         <Table
-          rowKey="ID"
+          //rowKey="ID"
           columns={columns}
-          dataSource={data}
+          dataSource={studentData ? [studentData] : []}
           style={{ width: "100%", overflow: "scroll" }}
           pagination={false}
         />

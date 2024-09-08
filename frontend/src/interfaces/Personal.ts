@@ -1,10 +1,10 @@
 export interface PersonalInterface{
   ID?: number;
-  Nickname?: string;
-  CitizenID?: string;
-  Phone?: string;
-  Nationality?: string;
-  Race?: string;
+  nickname?: string;
+  citizen_id?: string;
+  phone?: string;
+  nationality?: string;
+  race?: string;
   Religion?: string;
   BloodGroup?: string;
   UD?: string;

@@ -8,7 +8,7 @@ export interface OtherInteface{
   PlateNo?: string;
   TaxDate?: string;
   ProvinceVehicle?: string;
-  LicenseID?: number;
+  LicenseID?: number; 
   Type?: string;
   ExpiredCard?: string;
   StudentID?: string; // เชื่อมโยงกับ Student

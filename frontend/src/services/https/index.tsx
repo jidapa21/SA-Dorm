@@ -97,6 +97,32 @@ async function ListFamily() {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function ListOther() {
+  return await axios
+    .get(`${apiUrl}/list-other`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function GetAddressById(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-address/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetFamilyById(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-family/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetOtherById(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-other/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 
 export {
   SignInStudent,
@@ -112,4 +138,8 @@ export {
   GetPersonalById,
   ListAddress,
   ListFamily,
+  ListOther,
+  GetAddressById,
+  GetFamilyById,
+  GetOtherById
 };

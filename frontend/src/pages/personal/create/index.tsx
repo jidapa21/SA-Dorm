@@ -12,11 +12,11 @@ function PersonalCreate() {
 		try {
 			const personalDetailData: PersonalDetailInterface = {
 				personal: {
-					Nickname: values.Nickname,
-					CitizenID: values.CitizenID,
-					Phone: values.Phone,
-					Nationality: values.Nationality,
-					Race: values.Race,
+					nickname: values.nickname,
+					citizen_id: values.citizen_id,
+					phone: values.phone,
+					nationality: values.nationality,
+					race: values.race,
 					Religion: values.Religion,
 					BloodGroup: values.BloodGroup,
 					UD: values.UD,
@@ -39,8 +39,8 @@ function PersonalCreate() {
 				OccupationMather: values.OccupationMather,
 				PhoneFather: values.PhoneFather,
 				PhoneMather: values.PhoneMather,
-				FamilyStatusID: values.FamilyStatusID,
-				GuardiansID: values.GuardiansID,
+				family_status_id: values.family_status_id,
+				guardian_id: values.guardian_id,
 				OrGuardiansName: values.OrGuardiansName,
 				Relationship: values.Relationship,
 				OccupationGuardian: values.OccupationGuardian,
@@ -101,7 +101,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ชื่อเล่น"
-									name="Nickname"
+									name="nickname"
 									rules={[{ required: true, message: "กรุณากรอกชื่อเล่น" }]}
 								> 
 								<Input />
@@ -110,7 +110,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="รหัสบัตรประชาชน"
-									name="CitizenID"
+									name="citizen_id"
 									rules={[{ required: true, message: "กรุณากรอกรหัสบัตรประชาชน" },
 													{pattern: /^[0-9]{13}$/, message: "กรุณากรอกรหัสบัตรประชาชนที่ถูกต้อง (13 หลัก)" }]}
 									>
@@ -120,7 +120,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="หมายเลขโทรศัพท์มือถือ"
-									name="Phone"
+									name="phone"
 									rules={[{ required: true, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
 												{pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" }]}
 								>
@@ -130,7 +130,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="สัญชาติ"
-									name="Nationality"
+									name="nationality"
 									rules={[{ required: true, message: "กรุณากรอกสัญชาติ" }]}
 								>
 									<Input />
@@ -139,7 +139,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="เชื้อชาติ"
-									name="Race"
+									name="race"
 									rules={[{ required: true, message: "กรุณากรอกเชื้อชาติ" }]}
 								>
 									<Input />
@@ -319,7 +319,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="สถานภาพครอบครัว"
-										name="FamilyStatusID"
+										name="family_status_id"
 										rules={[
 												{
 												required: true,
@@ -341,7 +341,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="ผู้ปกครอง"
-										name="GuardiansID"
+										name="guardian_id"
 										rules={[{ required: true, message: "กรุณาเลือกผู้ปกครอง",}]}
 									>
 									<Select
