@@ -11,8 +11,8 @@ type Reservation struct {
 	ReserveDate  	time.Time
 
 	
-	StudentID *uint
-	Student	Students `gorm:"foriegnKey:StudentID"`
+	StudentID uint      `json:"student_id"`
+	Student   *Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
 	DormID *uint
 	Dorm	Dorm  `gorm:"foriegnKey:DormID"`
@@ -20,4 +20,8 @@ type Reservation struct {
 	RoomID *uint
 	Room	Room  `gorm:"foriegnKey:RoomID"`
 
+	Repairings  			[]Repairing `gorm:"foreignKey:ReservationID"`
+	DelayedPaymentForms  	[]DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
+	En_ExitingForms  		[]En_ExitingForm `gorm:"foreignKey:ReservationID"`
+	ResigningForms  		[]ResigningForm `gorm:"foreignKey:ReservationID"`
 }

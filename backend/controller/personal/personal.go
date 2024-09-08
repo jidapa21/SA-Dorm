@@ -49,7 +49,7 @@ func CreatePersonal(c *gin.Context) {
 // GET /get-personal/:id
 func GetPersonal(c *gin.Context) {
 	ID := c.Param("id")
-	var personal entity.Students
+	var personal entity.Personal
 
 	db := config.DB()
 	results := db.First(&personal, ID)

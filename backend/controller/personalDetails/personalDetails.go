@@ -75,3 +75,4 @@ func CreatePersonalDetails(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Personal details created successfully"})
 }
+

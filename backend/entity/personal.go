@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type Personal struct {
 	gorm.Model
-	Nickname    string
-	CitizenID   string
-	Phone       string
-	Nationality string
-	Race        string
+	Nickname    string `json:"nickname"`
+	CitizenID   string `json:"citizen_id"`
+	Phone       string `json:"phone"`
+	Nationality string `json:"nationality"`
+	Race        string `json:"race"`
 	Religion    string
 	BloodGroup  string
 	UD          *string

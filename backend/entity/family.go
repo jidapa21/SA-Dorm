@@ -15,10 +15,10 @@ type Family struct {
 	OccupationGuardian *string
 	PhoneGuardian      *string
 
-	GuardiansID uint
+	GuardiansID uint       `json:"guardian_id"`
 	Guardian    *Guardians `gorm:"foreignKey: GuardiansID" json:"guardian"`
 
-	FamilyStatusID uint
+	FamilyStatusID uint            `json:"family_status_id"`
 	FamilyStatus   *FamilyStatuses `gorm:"foreignKey: FamilyStatusID" json:"family_status"`
 
 	// One-to-one relationship with Student

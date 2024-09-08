@@ -37,10 +37,10 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 	)
-	GenderMale := entity.Genders{Gender_type: "Male"}
-	GenderFemale := entity.Genders{Gender_type: "Female"}
-	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender_type: "Male"})
-	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender_type: "Female"})
+	GenderMale := entity.Genders{Gender: "Male"}
+	GenderFemale := entity.Genders{Gender: "Female"}
+	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
+	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
 	FamilyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
 	FamilyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}

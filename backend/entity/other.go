@@ -19,8 +19,8 @@ type Other struct {
 	Type                 *string
 	ExpiredCard          *time.Time
 
-	LicenseID *uint
-	License   *FamilyStatuses `gorm:"foreignKey: LicenseID"`
+	LicenseID *uint           
+	License   *FamilyStatuses `gorm:"foreignKey: LicenseID" json:"license"`
 
 	// One-to-one relationship with Student
 	//StudentID string

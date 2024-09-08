@@ -21,3 +21,21 @@ func ListAddress(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, address)
 }
+
+// GET /get-address/:id
+func GetAddress(c *gin.Context) {
+	ID := c.Param("id")
+	var address entity.Address
+
+	db := config.DB()
+	results := db.First(&address, ID)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	if address.ID == 0 {
+		c.JSON(http.StatusNoContent, gin.H{})
+		return
+	}
+	c.JSON(http.StatusOK, address)
+}
