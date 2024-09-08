@@ -26,43 +26,43 @@ const MainDorm1: React.FC = () => (
     <Divider />
     <Divider orientation="left">ชั้นที่ 1</Divider>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '10px' }}>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1100</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1101</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1102</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1103</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1104</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1105</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1106</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1107</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1108</div><br/><br/><div>0/3</div>
         </div></Link>
-      <Link to="/booking">
+      <Link to="/dorm-booking/booking">
         <div style={style}>
           <div>1109</div><br/><br/><div>0/3</div>
         </div></Link>

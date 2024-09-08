@@ -98,8 +98,6 @@ const Booking: React.FC = () => {
       <br/>
     </>
   );
-  
 }
-
 
 export default Booking;

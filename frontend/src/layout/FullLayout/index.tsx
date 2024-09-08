@@ -11,6 +11,7 @@ import MainDorm1 from "../../pages/dorm/MainDorm1";
 import MainDorm2 from "../../pages/dorm/MainDorm2";
 import MainDorm3 from "../../pages/dorm/MainDorm3";
 import MainDorm4 from "../../pages/dorm/MainDorm4";
+import Booking from "../../pages/dorm/Booking";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -221,6 +222,7 @@ const FullLayout: React.FC = () => {
               <Route path="/dorm-booking/mainDorm2" element={<MainDorm2 />} />
               <Route path="/dorm-booking/mainDorm3" element={<MainDorm3 />} />
               <Route path="/dorm-booking/mainDorm4" element={<MainDorm4 />} />
+              <Route path="/dorm-booking/booking" element={<Booking />} />
               <Route path="/list" element={<Listpages />} />
               <Route path="/repair" element={<Repairpages />} />
               <Route path="/form/DelayedPayment" element={<DelayedPaymentpages />} />
