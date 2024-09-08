@@ -8,10 +8,12 @@ import {
     DatePicker,
     Card,
     Divider,
+    Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { NavLink, Link } from 'react-router-dom';
+const { Text } = Typography;
 import "../../repair/index.css";
 
 export default function index() {
@@ -38,12 +40,21 @@ export default function index() {
                     //onFinish={onFinish}
                     autoComplete="off"
                 >
-                    <h3>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</h3>
-                    <h3>อาคาร  4  ห้อง  414A</h3>
+                    <Space direction="vertical">
+                        <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
+                        <Text>อาคาร  4  ห้อง  414A</Text>
+                    </Space>
                 </Form>
-                <Form layout="horizontal">
+
+                <br />
+
+                <Form
+                    name="basic"
+                    layout="vertical"
+                    autoComplete="off"
+                >
                     <Row gutter={64}>
-                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                             <Form.Item
                                 label="ค่าหอพัก"
                                 name="dorm_payment"
@@ -52,7 +63,7 @@ export default function index() {
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                             <Form.Item
                                 label="ค่าไฟฟ้า"
                                 name="electricly_bill"
@@ -61,7 +72,7 @@ export default function index() {
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                             <Form.Item
                                 label="ค่าน้ำ"
                                 name="water_bill"
@@ -70,7 +81,7 @@ export default function index() {
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                             <Form.Item
                                 label="เนื่องจาก"
                                 name="because_of"
@@ -85,7 +96,7 @@ export default function index() {
                             </Form.Item>
                         </Col>
 
-                        <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                             <Form.Item
                                 label="ชำระภายในวันที่"
                                 name="due_date"

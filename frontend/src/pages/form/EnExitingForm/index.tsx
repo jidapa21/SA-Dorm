@@ -9,10 +9,12 @@ import {
   DatePicker,
   Card,
   Divider,
+  Typography,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
+const { Text } = Typography;
 import "../../repair/index.css";
 
 export default function index() {
@@ -35,7 +37,6 @@ export default function index() {
 
   return (
     <>
-    
       <Card>
         <h2>แบบฟอร์มขออนุญาติเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืนนอกหอพัก</h2>
         <Divider />
@@ -45,14 +46,26 @@ export default function index() {
           //onFinish={onFinish}
           autoComplete="off"
         >
-          <h3>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</h3>
-          <h3>อาคาร  4  ห้อง  414A</h3>
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Space direction="vertical">
+                <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
+                <Text>อาคาร  4  ห้อง  414A</Text>
+              </Space>
+            </Col>
+            <Col>
+              <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+            </Col>
+          </Row>
         </Form>
-        
-        <div className='flex1'>
-                <div>วันที่ปัจจุบัน: {formattedDate}</div>
-              </div>
-        <Form layout="horizontal">
+
+        <br />
+
+        <Form
+          name="basic"
+          layout="horizontal"
+          autoComplete="off"
+        >
           <Row gutter={64}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item label="เรื่องที่ขอ:"
