@@ -15,6 +15,7 @@ import (
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/student"
+	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -53,10 +54,12 @@ func main() {
 		// Family Route
 		router.GET("/list-family", family.ListFamily)
 		router.GET("/get-family/:id", family.GetFamily)
-
 		// Other Route
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
+		// Repairing Route
+		router.GET("/list-repairing", repairing.ListRepairings)
+		router.GET("/get-repairing/:id", repairing.GetRepairing)
 
 	}
 	r.GET("/genders", genders.GetAll)

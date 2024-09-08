@@ -36,6 +36,11 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+
+		&entity.Repairing{},
+		&entity.DelayedPaymentForm{},
+		&entity.En_ExitingForm{},
+		&entity.ResigningForm{},
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
