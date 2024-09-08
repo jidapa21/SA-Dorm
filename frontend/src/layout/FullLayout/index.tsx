@@ -7,7 +7,7 @@ import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
 import logo from "../../assets/logo.png";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
-import DormBookingpages from "../../pages/dorm";
+import MainDorm from "../../pages/dorm/mainDorm";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -190,7 +190,7 @@ const FullLayout: React.FC = () => {
               <Route path="/personal" element={<Personal />} />
               <Route path="/personal/create" element={<PersonalCreate />} />
               <Route path="/payment" element={<Paymentpages />} />
-              <Route path="/dorm-booking" element={<DormBookingpages />} />
+              <Route path="/dorm-booking" element={<MainDorm />} />
               <Route path="/list" element={<Listpages />} />
               <Route path="/repair" element={<Repairpages />} />
               <Route path="/form/DelayedPayment" element={<DelayedPaymentpages />} />

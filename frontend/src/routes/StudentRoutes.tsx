@@ -5,7 +5,7 @@ import FullLayout from "../layout/FullLayout";
 const MainPages = Loadable(lazy(() => import("../pages/authentication/LoginStudent")));
 const Homepages = Loadable(lazy(() => import("../pages/homepage")));
 const Payment = Loadable(lazy(() => import("../pages/payment")));
-const DormBooking = Loadable(lazy(() => import("../pages/dorm")));
+const MainDorm = Loadable(lazy(() => import("../pages/dorm/mainDorm")));
 const List = Loadable(lazy(() => import("../pages/list")));
 const Repair = Loadable(lazy(() => import("../pages/repair")));
 const DelayedPayment = Loadable(lazy(() => import("../pages/form/DelayedPaymentForm")));
@@ -51,7 +51,7 @@ const StudentRoutes = (isLoggedInStudent : boolean): RouteObject => {
         children: [
           {
             path: "/dorm-booking",
-            element: <DormBooking />,
+            element: <MainDorm />,
           },
         ],
       },
