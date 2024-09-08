@@ -8,7 +8,8 @@ const Payment = Loadable(lazy(() => import("../pages/payment")));
 const MainDorm1 = Loadable(lazy(() => import("../pages/dorm/MainDorm1")));
 const MainDorm2 = Loadable(lazy(() => import("../pages/dorm/MainDorm2")));
 const MainDorm3 = Loadable(lazy(() => import("../pages/dorm/MainDorm3")));
-const MainDorm4 = Loadable(lazy(() => import("../pages/dorm/MainDorm4")));  
+const MainDorm4 = Loadable(lazy(() => import("../pages/dorm/MainDorm4")));
+const Booking = Loadable(lazy(() => import("../pages/dorm/Booking")));  
 const List = Loadable(lazy(() => import("../pages/list")));
 const Repair = Loadable(lazy(() => import("../pages/repair")));
 const DelayedPayment = Loadable(lazy(() => import("../pages/form/DelayedPaymentForm")));
@@ -67,6 +68,10 @@ const StudentRoutes = (isLoggedInStudent : boolean): RouteObject => {
           {
             path: "/dorm-booking/mainDorm4",
             element: <MainDorm4 />,
+          },
+          {
+            path: "/dorm-booking/booking",
+            element: <Booking />,
           },
         ],
       },      

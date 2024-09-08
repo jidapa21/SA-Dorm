@@ -112,22 +112,22 @@ const FullLayout: React.FC = () => {
               >
                 <Menu.Item key="mainDorm1">
                   <Link to="/dorm-booking/mainDorm1">
-                    <span>หอพักชั้น 1</span>
+                    <span>หอพักชาย 1</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm2">
                   <Link to="/dorm-booking/mainDorm2">
-                    <span>หอพักชั้น 2</span>
+                    <span>หอพักชาย 2</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm3">
                   <Link to="/dorm-booking/mainDorm3">
-                    <span>หอพักชั้น 3</span>
+                    <span>หอพักหญิง 3</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm4">
                   <Link to="/dorm-booking/mainDorm4">
-                    <span>หอพักชั้น 4</span>
+                    <span>หอพักหญิง 4</span>
                   </Link>
                 </Menu.Item>
               </Menu.SubMenu>

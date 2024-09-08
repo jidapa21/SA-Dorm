@@ -18,167 +18,142 @@ const style: React.CSSProperties = {
 
 const MainDorm1: React.FC = () => (
   <>
-    <div></div>
+    <Row>
+      <Col span={12}>
+        <h2 style={{color: '#1f1f1f'}}>จองหอพักชาย 1</h2>
+      </Col>
+    </Row>
+    <Divider />
     <Divider orientation="left">ชั้นที่ 1</Divider>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '10px' }}>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4100</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1100</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4101</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1101</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4102</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1102</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4103</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1103</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4104</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1104</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4105</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1105</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4106</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1106</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4107</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1107</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4108</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1108</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4109</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1109</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
     </div>
 
     <Divider orientation="left">ชั้นที่ 2</Divider>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '10px' }}>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4200</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1200</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4201</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1201</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4202</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1202</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4203</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1203</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4204</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1204</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4205</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1205</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4206</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1206</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4207</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1207</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4208</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1208</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4209</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1209</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
     </div>
 
     <Divider orientation="left">ชั้นที่ 3</Divider>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '10px' }}>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4300</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1300</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4301</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1301</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4302</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1302</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4303</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1303</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4304</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1304</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4305</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1305</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4306</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1306</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4307</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1307</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4308</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1308</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
-      <div style={style}>
-      <Link to="/subDorm"><div>
-        <div>4309</div><br/><br/><div>0/3</div>
+      <Link to="/booking">
+        <div style={style}>
+          <div>1309</div><br/><br/><div>0/3</div>
         </div></Link>
-      </div>
     </div>
   </>
 );
