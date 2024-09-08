@@ -16,7 +16,7 @@ type DelayedPaymentForm struct {
 
     // StudentID ทำหน้าที่เป็น FK
     ReservationID	uint
-    Reservation		Student `gorm:"foreignKey:ReservationID"`
+    Reservation		Reservation `gorm:"foreignKey:ReservationID"`
 
     // AdminID ทำหน้าที่เป็น FK
     AdminID	uint

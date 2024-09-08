@@ -11,21 +11,10 @@ type Admin struct {
 
     
 	PhonNumber          string
-	Repairings          []Repairing          `gorm:"foreignKey:Admin_ID"`
-	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:Admin_ID"`
-	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:Admin_ID"`
-	ResigningForms      []ResigningForm      `gorm:"foreignKey:Admin_ID"`
-	Slips               []Slip               `gorm:"foreignKey:Admin_ID"`
-	Announcement        []Announcement       `gorm:"foreignKey:Admin_ID"`
-    // 1 แอดมินอนุมัติการซ่อมได้หลายรอบ
-    Repairings  []Repairing `gorm:"foreignKey:Admin_ID"`
-
-    // 1 แอดมินอนุมัติฟอร์มผ่อนผันค่าหอพักได้หลายรอบ
-    DelayedPaymentForms  []DelayedPaymentForm `gorm:"foreignKey:Admin_ID"`
-
-    // 1 นักศึกษาเข้า-ออกหอพักได้หลายรอบ
-    En_ExitingForms  []En_ExitingForm `gorm:"foreignKey:Admin_ID"`
-
-    // 1 นักศึกษาลาออกจากหอพักได้ 1 รอบ
-    ResigningForms  []ResigningForm `gorm:"foreignKey:Admin_ID"`
+	Repairings          []Repairing          `gorm:"foreignKey:AdminID"`
+	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:AdminID"`
+	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:AdminID"`
+	ResigningForms      []ResigningForm      `gorm:"foreignKey:AdminID"`
+	Slips               []Slip               `gorm:"foreignKey:AdminID"`
+	Announcement        []Announcement       `gorm:"foreignKey:AdminID"`
 }

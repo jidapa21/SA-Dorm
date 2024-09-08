@@ -15,7 +15,7 @@ type En_ExitingForm struct {
 
     // StudentID ทำหน้าที่เป็น FK
     ReservationID	string
-    Reservation		Student `gorm:"foreignKey:ReservationID"`
+    Reservation		Reservation `gorm:"foreignKey:ReservationID"`
 
     // AdminID ทำหน้าที่เป็น FK
     AdminID	string

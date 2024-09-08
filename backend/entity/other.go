@@ -26,5 +26,5 @@ type Other struct {
 	//StudentID string
 	//StudentID string
 	StudentID uint      `json:"student_id"`
-	Student   *Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	Student   *Student `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 }

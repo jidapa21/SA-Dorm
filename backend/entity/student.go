@@ -16,21 +16,21 @@ type Student struct {
 	Major     string    `json:"major"`
 
 	GenderID uint     `json:"gender_id"`
-	Gender   *Genders `gorm:"foreignKey: gender_id" json:"gender"`
+	Gender   *Gender `gorm:"foreignKey: gender_id" json:"gender"`
 
     // RoomID ทำหน้าที่เป็น FK
-    Room_ID     uint
-    Room        Room `gorm:"foreignKey:Room_ID"`
+    RoomID     uint
+    Room        Room `gorm:"foreignKey:RoomID"`
 
     // 1 นักศึกษาแจ้งซ่อมได้หลายรอบ
-    Repairings  []Repairing `gorm:"foreignKey:Student_ID"`
+    Repairings  []Repairing `gorm:"foreignKey:StudentID"`
 
     // 1 นักศึกษาผ่อนผันค่าหอพักได้หลายรอบ
-    DelayedPaymentForms  []DelayedPaymentForm `gorm:"foreignKey:Student_ID"`
+    DelayedPaymentForms  []DelayedPaymentForm `gorm:"foreignKey:StudentID"`
 
     // 1 นักศึกษาเข้า-ออกหอพักได้หลายรอบ
-    En_ExitingForms  []En_ExitingForm `gorm:"foreignKey:Student_ID"`
+    En_ExitingForms  []En_ExitingForm `gorm:"foreignKey:StudentID"`
 
     // 1 นักศึกษาลาออกจากหอพักได้ 1 รอบ
-    ResigningForms  []ResigningForm `gorm:"foreignKey:Student_ID"`
+    ResigningForms  []ResigningForm `gorm:"foreignKey:StudentID"`
 }

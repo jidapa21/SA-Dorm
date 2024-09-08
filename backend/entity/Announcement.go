@@ -11,5 +11,5 @@ type Announcement struct {
 	Title   string
 	Date    time.Time
 	Admin_ID uint
-	Admin   Admin `gorm:"foriengKey:Admin_ID"`
+	Admin   Admin `gorm:"foriengKey:AdminID"`
 }
