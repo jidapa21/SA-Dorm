@@ -16,8 +16,9 @@ const style: React.CSSProperties = {
   textAlign: 'center'
 };
 
-const mainDorm: React.FC = () => (
+const mainDorm1: React.FC = () => (
   <>
+    <div></div>
     <Divider orientation="left">ชั้นที่ 1</Divider>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '10px' }}>
       <div style={style}>
@@ -182,4 +183,4 @@ const mainDorm: React.FC = () => (
   </>
 );
 
-export default mainDorm;
+export default mainDorm1;

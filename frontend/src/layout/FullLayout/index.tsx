@@ -7,7 +7,10 @@ import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
 import logo from "../../assets/logo.png";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
-import MainDorm from "../../pages/dorm/mainDorm";
+import MainDorm1 from "../../pages/dorm/mainDorm1";
+import MainDorm2 from "../../pages/dorm/mainDorm2";
+import MainDorm3 from "../../pages/dorm/mainDorm3";
+import MainDorm4 from "../../pages/dorm/mainDorm4";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -97,15 +100,40 @@ const FullLayout: React.FC = () => {
                   <span>ข้อมูลส่วนตัว</span>
                 </Link>
               </Menu.Item>
-              <Menu.Item
+
+              <Menu.SubMenu
                 key="dorm-booking"
-                onClick={() => setCurrentPage("dorm-booking")}
+                title={
+                  <span>
+                   <FormOutlined /> 
+                    <span>จองหอพัก</span>
+                  </span>
+                }
               >
-                <Link to="/dorm-booking">
-                 <ApartmentOutlined /> 
-                  <span>จองหอพัก</span>
-                </Link>
-              </Menu.Item>
+                <Menu.Item key="mainDorm1">
+                  <Link to="/dorm-booking/mainDorm1">
+                    <span>หอพักชาย 1</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm2">
+                  <Link to="/dorm-booking/mainDorm2">
+                    <span>หอพักชาย 2</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm3">
+                  <Link to="/dorm-booking/mainDorm3">
+                    <span>หอพักหญิง 3</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm4">
+                  <Link to="/dorm-booking/mainDorm4">
+                    <span>หอพักหญิง 4</span>
+                  </Link>
+                </Menu.Item>
+              </Menu.SubMenu>
+
+
+
               <Menu.Item
                 key="list"
                 onClick={() => setCurrentPage("list")}
@@ -190,7 +218,10 @@ const FullLayout: React.FC = () => {
               <Route path="/personal" element={<Personal />} />
               <Route path="/personal/create" element={<PersonalCreate />} />
               <Route path="/payment" element={<Paymentpages />} />
-              <Route path="/dorm-booking" element={<MainDorm />} />
+              <Route path="/dorm-booking/mainDorm1" element={<MainDorm1 />} />
+              <Route path="/dorm-booking/mainDorm2" element={<MainDorm2 />} />
+              <Route path="/dorm-booking/mainDorm3" element={<MainDorm3 />} />
+              <Route path="/dorm-booking/mainDorm4" element={<MainDorm4 />} />
               <Route path="/list" element={<Listpages />} />
               <Route path="/repair" element={<Repairpages />} />
               <Route path="/form/DelayedPayment" element={<DelayedPaymentpages />} />
