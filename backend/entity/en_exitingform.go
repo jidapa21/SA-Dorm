@@ -19,6 +19,6 @@ type En_ExitingForm struct {
 
     // AdminID ทำหน้าที่เป็น FK
     AdminID	string
-    Admin		Admin `gorm:"foreignKey:AdminID"`
+    Admin		Admins `gorm:"foreignKey:AdminID"`
 
 }

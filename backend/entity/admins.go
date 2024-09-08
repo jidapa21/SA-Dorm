@@ -2,10 +2,11 @@ package entity
 
 import "gorm.io/gorm"
 
-type Admin struct {
+type Admins struct {
     gorm.Model
     Username    string  `json:"username"`
-    Full_Name   string
+	FirstName string
+	LastName  string
     Phone       string
     Password    string  `json:"password"`
 

@@ -16,7 +16,7 @@ func DB() *gorm.DB {
 	return db
 }
 func ConnectionDB() {
-	database, err := gorm.Open(sqlite.Open("sa.db?cache=shared"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open("sa1.db?cache=shared"), &gorm.Config{})
 
 	if err != nil {
 		panic("failed to connect database")
@@ -37,10 +37,10 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 	)
-	GenderMale := entity.Genders{Gender: "Male"}
-	GenderFemale := entity.Genders{Gender: "Female"}
-	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
-	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
+	GenderMale := entity.Genders{Gender_type: "Male"}
+	GenderFemale := entity.Genders{Gender_type: "Female"}
+	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender_type: "Male"})
+	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender_type: "Female"})
 
 	FamilyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
 	FamilyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}
@@ -85,7 +85,6 @@ func SetupDatabase() {
 		FirstName: "Jetnipat ",
 		LastName:  "kunjai",
 		Phone:     "061xxxxxxx",
-		Birthday:  Birthday,
 		Password:  adminhashedPassword,
 	}
 

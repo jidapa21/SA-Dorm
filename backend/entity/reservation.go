@@ -12,7 +12,7 @@ type Reservation struct {
 
 	
 	StudentID *uint
-	Student	Student `gorm:"foriegnKey:StudentID"`
+	Student	Students `gorm:"foriegnKey:StudentID"`
 
 	DormID *uint
 	Dorm	Dorm  `gorm:"foriegnKey:DormID"`

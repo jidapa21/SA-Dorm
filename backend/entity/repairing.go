@@ -19,5 +19,5 @@ type Repairing struct {
 
     // AdminID ทำหน้าที่เป็น FK
     AdminID     uint
-    Admin       Admin `gorm:"foreignKey:AdminID"`
+    Admin       Admins `gorm:"foreignKey:AdminID"`
 }
