@@ -15,6 +15,6 @@ type Admin struct {
 	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:AdminID"`
 	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:AdminID"`
 	ResigningForms      []ResigningForm      `gorm:"foreignKey:AdminID"`
-	Slips               []Slip               `gorm:"foreignKey:AdminID"`
+	//Slips               []Slip               `gorm:"foreignKey:AdminID"`
 	Announcement        []Announcement       `gorm:"foreignKey:AdminID"`
 }
