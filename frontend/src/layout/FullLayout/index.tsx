@@ -7,10 +7,10 @@ import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
 import logo from "../../assets/logo.png";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
-import MainDorm1 from "../../pages/dorm/mainDorm1";
-import MainDorm2 from "../../pages/dorm/mainDorm2";
-import MainDorm3 from "../../pages/dorm/mainDorm3";
-import MainDorm4 from "../../pages/dorm/mainDorm4";
+import MainDorm1 from "../../pages/dorm/MainDorm1";
+import MainDorm2 from "../../pages/dorm/MainDorm2";
+import MainDorm3 from "../../pages/dorm/MainDorm3";
+import MainDorm4 from "../../pages/dorm/MainDorm4";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -112,26 +112,25 @@ const FullLayout: React.FC = () => {
               >
                 <Menu.Item key="mainDorm1">
                   <Link to="/dorm-booking/mainDorm1">
-                    <span>หอพักชาย 1</span>
+                    <span>หอพักชั้น 1</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm2">
                   <Link to="/dorm-booking/mainDorm2">
-                    <span>หอพักชาย 2</span>
+                    <span>หอพักชั้น 2</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm3">
                   <Link to="/dorm-booking/mainDorm3">
-                    <span>หอพักหญิง 3</span>
+                    <span>หอพักชั้น 3</span>
                   </Link>
                 </Menu.Item>
                 <Menu.Item key="mainDorm4">
                   <Link to="/dorm-booking/mainDorm4">
-                    <span>หอพักหญิง 4</span>
+                    <span>หอพักชั้น 4</span>
                   </Link>
                 </Menu.Item>
               </Menu.SubMenu>
-
 
 
               <Menu.Item
@@ -228,8 +227,6 @@ const FullLayout: React.FC = () => {
               <Route path="/form/EnExiting" element={<EnExitingpages />} />
               <Route path="/form/Resigning" element={<Resigningpages />} />
               <Route path="/status" element={<Statusgpages />} />
-
-
             </Routes>
           </div>
         </Content>

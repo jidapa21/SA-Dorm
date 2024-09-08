@@ -3,7 +3,7 @@ import { Col, Row,Divider} from "antd";
 import Bsub from './dorm/Bsub'*/
 
 
-function mainDorm3() {
+function MainDorm3() {
   
   
   return (
@@ -23,4 +23,4 @@ function mainDorm3() {
   );
 }
 
-export default mainDorm3;
+export default MainDorm3;

@@ -16,7 +16,7 @@ const style: React.CSSProperties = {
   textAlign: 'center'
 };
 
-const mainDorm1: React.FC = () => (
+const MainDorm1: React.FC = () => (
   <>
     <div></div>
     <Divider orientation="left">ชั้นที่ 1</Divider>
@@ -183,4 +183,4 @@ const mainDorm1: React.FC = () => (
   </>
 );
 
-export default mainDorm1;
+export default MainDorm1;
