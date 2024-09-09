@@ -23,11 +23,13 @@ import { Link, useNavigate } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
+import { StudentInterface } from "../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
 import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+interface CombinedData extends StudentInterface{} // Combining both interfaces
 
 export default function RepairingCreate() {
 
@@ -46,10 +48,6 @@ export default function RepairingCreate() {
         // Combine data into a single object
         const combinedData: CombinedData = {
           ...studentRes.data,
-          ...personalRes.data,
-          ...addressRes.data,
-          ...familyRes.data,
-          ...otherRes.data,
         };
         setStudentData(combinedData);
       } else {
@@ -201,6 +199,7 @@ export default function RepairingCreate() {
           autoComplete="off"
         >
           <Space direction="vertical">
+          <td>{record.student_id}</td>
             <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
             <Text>อาคาร  4  ห้อง  414A</Text>
           </Space>

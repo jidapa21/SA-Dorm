@@ -72,14 +72,14 @@ func SetupDatabase() {
 	db.FirstOrCreate(&noLicense, &entity.License{License: "ไม่มี"})
 
 
-	DormFemale1 := entity.Dorm{Type: "หอพักหญิง 1"}
-	DormFemale2 := entity.Dorm{Type: "หอพักหญิง 2"}
-	DorMale1 := entity.Dorm{Type: "หอพักชาย 1"}
-	DorMale2 := entity.Dorm{Type: "หอพักชาย 2"}
-	db.FirstOrCreate(&DormFemale1, &entity.Dorm{Type: "หอพักหญิง 1"})
-	db.FirstOrCreate(&DormFemale2, &entity.Dorm{Type: "หอพักหญิง 2"})
-	db.FirstOrCreate(&DorMale1, &entity.Dorm{Type: "หอพักชาย 1"})
-	db.FirstOrCreate(&DorMale2, &entity.Dorm{Type: "หอพักชาย 2"})
+	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3"}
+	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4"}
+	DormMale1 := entity.Dorm{Type: "หอพักชาย 1"}
+	DormMale2 := entity.Dorm{Type: "หอพักชาย 2"}
+	db.FirstOrCreate(&DormFemale1, &entity.Dorm{Type: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale2, &entity.Dorm{Type: "หอพักหญิง 4"})
+	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
+	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
 
 	Room4101 := entity.Room{RoomNumber: 4101}
 	Room4102 := entity.Room{RoomNumber: 4102}
