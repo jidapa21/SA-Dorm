@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
+	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/genders"
 	"dormitory.com/dormitory/controller/guardians"
 	"dormitory.com/dormitory/controller/license"
@@ -69,6 +70,17 @@ func main() {
 		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
 		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
 		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
+		// Announcement Routes
+		router.POST("/create-announcement", announcement.CreateAnnouncement)
+		router.GET("/announcements", announcement.GetAnnouncements)
+		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
+		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
+		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
+		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
+		// Admin Routes
+		router.GET("/GetAllAdmins", admin.GetAllAdmins)
+		router.POST("/create-admin", admin.CreateAdmin)
+		router.DELETE("/admin/:id", admin.DeleteAdmin)
 	}
 	r.GET("/genders", genders.GetAll)
 	r.GET("/familyStatuses", familystatuses.GetAll)
