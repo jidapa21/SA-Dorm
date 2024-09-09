@@ -24,13 +24,49 @@ const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
 import { RepairInterface } from "./../../interfaces/repairing";
-import { RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
+import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 export default function RepairingCreate() {
 
+  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
+
+  const getStudentData = async (id: string) => {
+    try {
+      // Fetch all related data by student ID
+      const [studentRes ] = await Promise.all([
+        GetStudentsById(id),
+      ]);
+
+      if (
+        studentRes.status === 200  
+      ) {
+        // Combine data into a single object
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+          ...personalRes.data,
+          ...addressRes.data,
+          ...familyRes.data,
+          ...otherRes.data,
+        };
+        setStudentData(combinedData);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+        setStudentData(null);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch student data.",
+      });
+      setStudentData(null);
+    }
+  };
     const columns: ColumnsType<RepairInterface> = [
       {
         title: "ลำดับ",
