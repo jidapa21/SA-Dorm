@@ -1,15 +1,14 @@
 package personal
 
 import (
-	"errors"
 	"net/http"
 
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
+/*
 // POST /create-personal
 func CreatePersonal(c *gin.Context) {
 	var personal entity.Personal
@@ -36,7 +35,7 @@ func CreatePersonal(c *gin.Context) {
 		return
 	}
 	// ตั้งค่า student_id ให้กับ Personal
-	personal.StudentID = student.ID
+	personal.StudentID = student.StudentID
 
 	if err := db.Create(&personal).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -45,7 +44,7 @@ func CreatePersonal(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Personal created successfully", "data": personal})
 }
-
+*/
 // GET /get-personal/:id
 func GetPersonal(c *gin.Context) {
 	ID := c.Param("id")

@@ -9,18 +9,64 @@ import {
   Card,
   Divider,
   Modal,
+  Select,
   message,
   Typography,
+  GetProp,
+  UploadFile,
+  UploadProps,
 } from "antd";
 import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 const { Text } = Typography;
+import ImgCrop from "antd-img-crop";
+
 import { RepairInterface } from "./../../interfaces/repairing";
+import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
 import "./../repair/index.css";
 
-export default function index() {
-  /*
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+export default function RepairingCreate() {
+
+  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
+
+  const getStudentData = async (id: string) => {
+    try {
+      // Fetch all related data by student ID
+      const [studentRes ] = await Promise.all([
+        GetStudentsById(id),
+      ]);
+
+      if (
+        studentRes.status === 200  
+      ) {
+        // Combine data into a single object
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+          ...personalRes.data,
+          ...addressRes.data,
+          ...familyRes.data,
+          ...otherRes.data,
+        };
+        setStudentData(combinedData);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+        setStudentData(null);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch student data.",
+      });
+      setStudentData(null);
+    }
+  };
     const columns: ColumnsType<RepairInterface> = [
       {
         title: "ลำดับ",
@@ -42,56 +88,108 @@ export default function index() {
         )
       },
       {
-        title: "ชื่อ",
-        dataIndex: "FirstName",
-        key: "firstname",
+        title: "รายละเอียดการขอรับบริการ",
+        dataIndex: "Detail",
+        key: "detail",
       },
       {
-        title: "นามสกุล",
-        dataIndex: "LastName",
-        key: "lastname",
+        title: "รายละเอียดสถานที่รับบริการ",
+        dataIndex: "Location_Details",
+        key: "location_details",
       },
       {
-        title: "เพศ",
-        dataIndex: "Gender",
-        key: "gender",
-        render: (item) => Object.values(item.Name),
+        title: "ช่องทางติดต่อ",
+        dataIndex: "Contact",
+        key: "contact",
       },
       {
-        title: "อีเมล",
-        dataIndex: "Email",
-        key: "email",
+        title: "ช่วงเวลาที่รับบริการ",
+        dataIndex: "Time_Slot",
+        key: "time_slot",
       },
       {
-        title: "วันเกิด",
-        dataIndex: "BirthDay",
-        key: "birthday",
-        render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
+        title: "หมายเหตุ",
+        dataIndex: "Remarks",
+        key: "remarks",
       },
       {
-        title: "จัดการ",
-        dataIndex: "Manage",
-        key: "manage",
+        title: "สถานะ",
+        dataIndex: "Status",
+        key: "status",
         render: (text, record, index) => (
           <>
-            <Button
-              onClick={() => navigate(`/customer/edit/${record.ID}`)}
-              shape="circle"
-              icon={<EditOutlined />}
-              size={"large"}
-            />
-            <Button
-              onClick={() => showModal(record)}
-              style={{ marginLeft: 10 }}
-              shape="circle"
-              icon={<DeleteOutlined />}
-              size={"large"}
-              danger
-            />
           </>
         ),
       },
-    ];*/
+    ];
+
+    const navigate = useNavigate();
+    const [users, setUsers] = useState<RepairInterface[]>([]);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState<String>();
+  const [deleteId, setDeleteId] = useState<Number>();
+
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+  
+      const handleCancel = () => {
+      setOpen(false);
+    };
+    
+    const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+      setFileList(newFileList);
+    };
+  
+    const onPreview = async (file: UploadFile) => {
+      let src = file.url as string;
+      if (!src) {
+        src = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file.originFileObj as FileType);
+          reader.onload = () => resolve(reader.result as string);
+        });
+      }
+      console.log("Preview Image URL: ", src);  // Check the preview URL
+      const image = new Image();
+      image.src = src;
+      const imgWindow = window.open(src);
+      imgWindow?.document.write(image.outerHTML);
+    };
+  
+    const onFinish = async (values: RepairInterface) => {
+      console.log("Form Values: ", values);  // Check form values
+      values.Image = fileList[0]?.thumbUrl;  // Check image URL
+      console.log("Image URL: ", values.Image);
+    
+      try {
+        let res = await RepairingUI(values);
+        console.log("API Response: ", res);
+        if (res && res.message === "Created success") {
+          messageApi.open({
+            type: "success",
+            content: "บันทึกข้อมูลสำเร็จ",
+          });
+          setTimeout(() => {
+            navigate("/repair");
+          }, 2000);
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "เกิดข้อผิดพลาด !",
+          });
+        }
+      } catch (error) {
+        console.error("API Request Error: ", error);
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาด !",
+        });
+      }
+    };
+    
+  
   return (
     <>
       <Card>
@@ -100,7 +198,6 @@ export default function index() {
         <Form
           name="basic"
           layout="vertical"
-          //onFinish={onFinish}
           autoComplete="off"
         >
           <Space direction="vertical">
@@ -110,17 +207,18 @@ export default function index() {
         </Form>
 
         <br />
-        
+
         <Form
           name="basic"
           layout="vertical"
+          onFinish={onFinish}
           autoComplete="off"
         >
           <Row gutter={[16, 0]}>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="หัวข้อการขอรับบริการ"
-                name="subject"
+                name="Subject"
                 rules={[
                   {
                     required: true,
@@ -128,34 +226,37 @@ export default function index() {
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="อ่างน้ำตัน" />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="ภาพประกอบ"
-                name="image"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณาเพิ่มรูปภาพประกอบ !",
-                  },
-                ]}
+                name="Image"
+                valuePropName="fileList"
               >
-                <Upload
-                  name="file"
-                  action="/upload.do"
-                  listType="picture"
-                  beforeUpload={() => false} // Prevent auto upload
-                >
-                  <Button icon={<UploadOutlined />}>เลือกไฟล์</Button>
-                </Upload>
+                <ImgCrop rotationSlider>
+                  <Upload
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={(file) => {
+                      setFileList([...fileList, file]);
+                      return false;
+                    }}
+                    maxCount={1}
+                    multiple={false}
+                    listType="picture"
+                  >
+                    <Button icon={<UploadOutlined />} >Upload</Button>
+                  </Upload>
+                </ImgCrop>
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="รายละเอียดการขอรับบริการ"
-                name="detail"
+                name="Detail"
                 rules={[
                   {
                     required: true,
@@ -163,13 +264,13 @@ export default function index() {
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="ทำเศษอาหารตก" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="รายละเอียดสถานที่รับบริการ"
-                name="location_detail"
+                name="Location_Details"
                 rules={[
                   {
                     required: true,
@@ -177,13 +278,13 @@ export default function index() {
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="ห้องน้ำรวมชั้น 1" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="หมายเหตุ"
-                name="remark"
+                name="Remarks"
               >
                 <Input />
               </Form.Item>
@@ -191,7 +292,7 @@ export default function index() {
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="ช่องทางติดต่อ"
-                name="contact"
+                name="Contact"
                 rules={[
                   {
                     required: true,
@@ -199,13 +300,13 @@ export default function index() {
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="ช่วงเวลาที่รับบริการ"
-                name="time_slot"
+                name="Time_Slot"
                 rules={[
                   {
                     required: true,
@@ -213,7 +314,7 @@ export default function index() {
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="9:00-16:00 น." />
               </Form.Item>
             </Col>
           </Row>
@@ -221,11 +322,9 @@ export default function index() {
             <Col style={{ marginTop: "40px" }}>
               <Form.Item>
                 <Space>
-                  <Link to="/Repairing">
-                    <Button htmlType="button" style={{ marginRight: "10px" }}>
-                      ยกเลิก
-                    </Button>
-                  </Link>
+                <Button htmlType="button" style={{ marginRight: "10px" }}>
+                    ยกเลิก
+                  </Button>
                   <Button
                     type="primary"
                     htmlType="submit"

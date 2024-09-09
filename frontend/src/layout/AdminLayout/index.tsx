@@ -1,127 +1,123 @@
-// Layout ของ Admin
+// AdminLayout.tsx
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { Layout, Menu, Button } from 'antd';
+import './index.css';
+import userImage from '../../assets/profile.jfif';
+import Logo from '../../assets/logo.png';
+import AdminRoutes from '../../routes/AdminRoutes'; 
 
-import React, { useState } from "react";
-import { Routes, Route, Link } from "react-router-dom";
-import "../../App.css";
-import { HomeOutlined, UserAddOutlined} from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
-import logo from "../../assets/logo.png";
-import Adminpages from "../../pages/adminpage";
-import Student from"../../pages/student";
-import StudentCreate from"../../pages/student/create";
-import StudentEdit from"../../pages/student/edit";
-
-const { Header, Content, Footer, Sider } = Layout;
+const { Sider, Content } = Layout;
 
 const AdminLayout: React.FC = () => {
-  const page = localStorage.getItem("page");
-  const [messageApi, contextHolder] = message.useMessage();
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-   
-  const setCurrentPage = (val: string) => {
-    localStorage.setItem("page", val);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(['1']);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isLoggedInAdmin = true;
+
+  useEffect(() => {
+    const path = location.pathname;
+    switch (path) {
+      case '/Announcement':
+        setSelectedKeys(['1']);
+        break;
+      case '/Repairing':
+        setSelectedKeys(['2']);
+        break;
+      case '/RequestDelayingPayment':
+        setSelectedKeys(['form1']);
+        break;
+      case '/Enteringandexitingdorm':
+        setSelectedKeys(['form2']);
+        break;
+      case '/ResigningForm':
+        setSelectedKeys(['form3']);
+        break;
+      case '/PaymentConfirmation':
+        setSelectedKeys(['paymentConfirmation']);
+        break;
+      case '/AdminManagement': // New menu item
+        setSelectedKeys(['adminManagement']);
+        break;
+      default:
+        setSelectedKeys([]);
+    }
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    // ลบค่าการล็อกอินจาก localStorage
+    localStorage.removeItem('isLoginAdmin');
+    localStorage.removeItem('isLoginStudent');
+    // เปลี่ยนเส้นทางไปยังหน้า Login
+    navigate('/login');
   };
-  const Logout = () => {
-    localStorage.clear();
-    messageApi.success("ออกจากระบบสำเร็จ");
-    setTimeout(() => {
-      location.href = "/";
-    }, 2000);
-  };
+
+  const dropdownMenu = (
+    <Menu className="custom-menu-submenu" mode="inline">
+      <Menu.Item key="form1">
+        <Link to="/RequestDelayingPayment">ฟอร์มผ่อนผัน</Link>
+      </Menu.Item>
+      <Menu.Item key="form2">
+        <Link to="/Enteringandexitingdorm">ฟอร์มขออนุญาตเข้า-ออกหอพัก</Link>
+      </Menu.Item>
+      <Menu.Item key="form3">
+        <Link to="/ResigningForm">ฟอร์มลาออกหอพัก</Link>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      {contextHolder}
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
-        style={{
-          backgroundColor: '#0c1327',  // Sidebar
-        }}
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider 
+        trigger={null} 
+        collapsible 
+        collapsed={collapsed} 
+        onCollapse={setCollapsed} 
+        className="custom-sider"
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "100%",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 20,
-                marginBottom: 20,
-              }}
-            >
-              <img
-                src={logo}
-                alt="Logo"
-                style={{ width: "80%" }}
-              />
-            </div>
-            <Menu
-              theme="dark"
-              style={{
-                backgroundColor: '#0c1327',  // Sidebar
-              }}
-              defaultSelectedKeys={[page ? page : "adminpage"]}
-              mode="inline"
-            >
-              <Menu.Item
-                key="adminpage"
-                onClick={() => setCurrentPage("adminpage")}
-              >
-                <Link to="/">
-                  <HomeOutlined />
-                  <span>แจ้งข่าวสาร</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item
-                key="student"
-                onClick={() => setCurrentPage("student")}
-              >
-                <Link to="/student">
-                  <UserAddOutlined />
-                  <span>ข้อมูลนักศึกษา</span>
-                </Link>
-              </Menu.Item>
-            </Menu>
-          </div>
-          <Button onClick={Logout} style={{ margin: 4 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60px', margin: '16px auto' }}>
+          <img src={Logo} alt="Logo" style={{ width: '40%' }} />
+        </div>
+        <div className="user-info-container">
+          <img src={userImage} alt="User" />
+          <div className="id">12345</div>
+          <div className="name">John Doe</div>
+        </div>
+        <Menu className='custom-menu' mode="inline" selectedKeys={selectedKeys}>
+          <Menu.Item key="1">
+            <Link to="/Announcement">แจ้งข่าวสาร</Link>
+          </Menu.Item>
+          <Menu.Item key="2">
+            <Link to="/Repairing">แจ้งซ่อม</Link>
+          </Menu.Item>
+          <Menu.SubMenu key="dropdown" title="แบบฟอร์ม">
+            {dropdownMenu}
+          </Menu.SubMenu>
+          <Menu.Item key="paymentConfirmation">
+            <Link to="/PaymentConfirmation">ยืนยันการชำระ</Link>
+          </Menu.Item>
+          <Menu.Item key="adminManagement"> {/* New menu item */}
+            <Link to="/AdminManagement">จัดการแอดมิน</Link>
+          </Menu.Item>
+        </Menu>
+        <div className="logout-container">
+          <Button className="logout-button" type="primary" onClick={handleLogout}>
             ออกจากระบบ
           </Button>
         </div>
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }} />
-          <div
-            style={{
-              padding: 24,
-              minHeight: "100%",
-              background: colorBgContainer,
-            }}
-          >
-            <Routes>
-              <Route path="/" element={<Adminpages />} />
-              <Route path="/student" element={<Student />} />
-              <Route path="/student/create" element={<StudentCreate />} />
-              <Route path="/student/edit/:id" element={<StudentEdit />} />
-            </Routes>
-          </div>
+        <Content className="custom-content" style={{ padding: 24 }}>
+          <Routes>
+            {AdminRoutes(isLoggedInAdmin)[0].children?.map((route) => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
-          Dormitory Admin
-        </Footer>
       </Layout>
     </Layout>
   );
 };
+
 export default AdminLayout;
