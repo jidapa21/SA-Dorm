@@ -6,7 +6,7 @@ type Dorm struct {
 	gorm.Model
 	Type 		string
 
-	GenderID *uint
+	GenderID uint
 	Gender   Genders `gorm:"foriegnKey:GenderID"`
 	
 	Rooms []Room `gorm:"foreignKey:DormID"`

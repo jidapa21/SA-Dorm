@@ -9,7 +9,7 @@ type Room struct {
 	Confirmation 	string
 
 	// DormID ทำหน้าที่เป็น FK
-	DormID 	*uint
+	DormID 	uint
 	Dorm	Dorm `gorm:"foriegnKey:DormID"`
 
 	Reservations []Reservation `gorm:"foreignKey:RoomID"`

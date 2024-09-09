@@ -98,20 +98,9 @@ export default function RepairingCreate() {
 
     const [fileList, setFileList] = useState<UploadFile[]>([]);
   
-    const getRepairing = async (id: string) => {
-      let res = await GetRepairing(id);
-      if (res) {
-        setUsers(res);
-      }
-    };
-  
       const handleCancel = () => {
       setOpen(false);
     };
-  
-    useEffect(() => {
-      GetRepairing("some-id");
-    }, []);
     
     const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
       setFileList(newFileList);

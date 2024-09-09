@@ -137,9 +137,9 @@ async function RepairingUI(data: RepairInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-async function GetRepairing(id: string) {
+async function GetRepairing(data: RepairInterface) {
   return await axios
-    .get(`${apiUrl}/get-repairing/${id}`, requestOptions)
+    .post(`${apiUrl}/create-repairing`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
