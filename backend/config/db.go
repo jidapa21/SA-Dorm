@@ -36,13 +36,24 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+<<<<<<< HEAD
 		&entity.RentFee{}, // เพิ่มตาราง RentFee
 		&entity.Expense{}, // เพิ่มตาราง Expense
+=======
+<<<<<<< HEAD
+		&entity.RentFee{}, // เพิ่มตาราง RentFee
+		&entity.Expense{}, // เพิ่มตาราง Expense
+=======
+>>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
 
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
+<<<<<<< HEAD
+=======
+>>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
+>>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
