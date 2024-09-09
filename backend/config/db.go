@@ -83,6 +83,7 @@ func SetupDatabase() {
 		StudentID: "B6510001",
 	})
 
+	
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
 	AdminUser := &entity.Admins{
