@@ -11,7 +11,7 @@ const Enteringandexitingdorm = Loadable(lazy(() => import('../pages/adminpage/En
 const ResigningForm = Loadable(lazy(() => import('../pages/adminpage/ResigningForm')));
 const RequestDelayingPayment = Loadable(lazy(() => import('../pages/adminpage/RequestDelayingPayment')));
 const PaymentConfirmation = Loadable(lazy(() => import('../pages/adminpage/PaymentConfirmation')));
-const AdminManagement = Loadable(lazy(() => import('../pages/adminpage/ManageAdmin')));
+const AdminManagement = Loadable(lazy(() => import('../pages/adminpage/manageadmin')));
 
 
 const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
