@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
+	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/genders"
 	"dormitory.com/dormitory/controller/guardians"
 	"dormitory.com/dormitory/controller/license"
@@ -19,6 +20,7 @@ import (
 	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
+	
 )
 
 const PORT = "8000"
@@ -59,6 +61,18 @@ func main() {
 		// Other Route
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
+<<<<<<< HEAD
+		
+		// RentFee Route
+		router.POST("/create-rent-fee", controller.CreateRentFee)
+		router.GET("/get-rent-fee/:id", controller.GetRentFee)
+		router.GET("/list-rent-fees", controller.ListRentFees)
+		router.PUT("/update-rent-fee/:id", controller.UpdateRentFee)
+		router.DELETE("/delete-rent-fee/:id", controller.DeleteRentFee)
+	}
+
+
+=======
 		// Repairing Route
 		router.POST("/create-repairing", repairing.RepairingUI)
 		router.GET("/list-repairing", repairing.ListRepairings)
@@ -69,7 +83,20 @@ func main() {
 		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
 		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
 		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
+		// Announcement Routes
+		router.POST("/create-announcement", announcement.CreateAnnouncement)
+		router.GET("/announcements", announcement.GetAnnouncements)
+		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
+		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
+		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
+		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
+		// Admin Routes
+		router.GET("/GetAllAdmins", admin.GetAllAdmins)
+		router.POST("/create-admin", admin.CreateAdmin)
+		router.DELETE("/admin/:id", admin.DeleteAdmin)
+>>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 	}
+
 	r.GET("/genders", genders.GetAll)
 	r.GET("/familyStatuses", familystatuses.GetAll)
 	r.GET("/guardians", guardians.GetAll)

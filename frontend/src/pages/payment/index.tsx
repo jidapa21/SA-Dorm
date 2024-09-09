@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-//import { NavLink ,Link} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload, Modal, Table, QRCode, Space } from 'antd';
+import { Button, message, Upload, Modal, Table, QRCode, Space, Divider, Steps } from 'antd';
 import type { TableProps } from 'antd';
 import type { UploadProps } from 'antd';
-import { Divider, Steps } from 'antd';
-//import JsBarcode from 'jsbarcode';
+
 //import qrcode from "../../assets/QR_code.png"
 //import barcode from "../../assets/Barcode.png"
 import "./index.css";
@@ -14,7 +12,8 @@ import "./index.css";
 const Index: React.FC = () => {
 
   const [text] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [totalAmount, setTotalAmount] = useState<number>(0);
 
 
   const showModal = () => {
@@ -90,14 +89,15 @@ const props: UploadProps = {
             amount: "100.00",
             remark: ''
         },
-        {
-            date: '',
-            list: 'รวม',
-            amount: "3165.00",
-            remark: ''
-        },
       ];
-      
+
+  // ฟังก์ชันคำนวณยอดรวม
+  useEffect(() => {
+    const total = data.reduce((sum, record) => {
+      return sum + parseFloat(record.amount || '0');
+    }, 0);
+    setTotalAmount(total);
+  }, [data]);
 
 return (
     <>
@@ -126,7 +126,10 @@ return (
     <Divider />
         <div className='text-container'></div>  
           <Table columns={columns} dataSource={data} pagination={false} />
-        <br/>
+          <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
+            ยอดรวมทั้งหมด: {totalAmount.toFixed(2)} บาท
+          </div>
+          <br/>
           <Button type="primary" onClick={showModal}>
             ชำระเงินที่นี่
           </Button>

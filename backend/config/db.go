@@ -36,11 +36,16 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+<<<<<<< HEAD
+		&entity.RentFee{}, // เพิ่มตาราง RentFee
+		&entity.Expense{}, // เพิ่มตาราง Expense
+=======
 
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
+>>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -134,5 +139,15 @@ func SetupDatabase() {
 	db.FirstOrCreate(AdminUser, &entity.Admins{
 		Username: "jetnipat",
 	})
+	// Seed ข้อมูล RentFee
+	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
+	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
+	rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
+	rentFee4 := entity.RentFee{DormID: 4, Amount: 2900.00}
+
+	db.FirstOrCreate(&rentFee1, &entity.RentFee{DormID: 1})
+	db.FirstOrCreate(&rentFee2, &entity.RentFee{DormID: 2})
+	db.FirstOrCreate(&rentFee3, &entity.RentFee{DormID: 3})
+	db.FirstOrCreate(&rentFee4, &entity.RentFee{DormID: 4})
 
 }

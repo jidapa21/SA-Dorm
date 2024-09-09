@@ -17,15 +17,17 @@ type JwtWrapper struct {
 // JwtClaim adds email as a claim to the token
 type JwtClaim struct {
 	StudentID string
+	AdminID   string // ใช้ AdminID แทน
+	Username  string // ใช้ Username แทน
 	jwt.StandardClaims
 }
 
-//เมื่อผู้ใช้เข้าสู่ระบบสำเร็จ, ระบบจะสร้าง JWT token ซึ่งบรรจุข้อมูลที่จำเป็น เช่น StudentID และส่งคืนให้กับผู้ใช้
-
-// Generate Token generates a jwt token
-func (j *JwtWrapper) GenerateToken(studentID string) (signedToken string, err error) {
+// GenerateToken generates a jwt token
+func (j *JwtWrapper) GenerateToken(studentID string, username string, adminID string) (signedToken string, err error) {
 	claims := &JwtClaim{
 		StudentID: studentID,
+		AdminID:   adminID,
+		Username:  username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,

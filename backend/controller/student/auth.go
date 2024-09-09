@@ -37,7 +37,7 @@ func SignInStudent(c *gin.Context) {
 	// ตรวจสอบรหัสผ่าน
 	err := bcrypt.CompareHashAndPassword([]byte(student.Password), []byte(payload.Password))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "password is incerrect"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "password is incorrect"})
 		return
 	}
 	jwtWrapper := services.JwtWrapper{
@@ -45,7 +45,8 @@ func SignInStudent(c *gin.Context) {
 		Issuer:          "AuthService",
 		ExpirationHours: 24,
 	}
-	signedToken, err := jwtWrapper.GenerateToken(student.StudentID)
+	// ส่งพารามิเตอร์ทั้งหมดให้กับ GenerateToken
+	signedToken, err := jwtWrapper.GenerateToken(payload.StudentID, "", "")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
