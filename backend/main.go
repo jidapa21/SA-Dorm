@@ -6,27 +6,27 @@ import (
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/controller/address"
 	"dormitory.com/dormitory/controller/admin"
+	announcement "dormitory.com/dormitory/controller/announcement"
+	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
-	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/genders"
 	"dormitory.com/dormitory/controller/guardians"
 	"dormitory.com/dormitory/controller/license"
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
-	
 )
 
 const PORT = "8000"
 
 func main() {
-	
+
 	// open connection database
 	config.ConnectionDB()
 	// Generate databases
@@ -61,18 +61,14 @@ func main() {
 		// Other Route
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
-<<<<<<< HEAD
-		
+
 		// RentFee Route
-		router.POST("/create-rent-fee", controller.CreateRentFee)
-		router.GET("/get-rent-fee/:id", controller.GetRentFee)
-		router.GET("/list-rent-fees", controller.ListRentFees)
-		router.PUT("/update-rent-fee/:id", controller.UpdateRentFee)
-		router.DELETE("/delete-rent-fee/:id", controller.DeleteRentFee)
-	}
+		router.POST("/create-rent-fee", rentfee.CreateRentFee)
+		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
+		router.GET("/list-rent-fees", rentfee.ListRentFees)
+		router.PUT("/update-rent-fee/:id", rentfee.UpdateRentFee)
+		router.DELETE("/delete-rent-fee/:id", rentfee.DeleteRentFee)
 
-
-=======
 		// Repairing Route
 		router.POST("/create-repairing", repairing.RepairingUI)
 		router.GET("/list-repairing", repairing.ListRepairings)
@@ -94,7 +90,6 @@ func main() {
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
->>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 	}
 
 	r.GET("/genders", genders.GetAll)
