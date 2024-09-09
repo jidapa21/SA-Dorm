@@ -8,6 +8,8 @@ import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
+import {AnnouncementInterface } from "../../interfaces/Announcement";
+import {AadminInterface } from "../../interfaces/Admin";
 
 import axios from "axios";
 const apiUrl = "http://localhost:8000";
@@ -180,6 +182,60 @@ async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function Adminlist() {
+  return await axios
+    .get(`${apiUrl}/GetAllAdmins`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function CreateAdmin(data: AadminInterface) {
+  return await axios
+    .post(`${apiUrl}/create-admin`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function DeleteAdmin(id: number) {
+  try {
+      const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
+      return response;
+  } catch (error) {
+      console.error('Error deleting admin:', error);
+      throw error;
+  }
+}async function ListAnnouncements() {
+  return await axios
+    .get(`${apiUrl}/list-announcement`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetAnnouncementById(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-announcement/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function CreateAnnouncement(data: AnnouncementInterface) {
+  return await axios
+    .post(`${apiUrl}/create-announcement`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function UpdateAnnouncementById(id: string, data: AnnouncementInterface) {
+  return await axios
+    .put(`${apiUrl}/update-announcement/${id}`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function DeleteAnnouncementById(id: string) {
+  return await axios
+    .delete(`${apiUrl}/delete-announcement/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 
 export {
   SignInStudent,
@@ -208,5 +264,13 @@ export {
   DelayedPaymentFormUI,
   GetDelayedPaymentForm,
   ListDelayedPaymentForms,
-  UpdateDelayedPaymentForm
+  UpdateDelayedPaymentForm, 
+  ListAnnouncements,
+  GetAnnouncementById,
+  CreateAnnouncement,
+  UpdateAnnouncementById,
+  DeleteAnnouncementById,
+  Adminlist,
+  CreateAdmin,
+  DeleteAdmin
 };
