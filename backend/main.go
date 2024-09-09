@@ -17,6 +17,7 @@ import (
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
+	
 )
 
 const PORT = "8000"
@@ -57,8 +58,18 @@ func main() {
 		// Other Route
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
+		
+		// RentFee Route
+		router.POST("/create-rent-fee", controller.CreateRentFee)
+		router.GET("/get-rent-fee/:id", controller.GetRentFee)
+		router.GET("/list-rent-fees", controller.ListRentFees)
+		router.PUT("/update-rent-fee/:id", controller.UpdateRentFee)
+		router.DELETE("/delete-rent-fee/:id", controller.DeleteRentFee)
+	}
+
 
 	}
+
 	r.GET("/genders", genders.GetAll)
 	r.GET("/familyStatuses", familystatuses.GetAll)
 	r.GET("/guardians", guardians.GetAll)
