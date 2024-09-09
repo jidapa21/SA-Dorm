@@ -12,7 +12,7 @@ function ConfigRoutes() {
 
   if (isLoggedInAdmin) {
     // ถ้า admin ล็อกอิน ให้ใช้เส้นทางของ admin
-    routes = [AdminRoutes(isLoggedInAdmin)];
+    routes = AdminRoutes(isLoggedInAdmin);
   } else if (isLoggedInStudent) {
     // ถ้า student ล็อกอิน ให้ใช้เส้นทางของ student
     routes = [StudentRoutes(isLoggedInStudent), MainRoutes()];
