@@ -3,6 +3,12 @@ import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
+// Repairing
+import { RepairInterface } from "../../interfaces/repairing";
+import { ResigningFormInterface } from "../../interfaces/ResigningForm";
+import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
+import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
+
 import axios from "axios";
 const apiUrl = "http://localhost:8000";
 const Authorization = localStorage.getItem("token");
@@ -124,6 +130,57 @@ async function GetOtherById(id: string) {
     .catch((e) => e.response);
 }
 
+//---------------------   Repairing ---------------------------------
+async function RepairingUI(data: RepairInterface) {
+  return await axios
+    .post(`${apiUrl}/create-repairing`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function GetRepairing(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-repairing/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListRepairings() {
+  return await axios
+    .get(`${apiUrl}/list-repairing`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateRepairing(id: string, data: RepairInterface) {
+  return await axios
+    .put(`${apiUrl}/update-repairing/${id}`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+//---------------------   DelayedPaymentForm ---------------------------------
+async function DelayedPaymentFormUI(data: RepairInterface) {
+  return await axios
+    .post(`${apiUrl}/create-delayedpaymentform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function GetDelayedPaymentForm(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-delayedpaymentform/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListDelayedPaymentForms() {
+  return await axios
+    .get(`${apiUrl}/list-delayedpaymentform`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
+  return await axios
+    .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 export {
   SignInStudent,
   SignInAdmin,
@@ -141,5 +198,15 @@ export {
   ListOther,
   GetAddressById,
   GetFamilyById,
-  GetOtherById
+  GetOtherById,
+  // ----------------- Repairing --------------
+  RepairingUI,
+  GetRepairing,
+  ListRepairings,
+  UpdateRepairing,
+  // ----------------- Repairing --------------
+  DelayedPaymentFormUI,
+  GetDelayedPaymentForm,
+  ListDelayedPaymentForms,
+  UpdateDelayedPaymentForm
 };

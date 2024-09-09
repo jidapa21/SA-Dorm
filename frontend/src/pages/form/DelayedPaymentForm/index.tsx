@@ -9,14 +9,44 @@ import {
     Card,
     Divider,
     Typography,
+    message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import { NavLink, Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 const { Text } = Typography;
+
+import { DelayedPaymentFormInterface } from "../../../interfaces/delayedpaymentform";
+import { DelayedPaymentFormUI, GetDelayedPaymentForm, ListDelayedPaymentForms, UpdateDelayedPaymentForm } from "../../../services/https";
 import "../../repair/index.css";
 
-export default function index() {
+export default function DelayedPaymentFormCreate() {
+
+    const navigate = useNavigate();
+    const [messageApi] = message.useMessage();
+    const [form] = Form.useForm();
+
+    const onFinish = async (values: DelayedPaymentFormInterface) => {
+        let res = await DelayedPaymentFormUI(values);
+        console.log(res);
+        if (res) {
+            messageApi.open({
+                type: "success",
+                content: "บันทึกข้อมูลสำเร็จ",
+            });
+            //form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+            //setFileList([]); // รีเซ็ตไฟล์อัปโหลด
+            setTimeout(function () {
+                navigate("/repair");
+            }, 2000);
+        } else {
+            messageApi.open({
+                type: "error",
+                content: "เกิดข้อผิดพลาด !",
+            });
+        }
+    };
 
     const formItemLayout = {
         labelCol: {
@@ -28,7 +58,53 @@ export default function index() {
             sm: { span: 14 },
         },
     };
-
+    const columns: ColumnsType<DelayedPaymentFormInterface> = [
+        {
+            title: "ลำดับ",
+            dataIndex: "ID",
+            key: "id",
+        },
+        {
+            title: "หัวข้อการขอรับบริการ",
+            dataIndex: "Subject",
+            key: "subject",
+        },
+        {
+            title: "รายละเอียดการขอรับบริการ",
+            dataIndex: "Detail",
+            key: "detail",
+        },
+        {
+            title: "นามสกุล",
+            dataIndex: "Location_Details",
+            key: "location_details",
+        },
+        {
+            title: "เพศ",
+            dataIndex: "Contact",
+            key: "contact",
+        },
+        {
+            title: "อีเมล",
+            dataIndex: "Time_Slot",
+            key: "time_slot",
+        },
+        {
+            title: "วันเกิด",
+            dataIndex: "Remarks",
+            key: "remarks",
+            render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
+        },
+        {
+            title: "จัดการ",
+            dataIndex: "Manage",
+            key: "manage",
+            render: (text, record, index) => (
+                <>
+                </>
+            ),
+        },
+    ]
     return (
         <>
             <Card>
