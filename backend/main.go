@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
+	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/genders"
 	"dormitory.com/dormitory/controller/guardians"
 	"dormitory.com/dormitory/controller/license"
@@ -15,6 +16,8 @@ import (
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/student"
+	"dormitory.com/dormitory/controller/repairing"
+	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 	
@@ -23,6 +26,7 @@ import (
 const PORT = "8000"
 
 func main() {
+	
 	// open connection database
 	config.ConnectionDB()
 	// Generate databases
@@ -44,7 +48,7 @@ func main() {
 		// CreatePersonalDetails Route
 		router.POST("/create-personal-detail", personaldetails.CreatePersonalDetails)
 		// Personal Route
-		router.POST("/create-personal", personal.CreatePersonal)
+		//router.POST("/create-personal", personal.CreatePersonal)
 		router.GET("/get-personal/:id", personal.GetPersonal)
 		router.PUT("/update-personal/:id", personal.UpdatePersonal)
 		router.GET("/list-personal", personal.ListPersonal)
@@ -54,10 +58,10 @@ func main() {
 		// Family Route
 		router.GET("/list-family", family.ListFamily)
 		router.GET("/get-family/:id", family.GetFamily)
-
 		// Other Route
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
+<<<<<<< HEAD
 		
 		// RentFee Route
 		router.POST("/create-rent-fee", controller.CreateRentFee)
@@ -68,6 +72,29 @@ func main() {
 	}
 
 
+=======
+		// Repairing Route
+		router.POST("/create-repairing", repairing.RepairingUI)
+		router.GET("/list-repairing", repairing.ListRepairings)
+		router.GET("/get-repairing/:id", repairing.GetRepairing)
+		router.PUT("/update-repairing/:id", repairing.UpdateRepairing)
+		// DelayedPaymentForm Route
+		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)
+		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
+		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
+		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
+		// Announcement Routes
+		router.POST("/create-announcement", announcement.CreateAnnouncement)
+		router.GET("/announcements", announcement.GetAnnouncements)
+		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
+		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
+		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
+		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
+		// Admin Routes
+		router.GET("/GetAllAdmins", admin.GetAllAdmins)
+		router.POST("/create-admin", admin.CreateAdmin)
+		router.DELETE("/admin/:id", admin.DeleteAdmin)
+>>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 	}
 
 	r.GET("/genders", genders.GetAll)

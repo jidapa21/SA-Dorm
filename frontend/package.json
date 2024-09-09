@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "antd": "^5.20.1",
+    "antd-img-crop": "^4.23.0",
     "axios": "^1.7.4",
     "dayjs": "^1.11.12",
     "react": "^18.3.1",

@@ -36,8 +36,16 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+<<<<<<< HEAD
 		&entity.RentFee{}, // เพิ่มตาราง RentFee
 		&entity.Expense{}, // เพิ่มตาราง Expense
+=======
+
+		&entity.Repairing{},
+		&entity.DelayedPaymentForm{},
+		&entity.En_ExitingForm{},
+		&entity.ResigningForm{},
+>>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -80,6 +88,7 @@ func SetupDatabase() {
 		StudentID: "B6510001",
 	})
 
+	
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
 	AdminUser := &entity.Admins{

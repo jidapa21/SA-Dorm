@@ -9,7 +9,6 @@ import (
 type Reservation struct {
 	gorm.Model
 	ReserveDate  	time.Time
-
 	
 	StudentID uint      `json:"student_id"`
 	Student   *Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
