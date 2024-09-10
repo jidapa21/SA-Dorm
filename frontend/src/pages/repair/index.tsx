@@ -32,8 +32,7 @@ import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
 //import { LoginStudent } from "./../../pages/authentication/LoginStudent";
 import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
-import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
-import { CreateRepairingUI, GetRepairingUI, UpdateRepairingUI } from "./../../services/https";
+import { GetStudentsById, CreateRepair, GetListRepairs, GetRepair, UpdateRepair } from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -146,8 +145,8 @@ export default function RepairingCreate() {
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
 
-  const getRepairingUI = async () => {
-    let res = await GetRepairingUI();
+  const CreateRepair = async () => {
+    let res = await CreateRepair();
     if (res) {
       setUsers(res);
     }
@@ -178,7 +177,7 @@ export default function RepairingCreate() {
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0]?.thumbUrl || "";
     try {
-      const res = await CreateRepairingUI(values);
+      const res = await CreateRepair(values);
       if (res.data.message === "Created success") {
         messageApi.open({
           type: "success",

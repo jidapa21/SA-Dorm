@@ -9,7 +9,7 @@ import (
 )
 
 // POST /users
-func RepairingUI(c *gin.Context) {
+func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
 
 	if err := c.ShouldBindJSON(&repairing); err != nil {
@@ -47,7 +47,7 @@ func RepairingUI(c *gin.Context) {
 
 
 // GET /Repairing/:id
-func GetRepairingUI(c *gin.Context) {
+func GetRepair(c *gin.Context) {
 	ID := c.Param("id")
 	var repairing entity.Repairing
 
@@ -61,7 +61,7 @@ func GetRepairingUI(c *gin.Context) {
 }
 
 // GET /Repairings
-func ListRepairingUIs(c *gin.Context) {
+func GetListRepairs(c *gin.Context) {
 	var repairings []entity.Repairing
 
 	db := config.DB()
@@ -75,7 +75,7 @@ func ListRepairingUIs(c *gin.Context) {
 
 
 // PATCH /repairings
-func UpdateRepairingUI(c *gin.Context) {
+func UpdateRepair(c *gin.Context) {
 	var repairing entity.Repairing
 	id := c.Param("id")
 
