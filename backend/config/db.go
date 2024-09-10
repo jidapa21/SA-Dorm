@@ -36,24 +36,31 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+		/*
 <<<<<<< HEAD
+*/
 		&entity.RentFee{}, // เพิ่มตาราง RentFee
 		&entity.Expense{}, // เพิ่มตาราง Expense
+		/*
 =======
 <<<<<<< HEAD
+*/
 		&entity.RentFee{}, // เพิ่มตาราง RentFee
 		&entity.Expense{}, // เพิ่มตาราง Expense
+		/*
 =======
 >>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
-
+*/
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
+		/*
 <<<<<<< HEAD
 =======
 >>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
 >>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
+*/
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -80,14 +87,14 @@ func SetupDatabase() {
 	db.FirstOrCreate(&noLicense, &entity.License{License: "ไม่มี"})
 
 
-	DormFemale1 := entity.Dorm{Type: "หอพักหญิง 1"}
-	DormFemale2 := entity.Dorm{Type: "หอพักหญิง 2"}
-	DorMale1 := entity.Dorm{Type: "หอพักชาย 1"}
-	DorMale2 := entity.Dorm{Type: "หอพักชาย 2"}
-	db.FirstOrCreate(&DormFemale1, &entity.Dorm{Type: "หอพักหญิง 1"})
-	db.FirstOrCreate(&DormFemale2, &entity.Dorm{Type: "หอพักหญิง 2"})
-	db.FirstOrCreate(&DorMale1, &entity.Dorm{Type: "หอพักชาย 1"})
-	db.FirstOrCreate(&DorMale2, &entity.Dorm{Type: "หอพักชาย 2"})
+	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3"}
+	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4"}
+	DormMale1 := entity.Dorm{Type: "หอพักชาย 1"}
+	DormMale2 := entity.Dorm{Type: "หอพักชาย 2"}
+	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
+	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
+	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
 
 	Room4101 := entity.Room{RoomNumber: 4101}
 	Room4102 := entity.Room{RoomNumber: 4102}
@@ -123,10 +130,10 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(room, &entity.Room{RoomNumber: 4102})
 
-	reserveDate, _ := time.Parse("02-01-2006", "21-05-1997")
+	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 
-		ReserveDate: 	reserveDate,
+		ReservationDate: 	ReservationDate,
 		StudentID: 		1,
 		DormID:      	4,
 		RoomID:      	4102,
@@ -148,6 +155,7 @@ func SetupDatabase() {
 		Username: "jetnipat",
 	})
 	// Seed ข้อมูล RentFee
+	/*
 	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
 	rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
@@ -157,5 +165,5 @@ func SetupDatabase() {
 	db.FirstOrCreate(&rentFee2, &entity.RentFee{DormID: 2})
 	db.FirstOrCreate(&rentFee3, &entity.RentFee{DormID: 3})
 	db.FirstOrCreate(&rentFee4, &entity.RentFee{DormID: 4})
-
+*/
 }

@@ -10,7 +10,7 @@ type Expense struct {
 	gorm.Model
 	Date  	time.Time
 	Remark	string
-
+/*
 	// RentFeeID ทำหน้าที่เป็น FK
 	RentFeeID *uint
 	RentFees   RentFee `gorm:"foreignKey:RentFeeID"`
@@ -28,4 +28,5 @@ type Expense struct {
 	// 	WaterID ทำหน้าที่เป็น FK
 	WaterID *uint
 	WaterFees   WaterFee `gorm:"foreignKey:WaterID"`
+	*/
 }

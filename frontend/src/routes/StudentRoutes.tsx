@@ -90,7 +90,7 @@ const StudentRoutes = (isLoggedInStudent : boolean): RouteObject => {
           {
             path: "/repair",
             element: <Repair />,
-          },
+          }
         ],
       },
       {
