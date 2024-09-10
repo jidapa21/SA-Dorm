@@ -1,4 +1,4 @@
-package controller
+package slip
 
 import (
 	"net/http"
@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tanapon395/sa-67-example/config"
-	"github.com/tanapon395/sa-67-example/entity"
+	"dormitory.com/dormitory/config"
+	"dormitory.com/dormitory/entity"
 )
 
 // PATCH /slip/:id

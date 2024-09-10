@@ -18,6 +18,7 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
+	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -91,7 +92,8 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		router.PATCH("/slip/:id", controller.UpdateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
+		
 	}
 
 	r.GET("/genders", genders.GetAll)
