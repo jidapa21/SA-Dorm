@@ -66,7 +66,7 @@ func UpdateRoom(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&room); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}

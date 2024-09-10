@@ -28,6 +28,7 @@ func SetupDatabase() {
 	db.AutoMigrate(
 		&entity.Students{},
 		&entity.Admins{},
+		&entity.Announcement{},
 		&entity.Genders{},
 		&entity.FamilyStatuses{},
 		&entity.Guardians{},

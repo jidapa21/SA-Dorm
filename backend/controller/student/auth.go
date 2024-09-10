@@ -12,8 +12,8 @@ import (
 
 type (
 	StudentAuthen struct {
-		StudentID 		string `json:"student_id"`
-		Password  		string `json:"password"`
+		StudentID string `json:"student_id"`
+		Password  string `json:"password"`
 	}
 )
 
@@ -95,9 +95,9 @@ func GetStudentDetails(c *gin.Context) {
 
 	// ส่งข้อมูลกลับไปที่ frontend
 	c.JSON(http.StatusOK, gin.H{
-		"first_name": result.FirstName,
-		"last_name":  result.LastName,
+		"first_name":  result.FirstName,
+		"last_name":   result.LastName,
 		"room_number": result.RoomNumber,
-		"dorm_id":    result.DormID,
+		"dorm_id":     result.DormID,
 	})
 }
