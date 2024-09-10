@@ -54,39 +54,3 @@ func ListRentFees(c *gin.Context) {
 	c.JSON(http.StatusOK, rentFees)
 }
 
-// PUT /update-rent-fee/:id
-func UpdateRentFee(c *gin.Context) {
-	ID := c.Param("id")
-	var rentFee entity.RentFee
-
-	db := config.DB()
-	if err := db.First(&rentFee, ID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "RentFee not found"})
-		return
-	}
-
-	if err := c.ShouldBindJSON(&rentFee); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := db.Save(&rentFee).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "RentFee updated", "data": rentFee})
-}
-
-// DELETE /delete-rent-fee/:id
-func DeleteRentFee(c *gin.Context) {
-	ID := c.Param("id")
-	db := config.DB()
-
-	if err := db.Delete(&entity.RentFee{}, ID).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "RentFee deleted"})
-}

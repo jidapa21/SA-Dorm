@@ -37,13 +37,15 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 
+		&entity.RentFee{},
+		&entity.WaterFee{},
+		&entity.ElectricityFee{},
+		&entity.Expense{},
+
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
-		/*
-			&entity.RentFee{}, // เพิ่มตาราง RentFee
-			&entity.Expense{}, // เพิ่มตาราง Expense
-		*/
+	
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
@@ -176,7 +178,34 @@ func SetupDatabase() {
 	db.FirstOrCreate(AdminUser, &entity.Admins{
 		Username: "jetnipat",
 	})
+
 	// Seed ข้อมูล RentFee
+	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
+	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
+	rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
+	rentFee4 := entity.RentFee{DormID: 4, Amount: 2900.00}
+	db.FirstOrCreate(&rentFee1, entity.RentFee{DormID: 1})
+	db.FirstOrCreate(&rentFee2, entity.RentFee{DormID: 2})
+	db.FirstOrCreate(&rentFee3, entity.RentFee{DormID: 3})
+	db.FirstOrCreate(&rentFee4, entity.RentFee{DormID: 4})
+
+	// Seed ข้อมูล WaterFee
+	waterFee := entity.WaterFee{Amount: 100.00}
+	db.FirstOrCreate(&waterFee, entity.WaterFee)
+
+	// Seed ข้อมูล ElectricityFee
+	electricityFee := entity.ElectricityFee{Amount: 100.00}
+	db.FirstOrCreate(&electricityFee2, entity.ElectricityFee)
+
+	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
+	expense1 := entity.Expense{
+		Remark:           "ค่าใช้จ่ายสำหรับเดือนนี้",
+		Status:           "Pending",
+		RentFeeID:        rentFee1.ID,
+		WaterFeeID:       waterFee1.ID,
+		ElectricityFeeID: electricityFee1.ID,
+	}
+	db.FirstOrCreate(&expense1, entity.Expense{ID: 1})
 	/*
 		rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 		rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload, Modal, Table, QRCode, Space, Divider, Steps } from 'antd';
+import { Button, message, Upload, Modal, Table, QRCode, Space, Divider, Steps} from 'antd';
 import type { TableProps } from 'antd';
 import type { UploadProps } from 'antd';
-
+import axios from 'axios';
+import Barcode from 'react-barcode'; // นำเข้า Barcode
 //import qrcode from "../../assets/QR_code.png"
 //import barcode from "../../assets/Barcode.png"
 import "./index.css";
@@ -14,7 +15,6 @@ const Index: React.FC = () => {
   const [text] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [totalAmount, setTotalAmount] = useState<number>(0);
-
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -141,13 +141,21 @@ return (
                   Ok
                 </Button>
               ]}
+              closable={false}
               className="modal-content"
+              
             >
               <Space direction="vertical" align="center">
+              <p className="modal-text">ธนาคาร ABC 123-4567-890</p>
                 <QRCode value={text || '-'} /> 
+                {/* เพิ่ม Barcode */}
+              <Barcode
+                value="123456789012" // แทนที่ด้วยข้อมูล Barcode ของคุณ
+                format="CODE128" // กำหนดรูปแบบของ Barcode
+                width={2}
+                height={60}
+                />
               </Space>
-              <p className="modal-text">123-4567-890</p>
-              <p className="modal-text">ธนาคาร ABC</p>
           </Modal>  
 
 

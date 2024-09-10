@@ -116,15 +116,15 @@ body {
     margin-top: 50px;
 }
   
-.modal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.modal-content .ant-modal-content {
+  width: 280px; /* ปรับขนาดความกว้างตามที่ต้องการ */
 }
 
+.modal-content .ant-modal-body {
+  padding: 0px; /* ปรับขนาดพื้นที่ภายในของ Modal */
+}
 .modal-text {
   margin-top: 0px; /* เพิ่มระยะห่างจากเนื้อหาข้างบน */
-  text-align: center;
+  text-align: 0;
 }
 
