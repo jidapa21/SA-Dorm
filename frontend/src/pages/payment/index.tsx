@@ -164,7 +164,7 @@ return (
         </div>
         <div className='text-container'>
             <div className='text-7'>
-                <Upload {...props}>
+                <Upload action="../../interfaces/slip" {...props}>
                     <Button icon={<UploadOutlined />}>เลือกไฟล์</Button>
                 </Upload>
             </div>

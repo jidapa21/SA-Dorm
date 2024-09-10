@@ -89,6 +89,9 @@ func main() {
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
+
+		//Slip Routes
+		router.PATCH("/slip/:id", controller.UpdateSlip)
 	}
 
 	r.GET("/genders", genders.GetAll)
