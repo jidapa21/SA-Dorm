@@ -92,57 +92,50 @@ const columns: ColumnsType<RepairInterface> = [
   },
 ];
 
-export default function RepairCreate() {
- 
-  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
+const navigate = useNavigate();
+const [messageApi, contextHolder] = message.useMessage();
 
-  const getReservationData = async (id: string) => {
-    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
+// Model
+const [open, setOpen] = useState(false);
+const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
+const [confirmLoading, setConfirmLoading] = useState(false);
+const [modalText, setModalText] = useState<String>();
+const [deleteId, setDeleteId] = useState<Number>();
+const [repairing, setRepairing] = useState<RepairInterface>();
+const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+export default function RepairCreate() {
+
+  const getStudentData = async (id: string) => {
     try {
+      // Fetch all related data by student ID
       const [studentRes] = await Promise.all([
         GetStudentsById(id),
       ]);
 
-      console.log("API response:", studentRes);  // เพิ่มการดีบัก
-
-      if (studentRes.status === 200) {
+      if (
+        studentRes.status === 200
+      ) {
+        // Combine data into a single object
         const combinedData: CombinedData = {
           ...studentRes.data,
         };
-        setReservationData(combinedData);
-        console.log("Fetching reservation data for ID:", id);
-        console.log("API response:", studentRes);
-        console.log("Combined data set:", combinedData);
-
+        setStudentData(combinedData);
       } else {
         messageApi.open({
           type: "error",
           content: "Error fetching data",
         });
-        setReservationData(null);
+        setStudentData(null);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
       messageApi.open({
         type: "error",
         content: "Failed to fetch student data.",
       });
-      setReservationData(null);
+      setStudentData(null);
     }
-
-  };
-
-  const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
-
-  // Model
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState<String>();
-  const [deleteId, setDeleteId] = useState<Number>();
-  const [repairing, setRepairing] = useState<RepairInterface>();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-
+  }
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -188,11 +181,11 @@ export default function RepairCreate() {
     setOpen(false);
   };
 
-
   useEffect(() => {
+    // Fetch student ID from localStorage
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getReservationData(studentId);
+      getStudentData(studentId);
     } else {
       messageApi.open({
         type: "error",
@@ -200,7 +193,6 @@ export default function RepairCreate() {
       });
     }
   }, []);
-
 
   return (
     <>
@@ -215,13 +207,9 @@ export default function RepairCreate() {
               autoComplete="off"
             >
               <Space direction="vertical">
-                {/*
-                <Text>รหัสนักเรียน: {StudentID}</Text>
-                <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
-                <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
-                */}
-                <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
-                <Text>อาคาร  4  ห้อง  414A</Text>
+                <Text>รหัสนักเรียน: {studentData?.StudentID || 'N/A'}</Text>
+                <Text>ผู้รับบริการ: {studentData?.FirstName || 'N/A'} {studentData?.LastName || 'N/A'}</Text>
+                <Text>อาคาร: {studentData?.DormID || 'N/A'} ห้อง: {studentData?.RoomNumber || 'N/A'}</Text>
               </Space>
             </Form>
 
@@ -361,8 +349,5 @@ export default function RepairCreate() {
       </Space>
     </>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 294db57bc9e8836e03a5f21f3ad47bc097528e6f
+
