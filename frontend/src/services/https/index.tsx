@@ -138,12 +138,12 @@ async function GetOtherById(id: string) {
 //---------------------   Repairing ---------------------------------
 
 async function CreateRepair(data: RepairInterface) {
-  const requestOptionsR = {
+  const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/repair`, requestOptionsR)
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
     .then((res) => {
       if (res.status == 201) {
         return res.json();
@@ -155,10 +155,10 @@ async function CreateRepair(data: RepairInterface) {
   }
 
 async function GetRepair(id: Number | undefined) {
-  const requestOptionsR = {
+  const requestOptions = {
     method: "GET"
   };
-  let res = await fetch(`${apiUrl}/repair/${id}`, requestOptionsR)
+  let res = await fetch(`${apiUrl}/repair/${id}`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -170,13 +170,13 @@ async function GetRepair(id: Number | undefined) {
 }
 
 async function GetListRepairs() {
-  const requestOptionsR = {
+  const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`${apiUrl}/repair`, requestOptionsR)
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -188,12 +188,12 @@ async function GetListRepairs() {
 }
 
 async function UpdateRepair(data: RepairInterface) {
-  const requestOptionsR = {
+  const requestOptions = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/repair/:id`, requestOptionsR)
+  let res = await fetch(`${apiUrl}/repair/:id`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
