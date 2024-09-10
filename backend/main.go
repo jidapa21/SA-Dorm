@@ -16,8 +16,8 @@ import (
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -67,9 +67,7 @@ func main() {
 		router.POST("/create-rent-fee", rentfee.CreateRentFee)
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
-		router.PUT("/update-rent-fee/:id", rentfee.UpdateRentFee)
-		router.DELETE("/delete-rent-fee/:id", rentfee.DeleteRentFee)
-
+		
 		// Repairing Route
 		router.POST("/create-repairing", repairing.RepairingUI)
 		router.GET("/list-repairing", repairing.ListRepairings)
