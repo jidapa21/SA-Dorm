@@ -28,6 +28,7 @@ func SetupDatabase() {
 	db.AutoMigrate(
 		&entity.Students{},
 		&entity.Admins{},
+		&entity.Announcement{},
 		&entity.Genders{},
 		&entity.FamilyStatuses{},
 		&entity.Guardians{},
@@ -226,5 +227,5 @@ expense1 := entity.Expense{
     WaterFeeID:       waterFee1.ID,         // เชื่อมโยง WaterFee
     ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
 }
-db.FirstOrCreate(&expense1, entity.Expense{ID: 1})
+db.FirstOrCreate(&expense1, entity.Expense{Remark: "ค่าใช้จ่ายสำหรับเดือนนี้"})
 }

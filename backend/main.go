@@ -18,6 +18,7 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
+	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,6 @@ func main() {
 	r.Use(CORSMiddleware())
 	// Auth Route
 	r.POST("/signin", student.SignInStudent)
-	r.POST("/signin", student.GetStudentDetails)
 	r.POST("/signin-admin", admin.SignInAdmin)
 	router := r.Group("/")
 	{
@@ -68,10 +68,10 @@ func main() {
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
 		
 		// Repairing Route
-		router.POST("/repair", repairing.CreateRepair)
-		router.GET("/repair/:id", repairing.GetRepair)
-		router.GET("/repair", repairing.GetListRepairs)
-		router.PUT("/repair", repairing.UpdateRepair)
+		router.POST("/creat-repair", repairing.CreateRepair)
+		router.GET("/get-repair/:id", repairing.GetRepair)
+		router.GET("/grt-list-repair", repairing.GetListRepairs)
+		router.PUT("/update-repair", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)
@@ -91,7 +91,8 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		router.PATCH("/slip/:id", controller.UpdateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
+		
 	}
 
 	r.GET("/genders", genders.GetAll)

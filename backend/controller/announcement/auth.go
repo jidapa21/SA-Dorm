@@ -24,27 +24,28 @@ func CreateAnnouncement(c *gin.Context) {
 	}
 
 	// ค้นหา AdminID จาก Username
-	var admin entity.Admins
-	db := config.DB()
-	if db == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
-		return
-	}
+var admin entity.Admins
+db := config.DB()
+if db == nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
+    return
+}
 
-	if err := db.Where("username = ?", username).First(&admin).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching AdminID from database"})
-		return
-	}
+if err := db.Where("username = ?", username).First(&admin).Error; err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching AdminID from database"})
+    return
+}
 
-	announcement.AdminID = admin.ID
-	announcement.Date = time.Now()
+announcement.AdminID = admin.ID
+announcement.Date = time.Now()
 
-	if err := db.Create(&announcement).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+if err := db.Create(&announcement).Error; err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    return
+}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Announcement created successfully"})
+c.JSON(http.StatusOK, gin.H{"message": "Announcement created successfully"})
+
 }
 func UpdateAnnouncement(c *gin.Context) {
 	id := c.Param("id")
