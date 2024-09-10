@@ -50,6 +50,7 @@ func SetupDatabase() {
 		&entity.WaterFee{},
 		&entity.ElectricityFee{},
 		&entity.Expense{},
+		&entity.Slip{},
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
