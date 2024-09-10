@@ -19,7 +19,7 @@ import {
 } from "antd";
 import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
@@ -111,7 +111,6 @@ export default function RepairCreate() {
       const [studentRes] = await Promise.all([
         GetStudentsById(id),
       ]);
-
       if (
         studentRes.status === 200
       ) {
@@ -119,6 +118,7 @@ export default function RepairCreate() {
         const combinedData: CombinedData = {
           ...studentRes.data,
         };
+        console.log(combinedData);
         setStudentData(combinedData);
       } else {
         messageApi.open({
@@ -155,33 +155,41 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
+  // สร้างฟังก์ชันที่เรียกใช้ `messageApi.open`
+  const showSuccessMessage = useCallback(() => {
+    messageApi.open({
+      type: "success",
+      content: "บันทึกข้อมูลสำเร็จ",
+    });
+  }, [messageApi]);
+
+  const showErrorMessage = useCallback(() => {
+    messageApi.open({
+      type: "error",
+      content: "เกิดข้อผิดพลาด !",
+    });
+  }, [messageApi]);
+
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0].thumbUrl;
     values.ID = repairing?.ID;
     let res = await CreateRepair(values);
-    console.log(res);
     if (res) {
-      messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
-      });
+      showSuccessMessage(); // เรียกใช้ฟังก์ชันในที่นี้
       setTimeout(function () {
         navigate("/repair");
       }, 2000);
     } else {
-      messageApi.open({
-        type: "error",
-        content: "เกิดข้อผิดพลาด !",
-      });
+      showErrorMessage(); // เรียกใช้ฟังก์ชันในที่นี้
     }
   };
+
 
   const handleCancel = () => {
     setOpen(false);
   };
 
   useEffect(() => {
-    // Fetch student ID from localStorage
     const studentId = localStorage.getItem("id");
     if (studentId) {
       getStudentData(studentId);
@@ -206,9 +214,13 @@ export default function RepairCreate() {
               autoComplete="off"
             >
               <Space direction="vertical">
-                <Text>รหัสนักเรียน: {studentData?.StudentID || 'N/A'}</Text>
-                <Text>ผู้รับบริการ: {studentData?.FirstName || 'N/A'} {studentData?.LastName || 'N/A'}</Text>
-                <Text>อาคาร: {studentData?.DormID || 'N/A'} ห้อง: {studentData?.RoomNumber || 'N/A'}</Text>
+                {studentData ? (
+                  <>
+                    <Text>รหัสนักเรียน: {studentData.StudentID}</Text>
+                    <Text>ผู้รับบริการ: {studentData.FirstName} {studentData.LastName}</Text>
+                    <Text>อาคาร: {studentData.DormID} ห้อง: {studentData.RoomNumber}</Text>
+                  </>
+                ) : (<Spin />)}
               </Space>
             </Form>
 

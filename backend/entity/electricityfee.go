@@ -10,5 +10,5 @@ type ElectricityFee struct {
 	ReservationID	uint      `json:"reservation_id"`
 	Reservation		*Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 
-	Expenses []Expense `gorm:"foreignKey:ElectricityFeeID"`
+	//Expenses []Expense `gorm:"foreignKey:ElectricityFeeID"`
 }
