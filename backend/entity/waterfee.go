@@ -8,5 +8,5 @@ type WaterFee struct {
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`
-	Reservation		*Reservations `gorm:"foreignKey: reservation_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
+	Reservation		*Reservations `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 }

@@ -9,11 +9,11 @@ type Expense struct {
 
 	// One-to-one relationship
 	RentFeeID	uint      `json:"rent_id"`
-	RentFee		*RentFees `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
+	RentFees		*RentFee `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
 
 	ElectricityFeeID	uint      `json:"elec_id"`
-	ElectricityFee		*ElectricityFees `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
+	ElectricityFees		*ElectricityFee `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
 
 	WaterFeeID	uint      `json:"water_id"`
-	WaterFee	*WaterFees `gorm:"foreignKey: water_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
+	WaterFees	*WaterFee `gorm:"foreignKey: water_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
 }
