@@ -35,7 +35,6 @@ func main() {
 	r.Use(CORSMiddleware())
 	// Auth Route
 	r.POST("/signin", student.SignInStudent)
-	r.POST("/signin", student.GetStudentDetails)
 	r.POST("/signin-admin", admin.SignInAdmin)
 	router := r.Group("/")
 	{
