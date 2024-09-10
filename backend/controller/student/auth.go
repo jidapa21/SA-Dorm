@@ -12,14 +12,18 @@ import (
 
 type (
 	StudentAuthen struct {
-		StudentID string `json:"student_id"`
-		Password  string `json:"password"`
+		StudentID 	string `json:"student_id"`
+		Password  	string `json:"password"`
+		DormID 		uint 	`json:"dorm_id"`
+		RoomNumber 	uint 	`json:"room_number"`
 	}
 )
 
 func SignInStudent(c *gin.Context) {
-	var payload StudentAuthen
-	var student entity.Students
+	var payload		StudentAuthen
+	var student		entity.Students
+	uint dormID		entity.Dorm
+	uint roomNumber	entity.Room
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -4,6 +4,7 @@ import "gorm.io/gorm"
 
 type Repairing struct {
     gorm.Model
+    RepairingID      uint `gorm:"primaryKey;autoIncrement"`
     Subject          string
     Detail           string
     Image            string `gorm:"type:longtext"`
