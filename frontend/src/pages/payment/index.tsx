@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, message, Upload, Modal, Table, QRCode, Space, Divider, Steps} from 'antd';
-import type { TableProps } from 'antd';
-import type { UploadProps } from 'antd';
-import axios from 'axios';
+import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps,TableProps,GetProp} from 'antd';
 import Barcode from 'react-barcode'; // นำเข้า Barcode
+import { SlipInterface } from "../../interfaces/Slip";
+import {CreateSlip, GetListSlips, GetSlip, UpdateSlip } from "./../../services/https";
+import { Link, useNavigate, useParams } from "react-router-dom";
 //import qrcode from "../../assets/QR_code.png"
 //import barcode from "../../assets/Barcode.png"
 import "./index.css";
 
-
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 const Index: React.FC = () => {
 
   const [text] = useState('');
@@ -99,6 +99,54 @@ const props: UploadProps = {
     setTotalAmount(total);
   }, [data]);
 
+  //model
+  const [slip, setSlip] = useState<SlipInterface>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
+
+  const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file: UploadFile) => {
+    let src = file.url as string;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj as FileType);
+        reader.onload = () => resolve(reader.result as string);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+
+  const onFinish = async (values: SlipInterface) => {
+    values.Path = fileList[0].thumbUrl;
+    values.ID = slip?.ID;
+    let res = await CreateSlip(values);
+    console.log(res);
+    if (res) {
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      setTimeout(function () {
+        navigate("/repair");
+      }, 2000);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
+    }
+  };
+
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
 return (
     <>
       <br />
@@ -164,11 +212,29 @@ return (
         </div>
         <div className='text-container'>
             <div className='text-7'>
-                <Upload action="../../interfaces/slip" {...props}>
-                    <Button icon={<UploadOutlined />}>เลือกไฟล์</Button>
-                </Upload>
-            </div>
+            <Form
+              name="basic"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
+              >
+              <Upload
+                  fileList={fileList}
+                  onChange={onChange}
+                  onPreview={onPreview}
+                  beforeUpload={(file) => {
+                    setFileList([...fileList, file]);
+                    return false;
+                  }}
+                  maxCount={1}
+                  multiple={false}
+                  listType="picture"
+              >
+                <Button icon={<UploadOutlined />} >Upload</Button>
+              </Upload>
+            </Form>
           </div>
+        </div>
     </>
   );
 }
