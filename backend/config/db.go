@@ -36,31 +36,18 @@ func SetupDatabase() {
 		&entity.Family{},
 		&entity.Other{},
 		&entity.Personal{},
+
+		&entity.Dorm{},
+		&entity.Room{},
+		&entity.Reservation{},
 		/*
-<<<<<<< HEAD
-*/
-		&entity.RentFee{}, // เพิ่มตาราง RentFee
-		&entity.Expense{}, // เพิ่มตาราง Expense
-		/*
-=======
-<<<<<<< HEAD
-*/
-		&entity.RentFee{}, // เพิ่มตาราง RentFee
-		&entity.Expense{}, // เพิ่มตาราง Expense
-		/*
-=======
->>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
-*/
+			&entity.RentFee{}, // เพิ่มตาราง RentFee
+			&entity.Expense{}, // เพิ่มตาราง Expense
+		*/
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
-		/*
-<<<<<<< HEAD
-=======
->>>>>>> e0969658cdc456b61c5aad6fadead021d59532de
->>>>>>> e10c7d2fe20e3cc766589210f5e438f7f0df1894
-*/
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -86,20 +73,41 @@ func SetupDatabase() {
 	db.FirstOrCreate(&hasLicense, &entity.License{License: "มี"})
 	db.FirstOrCreate(&noLicense, &entity.License{License: "ไม่มี"})
 
-
-	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3"}
-	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4"}
-	DormMale1 := entity.Dorm{Type: "หอพักชาย 1"}
-	DormMale2 := entity.Dorm{Type: "หอพักชาย 2"}
-	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
-	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
+	DormMale1 := entity.Dorm{Type: "หอพักชาย 1", GenderID: GenderMale.ID}
+	DormMale2 := entity.Dorm{Type: "หอพักชาย 2", GenderID: GenderMale.ID}
+	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3", GenderID: GenderFemale.ID}
+	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4", GenderID: GenderFemale.ID}
 	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
 	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
+	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
 
-	Room4101 := entity.Room{RoomNumber: 4101}
-	Room4102 := entity.Room{RoomNumber: 4102}
-	db.FirstOrCreate(&Room4101, &entity.Room{RoomNumber: 4101})
-	db.FirstOrCreate(&Room4102, &entity.Room{RoomNumber: 4102})
+	for roomNumber := 1100; roomNumber <= 4109; roomNumber++ {
+		// คำนวณ DormID จากหลักพันของ RoomNumber
+		if (roomNumber >= 1100 && roomNumber <= 1109) || 
+		(roomNumber >= 1200 && roomNumber <= 1209) || 
+		(roomNumber >= 1300 && roomNumber <= 1309) || 
+		(roomNumber >= 2100 && roomNumber <= 2109) || 
+		(roomNumber >= 2200 && roomNumber <= 2209) || 
+		(roomNumber >= 2300 && roomNumber <= 2309) || 
+		(roomNumber >= 3100 && roomNumber <= 3109) || 
+		(roomNumber >= 3200 && roomNumber <= 3209) || 
+		(roomNumber >= 3300 && roomNumber <= 3309) || 
+		(roomNumber >= 4100 && roomNumber <= 4109) || 
+		(roomNumber >= 4200 && roomNumber <= 4209) || 
+		(roomNumber >= 4300 && roomNumber <= 4309) {
+			
+			dormID := uint(roomNumber / 1000)
+
+			// สร้าง Room และกำหนดค่า DormID
+			room := entity.Room{
+				RoomNumber: uint(roomNumber),
+				DormID:     dormID, // DormID จะเป็น 1, 2, 3 หรือ 4 ตาม RoomNumber
+			}
+			// บันทึก Room ลงในฐานข้อมูล
+			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
+		}
+	}
 
 	// Seed ข้อมูล student
 	studentHashedPassword, _ := HashPassword("1234567890123")
@@ -116,12 +124,6 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
-	dorm := &entity.Dorm{
-		Type:     "Female",
-		GenderID: 1,
-	}
-	db.FirstOrCreate(dorm, &entity.Dorm{Type: "Female",})
-
 	room := &entity.Room{
 		RoomNumber:   4102,
 		Available:    "yes",
@@ -132,14 +134,12 @@ func SetupDatabase() {
 
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
-
-		ReservationDate: 	ReservationDate,
-		StudentID: 		1,
-		DormID:      	4,
-		RoomID:      	4102,
+		ReservationDate: ReservationDate,
+		StudentID:       1,
+		DormID:          4,
+		RoomID:          4102,
 	}
 	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: 1, DormID: 4, RoomID: 4102})
-
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
@@ -156,14 +156,14 @@ func SetupDatabase() {
 	})
 	// Seed ข้อมูล RentFee
 	/*
-	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
-	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
-	rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
-	rentFee4 := entity.RentFee{DormID: 4, Amount: 2900.00}
+		rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
+		rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
+		rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
+		rentFee4 := entity.RentFee{DormID: 4, Amount: 2900.00}
 
-	db.FirstOrCreate(&rentFee1, &entity.RentFee{DormID: 1})
-	db.FirstOrCreate(&rentFee2, &entity.RentFee{DormID: 2})
-	db.FirstOrCreate(&rentFee3, &entity.RentFee{DormID: 3})
-	db.FirstOrCreate(&rentFee4, &entity.RentFee{DormID: 4})
-*/
+		db.FirstOrCreate(&rentFee1, &entity.RentFee{DormID: 1})
+		db.FirstOrCreate(&rentFee2, &entity.RentFee{DormID: 2})
+		db.FirstOrCreate(&rentFee3, &entity.RentFee{DormID: 3})
+		db.FirstOrCreate(&rentFee4, &entity.RentFee{DormID: 4})
+	*/
 }

@@ -15,5 +15,5 @@ type RentFee struct {
 	Reservations   Reservation `gorm:"foreignKey:ReservationID"`
 	
 	// 1 RentFee เป็นเจ้าของได้หลาย Expenses
-	Expenses []Expense `gorm:"foreignKey:RentID"`
+	Expenses []Expense `gorm:"foreignKey:RentFeeID"`
 }
