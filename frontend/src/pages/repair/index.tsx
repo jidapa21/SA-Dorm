@@ -24,18 +24,14 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
-import { StudentInterface } from "../../interfaces/Student";
-import { InfoForProblemInterface } from "../../interfaces/infoforproblem";
-//import { GetStudentDetails } from "../../interfaces/Student";
+import { StudentInterface } from "./../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-//import { LoginStudent } from "./../../pages/authentication/LoginStudent";
-import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
-import { GetStudentsById, CreateRepair, GetListRepairs, GetRepair, UpdateRepair } from "./../../services/https";
+import { GetStudentsById, CreateRepair } from "./../../services/https";
 import "./../repair/index.css";
-import Repairing from "../adminpage/Repairing";
+import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
