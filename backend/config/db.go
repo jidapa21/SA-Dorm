@@ -37,21 +37,15 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 
-<<<<<<< HEAD
 		&entity.RentFee{},
 		&entity.WaterFee{},
 		&entity.ElectricityFee{},
 		&entity.Expense{},
 
-=======
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
-		/*
-			&entity.RentFee{}, // เพิ่มตาราง RentFee
-			&entity.Expense{}, // เพิ่มตาราง Expense
-		*/
->>>>>>> fc1a2ccd5fba07413e956c298f9ae51bf9e9842f
+	
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
@@ -164,7 +158,6 @@ func SetupDatabase() {
 	})
 
 	// Seed ข้อมูล RentFee
-<<<<<<< HEAD
 	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
 	rentFee3 := entity.RentFee{DormID: 3, Amount: 6500.00}
@@ -191,7 +184,6 @@ func SetupDatabase() {
 		ElectricityFeeID: electricityFee1.ID,
 	}
 	db.FirstOrCreate(&expense1, entity.Expense{ID: 1})
-=======
 	/*
 		rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 		rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
@@ -203,5 +195,4 @@ func SetupDatabase() {
 		db.FirstOrCreate(&rentFee3, &entity.RentFee{DormID: 3})
 		db.FirstOrCreate(&rentFee4, &entity.RentFee{DormID: 4})
 	*/
->>>>>>> fc1a2ccd5fba07413e956c298f9ae51bf9e9842f
 }
