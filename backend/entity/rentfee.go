@@ -10,6 +10,7 @@ type RentFee struct {
 	ReservationID	uint      `json:"reservation_id"`
 	Reservation		*Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 	
-	// 1 RentFee เป็นเจ้าของได้หลาย Expenses
-	Expenses []Expense `gorm:"foreignKey:RentFeeID"`
+	ExpenseID	uint      `json:"ex_id"`
+	Expense		*Expense `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
+	
 }
