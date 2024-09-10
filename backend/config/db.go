@@ -178,7 +178,7 @@ func SetupDatabase() {
 	db.FirstOrCreate(AdminUser, &entity.Admins{
 		Username: "jetnipat",
 	})
-
+/*
 	// Seed ข้อมูล RentFee
 	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
@@ -206,6 +206,7 @@ func SetupDatabase() {
 		ElectricityFeeID: electricityFee1.ID,
 	}
 	db.FirstOrCreate(&expense1, entity.Expense{ID: 1})
+	*/
 	/*
 		rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 		rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}

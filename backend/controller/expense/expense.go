@@ -3,8 +3,8 @@ package expense
 import (
 	"net/http"
 
-	"dormitory.com/dormitory/entity"
 	"dormitory.com/dormitory/config"
+	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,16 +34,17 @@ func GetExpense(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ElectricityFee not found"})
 		return
 	}
+	/*
+		// สร้างโครงสร้าง Expense
+		expense := entity.Expense{
+			RentFee:        rentFee,
+			WaterFee:       waterFee,
+			ElectricityFee: electricityFee,
+		}
 
-	// สร้างโครงสร้าง Expense
-	expense := entity.Expense{
-		RentFee:        rentFee,
-		WaterFee:       waterFee,
-		ElectricityFee: electricityFee,
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Expense fetched successfully",
-		"data":    expense,
-	})
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Expense fetched successfully",
+			"data":    expense,
+		})
+	*/
 }
