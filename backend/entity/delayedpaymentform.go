@@ -16,7 +16,7 @@ type DelayedPaymentForm struct {
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`
-	Reservation		*Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
+	Reservation		Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 
     // AdminID ทำหน้าที่เป็น FK
     AdminID     uint    `json:"admin_id"`

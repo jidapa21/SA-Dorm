@@ -5,8 +5,8 @@ import "gorm.io/gorm"
 type Room struct {
 	gorm.Model
 	RoomNumber 		uint
-	Available 		string
-	Confirmation 	string
+	Available 		uint
+	DormStatus 	string
 
 	// DormID ทำหน้าที่เป็น FK
 	DormID 	uint
