@@ -3,7 +3,7 @@ import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-import { SlipInterface } from "../../interfaces/slip";
+import { SlipInterface } from "../../interfaces/Slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
@@ -282,6 +282,57 @@ async function DeleteAnnouncementById(id: string) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+//-------------slip------------------
+
+async function CreateSlip(data: SlipInterface) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+    .then((res) => {
+      if (res.status == 201) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+  }
+
+async function GetSlip(id: Number | undefined) {
+  const requestOptions = {
+    method: "GET"
+  };
+  let res = await fetch(`${apiUrl}/slip/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
+
+async function GetListSlips() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`${apiUrl}/slip`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
 
 async function UpdateSlip(data: SlipInterface) {
   const requestOptions = {
@@ -338,5 +389,9 @@ export {
   Adminlist,
   CreateAdmin,
   DeleteAdmin,
-  UpdateSlip
+  //---------------Slip-------------
+  CreateSlip,
+  GetSlip,
+  GetListSlips,
+  UpdateSlip,
 };
