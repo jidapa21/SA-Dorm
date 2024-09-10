@@ -12,12 +12,12 @@ type ResigningForm struct {
 	Accommodation	string
     Status			string
 
-    // StudentID ทำหน้าที่เป็น FK
-    ReservationID	uint
-    Reservation		Reservation `gorm:"foreignKey:ReservationID"`
+	// One-to-one relationship
+	ReservationID	uint      `json:"reservation_id"`
+	Reservation		*Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 
     // AdminID ทำหน้าที่เป็น FK
-    AdminID	uint
-    Admin		Admins `gorm:"foreignKey:AdminID"`
+    AdminID     uint    `json:"admin_id"`
+    Admin       *Admins `gorm:"foreignKey:AdminID"`
 
 }

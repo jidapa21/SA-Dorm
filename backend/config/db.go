@@ -37,11 +37,6 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 
-		&entity.RentFee{},
-		&entity.WaterFee{},
-		&entity.ElectricityFee{},
-		&entity.Expense{},
-
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
@@ -50,6 +45,11 @@ func SetupDatabase() {
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
+
+		&entity.RentFee{},
+		&entity.WaterFee{},
+		&entity.ElectricityFee{},
+		&entity.Expense{},
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -135,35 +135,14 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
-	room := &entity.Room{
-		RoomNumber:   4102,
-		Available:    "yes",
-		Confirmation: "yes",
-		DormID:       4,
-	}
-	db.FirstOrCreate(room, &entity.Room{RoomNumber: 4102})
-
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
-	reservation := &entity.Reservation{
-		ReservationDate: ReservationDate,
-		StudentID:       1,
-		DormID:          4,
-		RoomID:          100,
-	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: 1, DormID: 4, RoomID: 100})
-
-	repairing := &entity.Repairing{
-		Subject:          "อ่างล้างมือตัน",
-		Detail:           "ทำเศษอาหารตก",
-		Image:            "yes",
-		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
-		Contact:          "097-153-1219",
-		Time_Slot:        "09:00-16:00 น.",
-		Status:           "รอดำเนินการ",
-		AdminID:          1,
-		ReservationID:    1,
-	}
-	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
+    reservation := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          4,
+        RoomID:          100,
+    }
+    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
@@ -178,6 +157,20 @@ func SetupDatabase() {
 	db.FirstOrCreate(AdminUser, &entity.Admins{
 		Username: "jetnipat",
 	})
+
+	repairing := &entity.Repairing{
+		ID: 				1,
+        Subject:          	"อ่างล้างมือตัน",
+        Detail:           	"ทำเศษอาหารตก",
+        Image:            	"yes",
+        Location_Details: 	"ห้องน้ำชั้น 1 หอ 4",
+        Contact:          	"097-153-1219",
+        Time_Slot:        	"09:00-16:00 น.",
+        Status:           	"รอดำเนินการ",
+		ReservationID:    	reservation.ID,
+        AdminID:          	1,
+    }
+    db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
 /*
 	// Seed ข้อมูล RentFee
 	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
