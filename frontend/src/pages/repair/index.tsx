@@ -39,46 +39,7 @@ type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
 
 
-export default function RepairingCreate() {
-
-  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
-
-  const getReservationData = async (id: string) => {
-    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
-    try {
-      const [studentRes] = await Promise.all([
-        GetStudentsById(id),
-      ]);
-
-      console.log("API response:", studentRes);  // เพิ่มการดีบัก
-
-      if (studentRes.status === 200) {
-        const combinedData: CombinedData = {
-          ...studentRes.data,
-        };
-        setReservationData(combinedData);
-        console.log("Fetching reservation data for ID:", id);
-        console.log("API response:", studentRes);
-        console.log("Combined data set:", combinedData);
-
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "Error fetching data",
-        });
-        setReservationData(null);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch student data.",
-      });
-      setReservationData(null);
-    }
-
-  };
-
+export default function RepairCreate() {
   const columns: ColumnsType<RepairInterface> = [
     {
       title: "ลำดับ",
@@ -135,6 +96,44 @@ export default function RepairingCreate() {
     },
   ];
 
+  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
+
+  const getReservationData = async (id: string) => {
+    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
+    try {
+      const [studentRes] = await Promise.all([
+        GetStudentsById(id),
+      ]);
+
+      console.log("API response:", studentRes);  // เพิ่มการดีบัก
+
+      if (studentRes.status === 200) {
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+        };
+        setReservationData(combinedData);
+        console.log("Fetching reservation data for ID:", id);
+        console.log("API response:", studentRes);
+        console.log("Combined data set:", combinedData);
+
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+        setReservationData(null);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch student data.",
+      });
+      setReservationData(null);
+    }
+
+  };
+
   const navigate = useNavigate();
   const [users, setUsers] = useState<RepairInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
@@ -144,6 +143,7 @@ export default function RepairingCreate() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const CreateRepair = async () => {
     let res = await CreateRepair();
@@ -151,8 +151,6 @@ export default function RepairingCreate() {
       setUsers(res);
     }
   };
-
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -167,7 +165,6 @@ export default function RepairingCreate() {
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    console.log("Preview Image URL: ", src);  // Check the preview URL
     const image = new Image();
     image.src = src;
     const imgWindow = window.open(src);
@@ -175,24 +172,18 @@ export default function RepairingCreate() {
   };
 
   const onFinish = async (values: RepairInterface) => {
-    values.Image = fileList[0]?.thumbUrl || "";
-    try {
-      const res = await CreateRepair(values);
-      if (res.data.message === "Created success") {
-        messageApi.open({
-          type: "success",
-          content: "บันทึกข้อมูลสำเร็จ",
-        });
-        setTimeout(() => {
-          navigate("/repair");
-        }, 2000);
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "เกิดข้อผิดพลาด !",
-        });
-      }
-    } catch (error) {
+    values.Image = fileList[0].thumbUrl;
+    let res = await CreateRepair(values);
+    console.log(res);
+    if (res) {
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      setTimeout(function () {
+        navigate("/repair");
+      }, 2000);
+    } else {
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาด !",
@@ -205,7 +196,7 @@ export default function RepairingCreate() {
   };
 
   useEffect(() => {
-    getRepairingUI();
+    CreateRepair();
     const studentId = localStorage.getItem("id");
     if (studentId) {
       getReservationData(studentId);
@@ -377,4 +368,5 @@ export default function RepairingCreate() {
       </Space>
     </>
   );
+}
 }

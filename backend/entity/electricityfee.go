@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type ElectricityFee struct {
 	gorm.Model
-	amount    float64 `json:"amount"`
+	Amount float64 `json:"amount"`
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`

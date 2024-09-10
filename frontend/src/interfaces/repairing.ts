@@ -9,5 +9,5 @@ export interface RepairInterface {
     Remarks?:           string;
     Status?:            string;
     AdminID?:           string;
-    ReservationID?:         string;
+    ReservationID?:     string;
 }
