@@ -50,15 +50,18 @@ export default function RepairingCreate() {
       const [studentRes] = await Promise.all([
         GetStudentsById(id),
       ]);
-  
+
       console.log("API response:", studentRes);  // เพิ่มการดีบัก
-  
+
       if (studentRes.status === 200) {
         const combinedData: CombinedData = {
           ...studentRes.data,
         };
         setReservationData(combinedData);
-        console.log("Combined data set:", combinedData);  // เพิ่มการดีบัก
+        console.log("Fetching reservation data for ID:", id);
+        console.log("API response:", studentRes);
+        console.log("Combined data set:", combinedData);
+
       } else {
         messageApi.open({
           type: "error",
@@ -74,8 +77,9 @@ export default function RepairingCreate() {
       });
       setReservationData(null);
     }
+
   };
-  
+
   const columns: ColumnsType<RepairInterface> = [
     {
       title: "ลำดับ",
@@ -174,7 +178,7 @@ export default function RepairingCreate() {
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0]?.thumbUrl || "";
     try {
-      const res = await RepairingUI(values);
+      const res = await CreateRepairingUI(values);
       if (res.data.message === "Created success") {
         messageApi.open({
           type: "success",
@@ -196,15 +200,14 @@ export default function RepairingCreate() {
       });
     }
   };
-  
+
   const handleCancel = () => {
     setOpen(false);
   };
-  
+
   useEffect(() => {
     getRepairingUI();
     const studentId = localStorage.getItem("id");
-    console.log("Student ID from localStorage:", studentId);  // เพิ่มการดีบัก
     if (studentId) {
       getReservationData(studentId);
     } else {
@@ -214,165 +217,164 @@ export default function RepairingCreate() {
       });
     }
   }, []);
-  
+
+
   return (
     <>
       <Space direction="vertical">
-        {ReservationData ? (
-          <>
-            <Card>
-              <h2>แจ้งซ่อม</h2>
-              <Divider />
-              <Form
-                name="basic"
-                layout="vertical"
-                autoComplete="off"
-              >
-                <Space direction="vertical">
-                  <Text>รหัสนักเรียน: {ReservationData.StudentID}</Text>
-                  <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
-                  <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
-                  <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
-                  <Text>อาคาร  4  ห้อง  414A</Text>
-                </Space>
-              </Form>
+        <>
+          <Card>
+            <h2>แจ้งซ่อม</h2>
+            <Divider />
+            <Form
+              name="basic"
+              layout="vertical"
+              autoComplete="off"
+            >
+              <Space direction="vertical">
+                {/*
+                <Text>รหัสนักเรียน: {StudentID}</Text>
+                <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
+                <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
+                */}
+                <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
+                <Text>อาคาร  4  ห้อง  414A</Text>
+              </Space>
+            </Form>
 
-              <br />
+            <br />
 
-              <Form
-                name="basic"
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-              >
-                <Row gutter={[16, 0]}>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="หัวข้อการขอรับบริการ"
-                      name="Subject"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกหัวข้อการขอรับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="อ่างน้ำตัน" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Form.Item
-                      label="ภาพประกอบ"
-                      name="Image"
-                      valuePropName="fileList"
-                    >
-                      <ImgCrop rotationSlider>
-                        <Upload
-                          fileList={fileList}
-                          onChange={onChange}
-                          onPreview={onPreview}
-                          beforeUpload={(file) => {
-                            setFileList([...fileList, file]);
-                            return false;
-                          }}
-                          maxCount={1}
-                          multiple={false}
-                          listType="picture"
-                        >
-                          <Button icon={<UploadOutlined />} >Upload</Button>
-                        </Upload>
-                      </ImgCrop>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="รายละเอียดการขอรับบริการ"
-                      name="Detail"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกรายละเอียดการขอรับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ทำเศษอาหารตก" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="รายละเอียดสถานที่รับบริการ"
-                      name="Location_Details"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกรายละเอียดสถานที่รับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ห้องน้ำรวมชั้น 1" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="หมายเหตุ"
-                      name="Remarks"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="ช่องทางติดต่อ"
-                      name="Contact"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกช่องทางติดต่อ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="ช่วงเวลาที่รับบริการ"
-                      name="Time_Slot"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกช่วงเวลาที่รับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="9:00-16:00 น." />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row justify="end">
-                  <Col style={{ marginTop: "40px" }}>
-                    <Form.Item>
-                      <Space>
-                        <Button htmlType="button" style={{ marginRight: "10px" }}>
-                          ยกเลิก
-                        </Button>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
-                          icon={<PlusOutlined />}
-                        >
-                          ยืนยัน
-                        </Button>
-                      </Space>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
-            </Card>
-          </>
-        ) : (
-          <p>Loading...</p>
-        )}
+            <Form
+              name="basic"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
+            >
+              <Row gutter={[16, 0]}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="หัวข้อการขอรับบริการ"
+                    name="Subject"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกหัวข้อการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="อ่างน้ำตัน" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <Form.Item
+                    label="ภาพประกอบ"
+                    name="Image"
+                    valuePropName="fileList"
+                  >
+                    <ImgCrop rotationSlider>
+                      <Upload
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={(file) => {
+                          setFileList([...fileList, file]);
+                          return false;
+                        }}
+                        maxCount={1}
+                        multiple={false}
+                        listType="picture"
+                      >
+                        <Button icon={<UploadOutlined />} >Upload</Button>
+                      </Upload>
+                    </ImgCrop>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดการขอรับบริการ"
+                    name="Detail"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ทำเศษอาหารตก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดสถานที่รับบริการ"
+                    name="Location_Details"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดสถานที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ห้องน้ำรวมชั้น 1" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="หมายเหตุ"
+                    name="Remarks"
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่องทางติดต่อ"
+                    name="Contact"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่องทางติดต่อ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่วงเวลาที่รับบริการ"
+                    name="Time_Slot"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่วงเวลาที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="9:00-16:00 น." />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row justify="end">
+                <Col style={{ marginTop: "40px" }}>
+                  <Form.Item>
+                    <Space>
+                      <Button htmlType="button" style={{ marginRight: "10px" }}>
+                        ยกเลิก
+                      </Button>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        icon={<PlusOutlined />}
+                      >
+                        ยืนยัน
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </>
       </Space>
     </>
   );
