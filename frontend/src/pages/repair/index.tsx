@@ -33,6 +33,7 @@ import { ReservationInterface } from "./../../interfaces/Reservation";
 //import { LoginStudent } from "./../../pages/authentication/LoginStudent";
 import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
 import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
+import { CreateRepairingUI, GetRepairingUI, UpdateRepairingUI } from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -75,21 +76,6 @@ export default function RepairingCreate() {
     }
   };
   
-
-  useEffect(() => {
-    const studentId = localStorage.getItem("id");
-    console.log("Student ID from localStorage:", studentId);  // เพิ่มการดีบัก
-    if (studentId) {
-      getReservationData(studentId);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "Student ID not found.",
-      });
-    }
-  }, []);
-  
-
   const columns: ColumnsType<RepairInterface> = [
     {
       title: "ลำดับ",
@@ -150,16 +136,20 @@ export default function RepairingCreate() {
   const [users, setUsers] = useState<RepairInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
+  // Model
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
 
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-
-  const handleCancel = () => {
-    setOpen(false);
+  const getRepairingUI = async () => {
+    let res = await GetRepairingUI();
+    if (res) {
+      setUsers(res);
+    }
   };
+
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -207,7 +197,24 @@ export default function RepairingCreate() {
     }
   };
   
-
+  const handleCancel = () => {
+    setOpen(false);
+  };
+  
+  useEffect(() => {
+    getRepairingUI();
+    const studentId = localStorage.getItem("id");
+    console.log("Student ID from localStorage:", studentId);  // เพิ่มการดีบัก
+    if (studentId) {
+      getReservationData(studentId);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Student ID not found.",
+      });
+    }
+  }, []);
+  
   return (
     <>
       <Space direction="vertical">

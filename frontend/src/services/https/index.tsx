@@ -10,8 +10,8 @@ import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
-
 import axios from "axios";
+
 const apiUrl = "http://localhost:8000";
 const Authorization = localStorage.getItem("token");
 const Bearer = localStorage.getItem("token_type");
@@ -144,6 +144,62 @@ async function RepairingUI(data: RepairInterface) {
     throw error;
   }
 }
+async function CreateRepairingUI(data: RepairInterface) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+    .then((res) => {
+      if (res.status == 201) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
+async function GetRepairingUI() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+async function UpdateRepairingUI(data: RepairInterface) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
 async function GetRepairing(data: RepairInterface) {
   return await axios
     .post(`${apiUrl}/create-repairing`, data, requestOptions)
@@ -265,6 +321,9 @@ export {
   GetRepairing,
   ListRepairings,
   UpdateRepairing,
+  CreateRepairingUI,
+  GetRepairingUI,
+  UpdateRepairingUI,
   // ----------------- Repairing --------------
   DelayedPaymentFormUI,
   GetDelayedPaymentForm,
