@@ -32,50 +32,14 @@ import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
 //import { LoginStudent } from "./../../pages/authentication/LoginStudent";
 import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
-import { GetStudentsById, RepairingUI, GetRepairing, ListRepairings, UpdateRepairing } from "./../../services/https";
-import { CreateRepairingUI, GetRepairingUI, UpdateRepairingUI } from "./../../services/https";
+import { GetStudentsById, CreateRepair, GetListRepairs, GetRepair, UpdateRepair } from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
 
 
-export default function RepairingCreate() {
-
-  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
-
-  const getReservationData = async (id: string) => {
-    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
-    try {
-      const [studentRes] = await Promise.all([
-        GetStudentsById(id),
-      ]);
-  
-      console.log("API response:", studentRes);  // เพิ่มการดีบัก
-  
-      if (studentRes.status === 200) {
-        const combinedData: CombinedData = {
-          ...studentRes.data,
-        };
-        setReservationData(combinedData);
-        console.log("Combined data set:", combinedData);  // เพิ่มการดีบัก
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "Error fetching data",
-        });
-        setReservationData(null);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch student data.",
-      });
-      setReservationData(null);
-    }
-  };
-  
+export default function RepairCreate() {
   const columns: ColumnsType<RepairInterface> = [
     {
       title: "ลำดับ",
@@ -132,6 +96,44 @@ export default function RepairingCreate() {
     },
   ];
 
+  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
+
+  const getReservationData = async (id: string) => {
+    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
+    try {
+      const [studentRes] = await Promise.all([
+        GetStudentsById(id),
+      ]);
+
+      console.log("API response:", studentRes);  // เพิ่มการดีบัก
+
+      if (studentRes.status === 200) {
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+        };
+        setReservationData(combinedData);
+        console.log("Fetching reservation data for ID:", id);
+        console.log("API response:", studentRes);
+        console.log("Combined data set:", combinedData);
+
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+        setReservationData(null);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch student data.",
+      });
+      setReservationData(null);
+    }
+
+  };
+
   const navigate = useNavigate();
   const [users, setUsers] = useState<RepairInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
@@ -141,15 +143,14 @@ export default function RepairingCreate() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const getRepairingUI = async () => {
-    let res = await GetRepairingUI();
+  const CreateRepair = async () => {
+    let res = await CreateRepair();
     if (res) {
       setUsers(res);
     }
   };
-
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -164,7 +165,6 @@ export default function RepairingCreate() {
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    console.log("Preview Image URL: ", src);  // Check the preview URL
     const image = new Image();
     image.src = src;
     const imgWindow = window.open(src);
@@ -172,39 +172,32 @@ export default function RepairingCreate() {
   };
 
   const onFinish = async (values: RepairInterface) => {
-    values.Image = fileList[0]?.thumbUrl || "";
-    try {
-      const res = await RepairingUI(values);
-      if (res.data.message === "Created success") {
-        messageApi.open({
-          type: "success",
-          content: "บันทึกข้อมูลสำเร็จ",
-        });
-        setTimeout(() => {
-          navigate("/repair");
-        }, 2000);
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "เกิดข้อผิดพลาด !",
-        });
-      }
-    } catch (error) {
+    values.Image = fileList[0].thumbUrl;
+    let res = await CreateRepair(values);
+    console.log(res);
+    if (res) {
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      setTimeout(function () {
+        navigate("/repair");
+      }, 2000);
+    } else {
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาด !",
       });
     }
   };
-  
+
   const handleCancel = () => {
     setOpen(false);
   };
-  
+
   useEffect(() => {
-    getRepairingUI();
+    CreateRepair();
     const studentId = localStorage.getItem("id");
-    console.log("Student ID from localStorage:", studentId);  // เพิ่มการดีบัก
     if (studentId) {
       getReservationData(studentId);
     } else {
@@ -214,166 +207,166 @@ export default function RepairingCreate() {
       });
     }
   }, []);
-  
+
+
   return (
     <>
       <Space direction="vertical">
-        {ReservationData ? (
-          <>
-            <Card>
-              <h2>แจ้งซ่อม</h2>
-              <Divider />
-              <Form
-                name="basic"
-                layout="vertical"
-                autoComplete="off"
-              >
-                <Space direction="vertical">
-                  <Text>รหัสนักเรียน: {ReservationData.StudentID}</Text>
-                  <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
-                  <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
-                  <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
-                  <Text>อาคาร  4  ห้อง  414A</Text>
-                </Space>
-              </Form>
+        <>
+          <Card>
+            <h2>แจ้งซ่อม</h2>
+            <Divider />
+            <Form
+              name="basic"
+              layout="vertical"
+              autoComplete="off"
+            >
+              <Space direction="vertical">
+                {/*
+                <Text>รหัสนักเรียน: {StudentID}</Text>
+                <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
+                <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
+                */}
+                <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
+                <Text>อาคาร  4  ห้อง  414A</Text>
+              </Space>
+            </Form>
 
-              <br />
+            <br />
 
-              <Form
-                name="basic"
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-              >
-                <Row gutter={[16, 0]}>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="หัวข้อการขอรับบริการ"
-                      name="Subject"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกหัวข้อการขอรับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="อ่างน้ำตัน" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Form.Item
-                      label="ภาพประกอบ"
-                      name="Image"
-                      valuePropName="fileList"
-                    >
-                      <ImgCrop rotationSlider>
-                        <Upload
-                          fileList={fileList}
-                          onChange={onChange}
-                          onPreview={onPreview}
-                          beforeUpload={(file) => {
-                            setFileList([...fileList, file]);
-                            return false;
-                          }}
-                          maxCount={1}
-                          multiple={false}
-                          listType="picture"
-                        >
-                          <Button icon={<UploadOutlined />} >Upload</Button>
-                        </Upload>
-                      </ImgCrop>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="รายละเอียดการขอรับบริการ"
-                      name="Detail"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกรายละเอียดการขอรับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ทำเศษอาหารตก" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="รายละเอียดสถานที่รับบริการ"
-                      name="Location_Details"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกรายละเอียดสถานที่รับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ห้องน้ำรวมชั้น 1" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="หมายเหตุ"
-                      name="Remarks"
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="ช่องทางติดต่อ"
-                      name="Contact"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกช่องทางติดต่อ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="ช่วงเวลาที่รับบริการ"
-                      name="Time_Slot"
-                      rules={[
-                        {
-                          required: true,
-                          message: "กรุณากรอกช่วงเวลาที่รับบริการ !",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="9:00-16:00 น." />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row justify="end">
-                  <Col style={{ marginTop: "40px" }}>
-                    <Form.Item>
-                      <Space>
-                        <Button htmlType="button" style={{ marginRight: "10px" }}>
-                          ยกเลิก
-                        </Button>
-                        <Button
-                          type="primary"
-                          htmlType="submit"
-                          icon={<PlusOutlined />}
-                        >
-                          ยืนยัน
-                        </Button>
-                      </Space>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
-            </Card>
-          </>
-        ) : (
-          <p>Loading...</p>
-        )}
+            <Form
+              name="basic"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
+            >
+              <Row gutter={[16, 0]}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="หัวข้อการขอรับบริการ"
+                    name="Subject"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกหัวข้อการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="อ่างน้ำตัน" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <Form.Item
+                    label="ภาพประกอบ"
+                    name="Image"
+                    valuePropName="fileList"
+                  >
+                    <ImgCrop rotationSlider>
+                      <Upload
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={(file) => {
+                          setFileList([...fileList, file]);
+                          return false;
+                        }}
+                        maxCount={1}
+                        multiple={false}
+                        listType="picture"
+                      >
+                        <Button icon={<UploadOutlined />} >Upload</Button>
+                      </Upload>
+                    </ImgCrop>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดการขอรับบริการ"
+                    name="Detail"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ทำเศษอาหารตก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดสถานที่รับบริการ"
+                    name="Location_Details"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดสถานที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ห้องน้ำรวมชั้น 1" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="หมายเหตุ"
+                    name="Remarks"
+                  >
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่องทางติดต่อ"
+                    name="Contact"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่องทางติดต่อ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่วงเวลาที่รับบริการ"
+                    name="Time_Slot"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่วงเวลาที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="9:00-16:00 น." />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row justify="end">
+                <Col style={{ marginTop: "40px" }}>
+                  <Form.Item>
+                    <Space>
+                      <Button htmlType="button" style={{ marginRight: "10px" }}>
+                        ยกเลิก
+                      </Button>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        icon={<PlusOutlined />}
+                      >
+                        ยืนยัน
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </>
       </Space>
     </>
   );
+}
 }

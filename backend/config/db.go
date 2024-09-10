@@ -37,11 +37,6 @@ func SetupDatabase() {
 		&entity.Other{},
 		&entity.Personal{},
 
-		&entity.RentFee{},
-		&entity.WaterFee{},
-		&entity.ElectricityFee{},
-		&entity.Expense{},
-
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
@@ -50,6 +45,12 @@ func SetupDatabase() {
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
+
+		&entity.RentFee{},
+		&entity.WaterFee{},
+		&entity.ElectricityFee{},
+		&entity.Expense{},
+		&entity.Slip{},
 	)
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
@@ -86,19 +87,19 @@ func SetupDatabase() {
 
 	for roomNumber := 1100; roomNumber <= 4109; roomNumber++ {
 		// คำนวณ DormID จากหลักพันของ RoomNumber
-		if (roomNumber >= 1100 && roomNumber <= 1109) || 
-		(roomNumber >= 1200 && roomNumber <= 1209) || 
-		(roomNumber >= 1300 && roomNumber <= 1309) || 
-		(roomNumber >= 2100 && roomNumber <= 2109) || 
-		(roomNumber >= 2200 && roomNumber <= 2209) || 
-		(roomNumber >= 2300 && roomNumber <= 2309) || 
-		(roomNumber >= 3100 && roomNumber <= 3109) || 
-		(roomNumber >= 3200 && roomNumber <= 3209) || 
-		(roomNumber >= 3300 && roomNumber <= 3309) || 
-		(roomNumber >= 4100 && roomNumber <= 4109) || 
-		(roomNumber >= 4200 && roomNumber <= 4209) || 
-		(roomNumber >= 4300 && roomNumber <= 4309) {
-			
+		if (roomNumber >= 1100 && roomNumber <= 1109) ||
+			(roomNumber >= 1200 && roomNumber <= 1209) ||
+			(roomNumber >= 1300 && roomNumber <= 1309) ||
+			(roomNumber >= 2100 && roomNumber <= 2109) ||
+			(roomNumber >= 2200 && roomNumber <= 2209) ||
+			(roomNumber >= 2300 && roomNumber <= 2309) ||
+			(roomNumber >= 3100 && roomNumber <= 3109) ||
+			(roomNumber >= 3200 && roomNumber <= 3209) ||
+			(roomNumber >= 3300 && roomNumber <= 3309) ||
+			(roomNumber >= 4100 && roomNumber <= 4109) ||
+			(roomNumber >= 4200 && roomNumber <= 4209) ||
+			(roomNumber >= 4300 && roomNumber <= 4309) {
+
 			dormID := uint(roomNumber / 1000)
 
 			// สร้าง Room และกำหนดค่า DormID
@@ -110,6 +111,15 @@ func SetupDatabase() {
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
+
+	/*
+		Status1 := entity.Repairing{Status: "รอดำเนินการ"}
+		Status2 := entity.Repairing{Status: "กำลังดำเนินการ"}
+		Status3 := entity.Repairing{Status: "เสร็จสิ้น"}
+		db.FirstOrCreate(&Status1, &entity.Repairing{Status: "รอดำเนินการ"})
+		db.FirstOrCreate(&Status2, &entity.Repairing{Status: "กำลังดำเนินการ"})
+		db.FirstOrCreate(&Status3, &entity.Repairing{Status: "เสร็จสิ้น"})
+	*/
 
 	// Seed ข้อมูล student
 	studentHashedPassword, _ := HashPassword("1234567890123")
@@ -126,22 +136,14 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
-	room := &entity.Room{
-		RoomNumber:   4102,
-		Available:    "yes",
-		Confirmation: "yes",
-		DormID:       4,
-	}
-	db.FirstOrCreate(room, &entity.Room{RoomNumber: 4102})
-
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
-	reservation := &entity.Reservation{
-		ReservationDate: ReservationDate,
-		StudentID:       1,
-		DormID:          4,
-		RoomID:          4102,
-	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: 1, DormID: 4, RoomID: 4102})
+    reservation := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          4,
+        RoomID:          100,
+    }
+    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
@@ -157,6 +159,20 @@ func SetupDatabase() {
 		Username: "jetnipat",
 	})
 
+	repairing := &entity.Repairing{
+		ID: 				1,
+        Subject:          	"อ่างล้างมือตัน",
+        Detail:           	"ทำเศษอาหารตก",
+        Image:            	"yes",
+        Location_Details: 	"ห้องน้ำชั้น 1 หอ 4",
+        Contact:          	"097-153-1219",
+        Time_Slot:        	"09:00-16:00 น.",
+        Status:           	"รอดำเนินการ",
+		ReservationID:    	reservation.ID,
+        AdminID:          	1,
+    }
+    db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
+/*
 	// Seed ข้อมูล RentFee
 	rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 	rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}
@@ -184,6 +200,7 @@ func SetupDatabase() {
 		ElectricityFeeID: electricityFee1.ID,
 	}
 	db.FirstOrCreate(&expense1, entity.Expense{ID: 1})
+	*/
 	/*
 		rentFee1 := entity.RentFee{DormID: 1, Amount: 6500.00}
 		rentFee2 := entity.RentFee{DormID: 2, Amount: 2900.00}

@@ -21,6 +21,8 @@ const requestOptions = {
     Authorization: `${Bearer} ${Authorization}`,
   },
 };
+
+
 async function SignInStudent(data: SignInStudentInterface) {
   return await axios
     .post(`${apiUrl}/signin`, data, requestOptions)
@@ -134,24 +136,14 @@ async function GetOtherById(id: string) {
 
 //---------------------   Repairing ---------------------------------
 
-async function RepairingUI(data: RepairInterface) {
-  try {
-    const response = await axios
-      .post(`${apiUrl}/create-repairing`, data, requestOptions);
-    return response;
-  } catch (error) {
-    console.error("Error creating repairing:", error);
-    throw error;
-  }
-}
-async function CreateRepairingUI(data: RepairInterface) {
+async function CreateRepair(data: RepairInterface) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
 
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+  let res = await fetch(`${apiUrl}/create-repairing`, requestOptions)
     .then((res) => {
       if (res.status == 201) {
         return res.json();
@@ -161,9 +153,26 @@ async function CreateRepairingUI(data: RepairInterface) {
     });
 
   return res;
+  }
+
+async function GetRepair(id: Number | undefined) {
+  const requestOptions = {
+    method: "GET"
+  };
+
+  let res = await fetch(`${apiUrl}/user/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
 }
 
-async function GetRepairingUI() {
+async function GetListRepairs() {
   const requestOptions = {
     method: "GET",
     headers: {
@@ -171,7 +180,7 @@ async function GetRepairingUI() {
     },
   };
 
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+  let res = await fetch(`${apiUrl}/users`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -182,14 +191,15 @@ async function GetRepairingUI() {
 
   return res;
 }
-async function UpdateRepairingUI(data: RepairInterface) {
+
+async function UpdateRepair(data: RepairInterface) {
   const requestOptions = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
 
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+  let res = await fetch(`${apiUrl}/update-repairing/:id`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -197,26 +207,7 @@ async function UpdateRepairingUI(data: RepairInterface) {
         return false;
       }
     });
-
   return res;
-}
-async function GetRepairing(data: RepairInterface) {
-  return await axios
-    .post(`${apiUrl}/create-repairing`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-async function ListRepairings() {
-  return await axios
-    .get(`${apiUrl}/list-repairing`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-async function UpdateRepairing(id: string, data: RepairInterface) {
-  return await axios
-    .put(`${apiUrl}/update-repairing/${id}`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
 }
 //---------------------   DelayedPaymentForm ---------------------------------
 async function DelayedPaymentFormUI(data: RepairInterface) {
@@ -317,14 +308,11 @@ export {
   GetFamilyById,
   GetOtherById,
   // ----------------- Repairing --------------
-  RepairingUI,
-  GetRepairing,
-  ListRepairings,
-  UpdateRepairing,
-  CreateRepairingUI,
-  GetRepairingUI,
-  UpdateRepairingUI,
-  // ----------------- Repairing --------------
+  CreateRepair,
+  GetRepair,
+  GetListRepairs,
+  UpdateRepair,
+  // ----------------- DelayedPaymentForm --------------
   DelayedPaymentFormUI,
   GetDelayedPaymentForm,
   ListDelayedPaymentForms,

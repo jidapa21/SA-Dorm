@@ -1,13 +1,14 @@
 package entity
 
 import (
-    "time"
-    "gorm.io/gorm"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 type Students struct {
-    gorm.Model
-    StudentID string    `json:"student_id"`
+	gorm.Model
+	StudentID string    `json:"student_id"`
 	Password  string    `json:"password"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
@@ -18,4 +19,5 @@ type Students struct {
 	GenderID uint     `json:"gender_id"`
 	Gender   *Genders `gorm:"foreignKey: gender_id" json:"gender"`
 
+	Reservations  		[]Reservation `gorm:"foreignKey:student_id"`
 }
