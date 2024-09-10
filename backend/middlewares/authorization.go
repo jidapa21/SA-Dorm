@@ -25,12 +25,12 @@ func Authorizes() gin.HandlerFunc {
 			return
 		}
 		clientToken = strings.TrimSpace(extractedToken[1])
-
+		
 		jwtWrapper := services.JwtWrapper{
 			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
 			Issuer:    "AuthService",
 		}
-
+		
 		claims, err := jwtWrapper.ValidateToken(clientToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
