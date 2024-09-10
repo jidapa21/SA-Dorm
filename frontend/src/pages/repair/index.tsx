@@ -36,75 +36,74 @@ import Repairing from "./../adminpage/Repairing";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
 
-const columns: ColumnsType<RepairInterface> = [
-  {
-    title: "ลำดับ",
-    dataIndex: "RepairingID",
-    key: "repairing_id",
-  },
-  {
-    title: "หัวข้อการขอรับบริการ",
-    dataIndex: "Subject",
-    key: "subject",
-  },
-  {
-    title: "ภาพประกอบ",
-    dataIndex: "Image",
-    key: "image",
-    width: "15%",
-    render: (text, record, index) => (
-      <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
-    )
-  },
-  {
-    title: "รายละเอียดการขอรับบริการ",
-    dataIndex: "Detail",
-    key: "detail",
-  },
-  {
-    title: "รายละเอียดสถานที่รับบริการ",
-    dataIndex: "Location_Details",
-    key: "location_details",
-  },
-  {
-    title: "ช่องทางติดต่อ",
-    dataIndex: "Contact",
-    key: "contact",
-  },
-  {
-    title: "ช่วงเวลาที่รับบริการ",
-    dataIndex: "Time_Slot",
-    key: "time_slot",
-  },
-  {
-    title: "หมายเหตุ",
-    dataIndex: "Remarks",
-    key: "remarks",
-  },
-  {
-    title: "สถานะ",
-    dataIndex: "Status",
-    key: "status",
-    render: (text, record, index) => (
-      <>
-      </>
-    ),
-  },
-];
-
-const navigate = useNavigate();
-const [messageApi, contextHolder] = message.useMessage();
-
-// Model
-const [open, setOpen] = useState(false);
-const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
-const [confirmLoading, setConfirmLoading] = useState(false);
-const [modalText, setModalText] = useState<String>();
-const [deleteId, setDeleteId] = useState<Number>();
-const [repairing, setRepairing] = useState<RepairInterface>();
-const [fileList, setFileList] = useState<UploadFile[]>([]);
-
 export default function RepairCreate() {
+  const columns: ColumnsType<RepairInterface> = [
+    {
+      title: "ลำดับ",
+      dataIndex: "RepairingID",
+      key: "repairing_id",
+    },
+    {
+      title: "หัวข้อการขอรับบริการ",
+      dataIndex: "Subject",
+      key: "subject",
+    },
+    {
+      title: "ภาพประกอบ",
+      dataIndex: "Image",
+      key: "image",
+      width: "15%",
+      render: (text, record, index) => (
+        <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
+      )
+    },
+    {
+      title: "รายละเอียดการขอรับบริการ",
+      dataIndex: "Detail",
+      key: "detail",
+    },
+    {
+      title: "รายละเอียดสถานที่รับบริการ",
+      dataIndex: "Location_Details",
+      key: "location_details",
+    },
+    {
+      title: "ช่องทางติดต่อ",
+      dataIndex: "Contact",
+      key: "contact",
+    },
+    {
+      title: "ช่วงเวลาที่รับบริการ",
+      dataIndex: "Time_Slot",
+      key: "time_slot",
+    },
+    {
+      title: "หมายเหตุ",
+      dataIndex: "Remarks",
+      key: "remarks",
+    },
+    {
+      title: "สถานะ",
+      dataIndex: "Status",
+      key: "status",
+      render: (text, record, index) => (
+        <>
+        </>
+      ),
+    },
+  ];
+
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // Model
+  const [open, setOpen] = useState(false);
+  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState<String>();
+  const [deleteId, setDeleteId] = useState<Number>();
+  const [repairing, setRepairing] = useState<RepairInterface>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const getStudentData = async (id: string) => {
     try {
@@ -135,7 +134,7 @@ export default function RepairCreate() {
       });
       setStudentData(null);
     }
-  }
+  };
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -350,4 +349,3 @@ export default function RepairCreate() {
     </>
   );
 }
-

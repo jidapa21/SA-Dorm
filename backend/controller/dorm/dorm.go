@@ -44,7 +44,7 @@ func ListDorms(c *gin.Context) {
 
 // PATCH /dorm
 func UpdateDorm(c *gin.Context) {
-	var Dorm entity.Dorm
+	var dorm entity.Dorm
 
 	DormID := c.Param("id")
 
