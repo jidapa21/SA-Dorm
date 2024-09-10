@@ -1,10 +1,10 @@
 package entity
 
-import
+import (
 
 	"time"
 	"gorm.io/gorm"
-
+)
 type Slip struct {
 	gorm.Model
 	Path    string `json:"path"`
@@ -14,6 +14,6 @@ type Slip struct {
 	Admin		*Admins `gorm:"foreignKey: AdminID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"admin"`
 
 	ExpenseID	uint      `json:"ex_id"`
-	Expense		*Expenses `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
+	Expense		*Expense `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
 
 }
