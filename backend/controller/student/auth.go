@@ -12,23 +12,24 @@ import (
 
 type (
 	StudentAuthen struct {
-		StudentID 	string `json:"student_id"`
-		Password  	string `json:"password"`
-		DormID 		uint 	`json:"dorm_id"`
-		RoomNumber 	uint 	`json:"room_number"`
+		StudentID 		string `json:"student_id"`
+		Password  		string `json:"password"`
 	}
 )
 
 func SignInStudent(c *gin.Context) {
-	var payload		StudentAuthen
-	var student		entity.Students
-	uint dormID		entity.Dorm
-	uint roomNumber	entity.Room
+	var payload			StudentAuthen
+	var student			entity.Students
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	// ค้นหา student ด้วย StudentID ที่ผู้ใช้กรอกเข้ามา
+	if err := config.DB().Raw("SELECT * FROM students WHERE student_id = ?", payload.StudentID).Scan(&student).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	// ค้นหา dorm ด้วย StudentID ที่ผู้ใช้กรอกเข้ามา
 	if err := config.DB().Raw("SELECT * FROM students WHERE student_id = ?", payload.StudentID).Scan(&student).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

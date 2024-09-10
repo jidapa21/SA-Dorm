@@ -132,7 +132,6 @@ func SetupDatabase() {
 
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
-
 		ReservationDate: 	ReservationDate,
 		StudentID: 		1,
 		DormID:      	4,
