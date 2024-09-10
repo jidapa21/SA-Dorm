@@ -20,12 +20,13 @@ import {
 import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
 import { StudentInterface } from "../../interfaces/Student";
 import { InfoForProblemInterface } from "../../interfaces/infoforproblem";
+//import { GetStudentDetails } from "../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
@@ -34,6 +35,7 @@ import { ReservationInterface } from "./../../interfaces/Reservation";
 import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
 import { GetStudentsById, CreateRepair, GetListRepairs, GetRepair, UpdateRepair } from "./../../services/https";
 import "./../repair/index.css";
+import Repairing from "../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
@@ -135,7 +137,6 @@ export default function RepairCreate() {
   };
 
   const navigate = useNavigate();
-  const [users, setUsers] = useState<RepairInterface[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
   // Model
@@ -143,14 +144,9 @@ export default function RepairCreate() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
+  const [repairing, setRepairing] = useState<RepairInterface>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const CreateRepair = async () => {
-    let res = await CreateRepair();
-    if (res) {
-      setUsers(res);
-    }
-  };
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -173,6 +169,7 @@ export default function RepairCreate() {
 
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0].thumbUrl;
+    values.ID = repairing?.ID;
     let res = await CreateRepair(values);
     console.log(res);
     if (res) {
@@ -196,7 +193,6 @@ export default function RepairCreate() {
   };
 
   useEffect(() => {
-    CreateRepair();
     const studentId = localStorage.getItem("id");
     if (studentId) {
       getReservationData(studentId);
@@ -369,4 +365,7 @@ export default function RepairCreate() {
     </>
   );
 }
-}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2bc2d4be78ff4bc979c99d351f868249f3f25ec3

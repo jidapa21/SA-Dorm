@@ -3,7 +3,7 @@ import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-// Repairing
+import { SlipInterface } from "../../interfaces/slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
@@ -13,6 +13,7 @@ import { AadminInterface } from "../../interfaces/Admin";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
+
 const Authorization = localStorage.getItem("token");
 const Bearer = localStorage.getItem("token_type");
 const requestOptions = {
@@ -142,8 +143,7 @@ async function CreateRepair(data: RepairInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-
-  let res = await fetch(`${apiUrl}/create-repairing`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
     .then((res) => {
       if (res.status == 201) {
         return res.json();
@@ -151,7 +151,6 @@ async function CreateRepair(data: RepairInterface) {
         return false;
       }
     });
-
   return res;
   }
 
@@ -159,8 +158,7 @@ async function GetRepair(id: Number | undefined) {
   const requestOptions = {
     method: "GET"
   };
-
-  let res = await fetch(`${apiUrl}/user/${id}`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair/${id}`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -168,7 +166,6 @@ async function GetRepair(id: Number | undefined) {
         return false;
       }
     });
-
   return res;
 }
 
@@ -179,8 +176,7 @@ async function GetListRepairs() {
       "Content-Type": "application/json",
     },
   };
-
-  let res = await fetch(`${apiUrl}/users`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -188,7 +184,6 @@ async function GetListRepairs() {
         return false;
       }
     });
-
   return res;
 }
 
@@ -198,8 +193,7 @@ async function UpdateRepair(data: RepairInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-
-  let res = await fetch(`${apiUrl}/update-repairing/:id`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair/:id`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -289,6 +283,25 @@ async function DeleteAnnouncementById(id: string) {
     .catch((e) => e.response);
 }
 
+async function UpdateSlip(data: SlipInterface) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+
+  let res = await fetch(`${apiUrl}/slip`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
 export {
   SignInStudent,
   SignInAdmin,
@@ -324,5 +337,6 @@ export {
   DeleteAnnouncementById,
   Adminlist,
   CreateAdmin,
-  DeleteAdmin
+  DeleteAdmin,
+  UpdateSlip
 };
