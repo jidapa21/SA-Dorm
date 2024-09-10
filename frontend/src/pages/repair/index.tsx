@@ -40,64 +40,64 @@ import Repairing from "../adminpage/Repairing";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
 
+const columns: ColumnsType<RepairInterface> = [
+  {
+    title: "ลำดับ",
+    dataIndex: "RepairingID",
+    key: "repairing_id",
+  },
+  {
+    title: "หัวข้อการขอรับบริการ",
+    dataIndex: "Subject",
+    key: "subject",
+  },
+  {
+    title: "ภาพประกอบ",
+    dataIndex: "Image",
+    key: "image",
+    width: "15%",
+    render: (text, record, index) => (
+      <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
+    )
+  },
+  {
+    title: "รายละเอียดการขอรับบริการ",
+    dataIndex: "Detail",
+    key: "detail",
+  },
+  {
+    title: "รายละเอียดสถานที่รับบริการ",
+    dataIndex: "Location_Details",
+    key: "location_details",
+  },
+  {
+    title: "ช่องทางติดต่อ",
+    dataIndex: "Contact",
+    key: "contact",
+  },
+  {
+    title: "ช่วงเวลาที่รับบริการ",
+    dataIndex: "Time_Slot",
+    key: "time_slot",
+  },
+  {
+    title: "หมายเหตุ",
+    dataIndex: "Remarks",
+    key: "remarks",
+  },
+  {
+    title: "สถานะ",
+    dataIndex: "Status",
+    key: "status",
+    render: (text, record, index) => (
+      <>
+      </>
+    ),
+  },
+];
 
 export default function RepairCreate() {
-  const columns: ColumnsType<RepairInterface> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "RepairingID",
-      key: "repairing_id",
-    },
-    {
-      title: "หัวข้อการขอรับบริการ",
-      dataIndex: "Subject",
-      key: "subject",
-    },
-    {
-      title: "ภาพประกอบ",
-      dataIndex: "Image",
-      key: "image",
-      width: "15%",
-      render: (text, record, index) => (
-        <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
-      )
-    },
-    {
-      title: "รายละเอียดการขอรับบริการ",
-      dataIndex: "Detail",
-      key: "detail",
-    },
-    {
-      title: "รายละเอียดสถานที่รับบริการ",
-      dataIndex: "Location_Details",
-      key: "location_details",
-    },
-    {
-      title: "ช่องทางติดต่อ",
-      dataIndex: "Contact",
-      key: "contact",
-    },
-    {
-      title: "ช่วงเวลาที่รับบริการ",
-      dataIndex: "Time_Slot",
-      key: "time_slot",
-    },
-    {
-      title: "หมายเหตุ",
-      dataIndex: "Remarks",
-      key: "remarks",
-    },
-    {
-      title: "สถานะ",
-      dataIndex: "Status",
-      key: "status",
-      render: (text, record, index) => (
-        <>
-        </>
-      ),
-    },
-  ];
-
+ 
   const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
 
   const getReservationData = async (id: string) => {
@@ -192,6 +192,7 @@ export default function RepairCreate() {
     setOpen(false);
   };
 
+
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
@@ -213,7 +214,7 @@ export default function RepairCreate() {
             <h2>แจ้งซ่อม</h2>
             <Divider />
             <Form
-              name="basic"
+              name="basic1"
               layout="vertical"
               autoComplete="off"
             >
@@ -231,7 +232,7 @@ export default function RepairCreate() {
             <br />
 
             <Form
-              name="basic"
+              name="basic2"
               layout="vertical"
               onFinish={onFinish}
               autoComplete="off"
@@ -365,7 +366,3 @@ export default function RepairCreate() {
     </>
   );
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 2bc2d4be78ff4bc979c99d351f868249f3f25ec3
