@@ -13,6 +13,7 @@ import { AadminInterface } from "../../interfaces/Admin";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
+
 const Authorization = localStorage.getItem("token");
 const Bearer = localStorage.getItem("token_type");
 const requestOptions = {
@@ -137,13 +138,12 @@ async function GetOtherById(id: string) {
 //---------------------   Repairing ---------------------------------
 
 async function CreateRepair(data: RepairInterface) {
-  const requestOptions = {
+  const requestOptionsR = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-
-  let res = await fetch(`${apiUrl}/create-repairing`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair`, requestOptionsR)
     .then((res) => {
       if (res.status == 201) {
         return res.json();
@@ -151,16 +151,14 @@ async function CreateRepair(data: RepairInterface) {
         return false;
       }
     });
-
   return res;
   }
 
 async function GetRepair(id: Number | undefined) {
-  const requestOptions = {
+  const requestOptionsR = {
     method: "GET"
   };
-
-  let res = await fetch(`${apiUrl}/user/${id}`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair/${id}`, requestOptionsR)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -168,19 +166,17 @@ async function GetRepair(id: Number | undefined) {
         return false;
       }
     });
-
   return res;
 }
 
 async function GetListRepairs() {
-  const requestOptions = {
+  const requestOptionsR = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-
-  let res = await fetch(`${apiUrl}/users`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair`, requestOptionsR)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -188,18 +184,16 @@ async function GetListRepairs() {
         return false;
       }
     });
-
   return res;
 }
 
 async function UpdateRepair(data: RepairInterface) {
-  const requestOptions = {
+  const requestOptionsR = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-
-  let res = await fetch(`${apiUrl}/update-repairing/:id`, requestOptions)
+  let res = await fetch(`${apiUrl}/repair/:id`, requestOptionsR)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
