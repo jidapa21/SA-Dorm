@@ -26,7 +26,6 @@ import (
 const PORT = "8000"
 
 func main() {
-
 	// open connection database
 	config.ConnectionDB()
 	// Generate databases
