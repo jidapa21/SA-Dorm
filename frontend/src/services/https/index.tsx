@@ -8,8 +8,8 @@ import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
-import {AnnouncementInterface } from "../../interfaces/Announcement";
-import {AadminInterface } from "../../interfaces/Admin";
+import { AnnouncementInterface } from "../../interfaces/Announcement";
+import { AadminInterface } from "../../interfaces/Admin";
 
 import axios from "axios";
 const apiUrl = "http://localhost:8000";
@@ -133,11 +133,16 @@ async function GetOtherById(id: string) {
 }
 
 //---------------------   Repairing ---------------------------------
+
 async function RepairingUI(data: RepairInterface) {
-  return await axios
-    .post(`${apiUrl}/create-repairing`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+  try {
+    const response = await axios
+      .post(`${apiUrl}/create-repairing`, data, requestOptions);
+    return response;
+  } catch (error) {
+    console.error("Error creating repairing:", error);
+    throw error;
+  }
 }
 async function GetRepairing(data: RepairInterface) {
   return await axios
@@ -196,13 +201,13 @@ async function CreateAdmin(data: AadminInterface) {
 }
 async function DeleteAdmin(id: number) {
   try {
-      const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
-      return response;
+    const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
+    return response;
   } catch (error) {
-      console.error('Error deleting admin:', error);
-      throw error;
+    console.error('Error deleting admin:', error);
+    throw error;
   }
-}async function ListAnnouncements() {
+} async function ListAnnouncements() {
   return await axios
     .get(`${apiUrl}/list-announcement`, requestOptions)
     .then((res) => res)
@@ -264,7 +269,7 @@ export {
   DelayedPaymentFormUI,
   GetDelayedPaymentForm,
   ListDelayedPaymentForms,
-  UpdateDelayedPaymentForm, 
+  UpdateDelayedPaymentForm,
   ListAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,

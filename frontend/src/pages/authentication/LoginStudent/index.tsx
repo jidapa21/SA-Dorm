@@ -26,6 +26,10 @@ function SignInStudentPages() {
     }
   };
 
+  const onLoginSuccess = (studentID: string) => {
+    localStorage.setItem("studentID", studentID);
+  };
+  
   return (
     <>
       {contextHolder}

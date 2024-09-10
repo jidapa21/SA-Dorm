@@ -121,10 +121,10 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(room, &entity.Room{RoomNumber: 4102})
 
-	reserveDate, _ := time.Parse("02-01-2006", "21-05-1997")
+	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 
-		ReserveDate: 	reserveDate,
+		ReservationDate: 	ReservationDate,
 		StudentID: 		1,
 		DormID:      	4,
 		RoomID:      	4102,
