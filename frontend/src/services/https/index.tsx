@@ -295,7 +295,7 @@ async function DeleteAnnouncementById(id: string) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-//-------------slip------------------
+//-------------slip--------------------------------------------------------------------------------------------------------------
 
 async function CreateSlip(data: SlipInterface) {
   const requestOptions = {
@@ -303,68 +303,87 @@ async function CreateSlip(data: SlipInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
-    .then((res) => {
-      if (res.status == 201) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
-  }
 
-async function GetSlip(id: Number | undefined) {
-  const requestOptions = {
-    method: "GET"
-  };
-  let res = await fetch(`${apiUrl}/slip/${id}`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
+  try {
+    const response = await fetch(`${apiUrl}/slip`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    return false;
+  }
+}
+
+
+
+
+  async function GetSlip(id: number | undefined) {
+    if (id === undefined) {
+      console.error('Invalid ID');
+      return false;
+    }
+  
+    try {
+      const response = await fetch(`${apiUrl}/slip/${id}`, { method: "GET" });
+      
+      if (response.ok) {
+        return await response.json();
       } else {
+        console.error('Error fetching slip:', response.status, response.statusText);
         return false;
       }
-    });
-  return res;
-}
+    } catch (error) {
+      console.error('Network error:', error);
+      return false;
+    }
+  }
+  
 
 async function GetListSlips() {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  let res = await fetch(`${apiUrl}/slip`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
+  try {
+    const response = await fetch(`${apiUrl}/slip`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     });
-  return res;
+    
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error('Error fetching slips list:', response.status, response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    return false;
+  }
 }
+
 
 async function UpdateSlip(data: SlipInterface) {
-  const requestOptions = {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-
-  let res = await fetch(`${apiUrl}/slip`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
+  try {
+    const response = await fetch(`${apiUrl}/slip`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
-
-  return res;
+    
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error('Error updating slip:', response.status, response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    return false;
+  }
 }
+
 
 export {
   SignInStudent,

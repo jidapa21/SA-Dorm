@@ -221,11 +221,11 @@ if result.RowsAffected > 0 {
 
 // Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
 expense1 := entity.Expense{
-    Remark:           "ค่าใช้จ่ายสำหรับเดือนนี้",
-    Status:           "Pending",
+    Remark:           " ",
+    Status:           "กำลังดำเนินการ",
     RentFeeID:        rentFee1.ID,          // เชื่อมโยง RentFee
     WaterFeeID:       waterFee1.ID,         // เชื่อมโยง WaterFee
     ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
 }
-db.FirstOrCreate(&expense1, entity.Expense{Remark: "ค่าใช้จ่ายสำหรับเดือนนี้"})
+db.FirstOrCreate(&expense1, entity.Expense{Remark: " "})
 }
