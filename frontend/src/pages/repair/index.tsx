@@ -34,92 +34,31 @@ import "./../repair/index.css";
 import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
+type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface;
 
 export default function RepairCreate() {
-  const columns: ColumnsType<RepairInterface> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "RepairingID",
-      key: "repairing_id",
-    },
-    {
-      title: "หัวข้อการขอรับบริการ",
-      dataIndex: "Subject",
-      key: "subject",
-    },
-    {
-      title: "ภาพประกอบ",
-      dataIndex: "Image",
-      key: "image",
-      width: "15%",
-      render: (text, record, index) => (
-        <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
-      )
-    },
-    {
-      title: "รายละเอียดการขอรับบริการ",
-      dataIndex: "Detail",
-      key: "detail",
-    },
-    {
-      title: "รายละเอียดสถานที่รับบริการ",
-      dataIndex: "Location_Details",
-      key: "location_details",
-    },
-    {
-      title: "ช่องทางติดต่อ",
-      dataIndex: "Contact",
-      key: "contact",
-    },
-    {
-      title: "ช่วงเวลาที่รับบริการ",
-      dataIndex: "Time_Slot",
-      key: "time_slot",
-    },
-    {
-      title: "หมายเหตุ",
-      dataIndex: "Remarks",
-      key: "remarks",
-    },
-    {
-      title: "สถานะ",
-      dataIndex: "Status",
-      key: "status",
-      render: (text, record, index) => (
-        <>
-        </>
-      ),
-    },
-  ];
-
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-
-  // Model
-  const [open, setOpen] = useState(false);
-  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState<String>();
-  const [deleteId, setDeleteId] = useState<Number>();
-  const [repairing, setRepairing] = useState<RepairInterface>();
+  const [studentData, setStudentData] = useState<StudentInterface | null>(null);
+  const [repairing, setRepairing] = useState<RepairInterface | null>(null);
+  const [reservationData, setReservationData] = useState<{
+    reservation: ReservationInterface | null;
+    student: StudentInterface | null;
+    dorm: DormInterface | null;
+    room: RoomInterface | null;
+  }>({
+    reservation: null,
+    student: null,
+    dorm: null,
+    room: null,
+  });
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const getStudentData = async (id: string) => {
     try {
-      // Fetch all related data by student ID
-      const [studentRes] = await Promise.all([
-        GetStudentsById(id),
-      ]);
-      if (
-        studentRes.status === 200
-      ) {
-        // Combine data into a single object
-        const combinedData: CombinedData = {
-          ...studentRes.data,
-        };
-        console.log(combinedData);
-        setStudentData(combinedData);
+      const studentRes = await GetStudentsById(id);
+      if (studentRes.status === 200) {
+        setStudentData(studentRes.data);
       } else {
         messageApi.open({
           type: "error",
@@ -136,6 +75,32 @@ export default function RepairCreate() {
     }
   };
 
+  const getRepairData = async (id: string) => {
+    try {
+      const response = await fetch(`/api/repairs/${id}`);
+      const data = await response.json();
+      
+      // Extract reservation from data
+      const reservation = data.Reservation;
+      const student = reservation.Student;
+      const dorm = reservation.Dorm;
+      const room = reservation.Room;
+      
+      setRepairing(data);
+      setReservationData({
+        reservation,
+        student,
+        dorm,
+        room,
+      });
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch repair data.",
+      });
+    }
+  };
+  
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -155,44 +120,36 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  // สร้างฟังก์ชันที่เรียกใช้ `messageApi.open`
   const showSuccessMessage = useCallback(() => {
     messageApi.open({
       type: "success",
-      content: "บันทึกข้อมูลสำเร็จ",
+      content: "Successfully saved data",
     });
   }, [messageApi]);
 
   const showErrorMessage = useCallback(() => {
     messageApi.open({
       type: "error",
-      content: "เกิดข้อผิดพลาด !",
+      content: "An error occurred!",
     });
   }, [messageApi]);
 
   const onFinish = async (values: RepairInterface) => {
-    values.Image = fileList[0].thumbUrl;
+    values.Image = fileList[0]?.thumbUrl || '';
     values.ID = repairing?.ID;
     let res = await CreateRepair(values);
     if (res) {
-      showSuccessMessage(); // เรียกใช้ฟังก์ชันในที่นี้
-      setTimeout(function () {
-        navigate("/repair");
-      }, 2000);
+      showSuccessMessage();
+      setTimeout(() => navigate("/repair"), 2000);
     } else {
-      showErrorMessage(); // เรียกใช้ฟังก์ชันในที่นี้
+      showErrorMessage();
     }
-  };
-
-
-  const handleCancel = () => {
-    setOpen(false);
   };
 
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getStudentData(studentId);
+      getRepairData(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",
@@ -200,7 +157,6 @@ export default function RepairCreate() {
       });
     }
   }, []);
-
   return (
     <>
       <Space direction="vertical">
@@ -209,18 +165,26 @@ export default function RepairCreate() {
             <h2>แจ้งซ่อม</h2>
             <Divider />
             <Form
-              name="basic1"
+              name="repairDetails"
               layout="vertical"
               autoComplete="off"
             >
               <Space direction="vertical">
-                {studentData ? (
+                {repairing && reservationData.reservation ? (
                   <>
-                    <Text>รหัสนักเรียน: {studentData.StudentID}</Text>
-                    <Text>ผู้รับบริการ: {studentData.FirstName} {studentData.LastName}</Text>
-                    <Text>อาคาร: {studentData.DormID} ห้อง: {studentData.RoomNumber}</Text>
+                    {reservationData.student && (
+                      <>
+                        <Text>Student ID: {reservationData.student.StudentID}</Text>
+                        <Text>Name: {reservationData.student.FirstName} {reservationData.student.LastName}</Text>
+                      </>
+                    )}
+                    {reservationData.dorm && reservationData.room && (
+                      <>
+                        <Text>Dorm: {reservationData.dorm.ID} Room: {reservationData.room.RoomNumber}</Text>
+                      </>
+                    )}
                   </>
-                ) : (<Spin />)}
+                ) : (<Text></Text>)}
               </Space>
             </Form>
 
