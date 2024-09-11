@@ -19,27 +19,22 @@ import {
 } from "antd";
 import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
-import { StudentInterface } from "../../interfaces/Student";
-import { InfoForProblemInterface } from "../../interfaces/infoforproblem";
-//import { GetStudentDetails } from "../../interfaces/Student";
+import { StudentInterface } from "./../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-//import { LoginStudent } from "./../../pages/authentication/LoginStudent";
-import { SignInStudentInterface } from "./../../interfaces/SignInStudent";
-import { GetStudentsById, CreateRepair, GetListRepairs, GetRepair, UpdateRepair } from "./../../services/https";
+import { GetStudentsById, CreateRepair } from "./../../services/https";
 import "./../repair/index.css";
-import Repairing from "../adminpage/Repairing";
+import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface; // Combining both interfaces
-
 
 export default function RepairCreate() {
   const columns: ColumnsType<RepairInterface> = [
@@ -98,55 +93,48 @@ export default function RepairCreate() {
     },
   ];
 
-  const [ReservationData, setReservationData] = useState<CombinedData | null>(null); // Store combined data
-
-  const getReservationData = async (id: string) => {
-    console.log("Fetching reservation data for ID:", id);  // เพิ่มการดีบัก
-    try {
-      const [studentRes] = await Promise.all([
-        GetStudentsById(id),
-      ]);
-
-      console.log("API response:", studentRes);  // เพิ่มการดีบัก
-
-      if (studentRes.status === 200) {
-        const combinedData: CombinedData = {
-          ...studentRes.data,
-        };
-        setReservationData(combinedData);
-        console.log("Fetching reservation data for ID:", id);
-        console.log("API response:", studentRes);
-        console.log("Combined data set:", combinedData);
-
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "Error fetching data",
-        });
-        setReservationData(null);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);  // เพิ่มการดีบัก
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch student data.",
-      });
-      setReservationData(null);
-    }
-
-  };
-
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
   // Model
   const [open, setOpen] = useState(false);
+  const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
   const [repairing, setRepairing] = useState<RepairInterface>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
+  const getStudentData = async (id: string) => {
+    try {
+      // Fetch all related data by student ID
+      const [studentRes] = await Promise.all([
+        GetStudentsById(id),
+      ]);
+      if (
+        studentRes.status === 200
+      ) {
+        // Combine data into a single object
+        const combinedData: CombinedData = {
+          ...studentRes.data,
+        };
+        console.log(combinedData);
+        setStudentData(combinedData);
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "Error fetching data",
+        });
+        setStudentData(null);
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Failed to fetch student data.",
+      });
+      setStudentData(null);
+    }
+  };
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -167,26 +155,35 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
+  // สร้างฟังก์ชันที่เรียกใช้ `messageApi.open`
+  const showSuccessMessage = useCallback(() => {
+    messageApi.open({
+      type: "success",
+      content: "บันทึกข้อมูลสำเร็จ",
+    });
+  }, [messageApi]);
+
+  const showErrorMessage = useCallback(() => {
+    messageApi.open({
+      type: "error",
+      content: "เกิดข้อผิดพลาด !",
+    });
+  }, [messageApi]);
+
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0].thumbUrl;
     values.ID = repairing?.ID;
     let res = await CreateRepair(values);
-    console.log(res);
     if (res) {
-      messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
-      });
+      showSuccessMessage(); // เรียกใช้ฟังก์ชันในที่นี้
       setTimeout(function () {
         navigate("/repair");
       }, 2000);
     } else {
-      messageApi.open({
-        type: "error",
-        content: "เกิดข้อผิดพลาด !",
-      });
+      showErrorMessage(); // เรียกใช้ฟังก์ชันในที่นี้
     }
   };
+
 
   const handleCancel = () => {
     setOpen(false);
@@ -195,7 +192,7 @@ export default function RepairCreate() {
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getReservationData(studentId);
+      getStudentData(studentId);
     } else {
       messageApi.open({
         type: "error",
@@ -203,7 +200,6 @@ export default function RepairCreate() {
       });
     }
   }, []);
-
 
   return (
     <>
@@ -213,25 +209,25 @@ export default function RepairCreate() {
             <h2>แจ้งซ่อม</h2>
             <Divider />
             <Form
-              name="basic"
+              name="basic1"
               layout="vertical"
               autoComplete="off"
             >
               <Space direction="vertical">
-                {/*
-                <Text>รหัสนักเรียน: {StudentID}</Text>
-                <Text>ผู้รับบริการ: {ReservationData.FirstName} {ReservationData.LastName}</Text>
-                <Text>อาคาร: {ReservationData.DormID} ห้อง: {ReservationData.RoomNumber}</Text>
-                */}
-                <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
-                <Text>อาคาร  4  ห้อง  414A</Text>
+                {studentData ? (
+                  <>
+                    <Text>รหัสนักเรียน: {studentData.StudentID}</Text>
+                    <Text>ผู้รับบริการ: {studentData.FirstName} {studentData.LastName}</Text>
+                    <Text>อาคาร: {studentData.DormID} ห้อง: {studentData.RoomNumber}</Text>
+                  </>
+                ) : (<Spin />)}
               </Space>
             </Form>
 
             <br />
 
             <Form
-              name="basic"
+              name="basic2"
               layout="vertical"
               onFinish={onFinish}
               autoComplete="off"

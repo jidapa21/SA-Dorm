@@ -16,5 +16,5 @@ type Expense struct {
 	WaterFeeID uint     `json:"water_id"`
 	WaterFees   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
 
-	Slips []Slip `gorm:"foreignKey:ExpenseID"`
+	//Slips []Slip `gorm:"foreignKey:ExpenseID"`
 }

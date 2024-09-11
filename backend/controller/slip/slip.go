@@ -1,80 +1,130 @@
 package slip
-
 import (
 	"net/http"
-	"path/filepath"
-	"strconv"
-	"time"
 
-	"github.com/gin-gonic/gin"
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
+	"github.com/gin-gonic/gin"
 )
 
-// PATCH /slip/:id
-func UpdateSlip(c *gin.Context) {
+// POST /users
+func CreateSlip(c *gin.Context) {
 	var slip entity.Slip
 
-	// รับ ID ของ slip จาก URL parameter
-	SlipID := c.Param("id")
+	if err := c.ShouldBindJSON(&slip); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// ค้นหา slip ในฐานข้อมูลโดยใช้ ID
 	db := config.DB()
-	result := db.First(&slip, SlipID)
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Slip ID not found"})
+
+	// ค้นหา reservation ด้วย id
+	var reservation entity.Reservation
+	db.First(&reservation, repairing.ReservationID)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
 		return
 	}
 
-	// รับไฟล์ที่ถูกอัปโหลด
-	file, err := c.FormFile("slip_file")
-	if err != nil && err != http.ErrMissingFile {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to upload file"})
+	// ค้นหา dorm ด้วย id
+	var dorm entity.Dorm
+	db.First(&dorm, repairing.Reservation.DormID)
+	if dorm.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "dorm_ID not found"})
 		return
 	}
 
-	// ถ้ามีการอัปโหลดไฟล์ใหม่ ให้บันทึกไฟล์ลงโฟลเดอร์
-	if file != nil {
-		filename := filepath.Base(file.Filename)
-		if err := c.SaveUploadedFile(file, "uploads/"+filename); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to save file"})
+	// ค้นหา room ด้วย id
+	var room entity.Room
+	db.First(&room, repairing.Reservation.RoomID)
+	if room.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "room_ID not found"})
+		return
+	}
+
+	rp := entity.Slip{
+		Path:           slip.Path,
+		Date:         	slip.date,
+		ExpenseID:     	slip.ReservationID,
+		Expense:    	slip, 
+		
+	}
+
+	if err := db.Create(&rp).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+}
+
+
+// GET /Slip/:id
+func GetSlip(c *gin.Context) {
+	ID := c.Param("id")
+	var slip entity.Slip
+	var reservation entity.Reservation
+
+	db := config.DB()
+	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
+		if err := db.Preload("Students").First(&reservation, ID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
-		// อัปเดต path ของไฟล์ในฐานข้อมูล
-		slip.Path = "uploads/" + filename
-	}
-
-	// รับข้อมูลวันที่ (date) จาก form และแปลงเป็นเวลา
-	date := c.PostForm("date")
-	if date != "" {
-		parsedDate, err := time.Parse("2006-01-02", date) // ตัวอย่าง format: "2023-09-08"
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
+		if err := db.Preload("Dorm").First(&reservation, ID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
-		slip.Date = parsedDate
+		if err := db.Preload("Room").First(&reservation, ID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
 	}
+	c.JSON(http.StatusOK, slip)
+}
 
-	// รับ AdminID จาก form-data และแปลงเป็นตัวเลข
-	adminID := c.PostForm("admin_id")
-	if adminID != "" {
-		adminIDValue, _ := strconv.ParseUint(adminID, 10, 64)
-		slip.AdminID = uint(adminIDValue)
+// GET /Slip
+func GetListSlips(c *gin.Context) {
+	var slips []entity.Slip
+	var reservation []entity.Reservation
+
+	db := config.DB()
+	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
+		if err := db.Preload("Students").Find(&reservation).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err := db.Preload("Dorm").Find(&reservation).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err := db.Preload("Room").Find(&reservation).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
 	}
+	c.JSON(http.StatusOK, slips)
+}
 
-	// รับ ExpenseID จาก form-data และแปลงเป็นตัวเลข
-	expenseID := c.PostForm("expense_id")
-	if expenseID != "" {
-		expenseIDValue, _ := strconv.ParseUint(expenseID, 10, 64)
-		slip.ExpenseID = uint(expenseIDValue)
-	}
 
-	// บันทึกข้อมูล slip ที่ถูกแก้ไข
-	result = db.Save(&slip)
+// PATCH /slip
+func UpdateSlip(c *gin.Context) {
+	var slip entity.Slip
+	id := c.Param("id")
+
+	db := config.DB()
+	result := db.First(&slip, id)
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to update slip"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Slip updated successfully"})
+	if err := c.ShouldBindJSON(slip.Status); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		return
+	}
+	if err := db.Save(slip.Status).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
 }
