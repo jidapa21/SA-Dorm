@@ -29,7 +29,7 @@ import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-import { GetStudentsById, CreateRepair, GetIDByStudentID } from "./../../services/https";
+import { GetStudentsById, CreateRepair, GetRepair } from "./../../services/https";
 import "./../repair/index.css";
 import Repairing from "./../adminpage/Repairing";
 
@@ -64,7 +64,7 @@ const columns: ColumnsType<RepairInterface> = [
             type="primary"
             htmlType="submit"
             icon={<PlusOutlined />}
-            onClick={() => GetIDByStudentID(record.ID)}
+            onClick={() => CreateRepair(record.ID)}
           >
             ยืนยัน
           </Button>
@@ -122,12 +122,12 @@ const columns: ColumnsType<RepairInterface> = [
     key: "status",
   },
   {
-    title: "เพศ",
+    title: "รหัสแอดมิน",
     dataIndex: "AdminID",
     key: "adminid",
   },
   {
-    title: "เพศ",
+    title: "รหัสการจอง",
     dataIndex: "ReservationID",
     key: "reservationid",
   },
@@ -162,6 +162,7 @@ export default function RepairCreate() {
   const [repairing, setRepairing] = useState<RepairInterface | null>(null);
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [form] = Form.useForm();
 
   // Model
   const [open, setOpen] = useState(false);
@@ -169,22 +170,28 @@ export default function RepairCreate() {
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
 
-  const getIDByStudentID = async () => {
-    let res = await GetIDByStudentID(myId); // เรียกใช้ฟังก์ชันที่แก้ไขแล้ว
-    return res;
-  };
-
-  const getRepairing = async () => {/*
-  let res = await setRepairing();
-  if (res.status == 200) {
-    setRepairing(res.data);
-  } else {
-    setRepairing([]);
-    messageApi.open({
-      type: "error",
-      content: res.data.error,
-    });
-  }*/
+  const getRepairing = async (id: string) => {
+    let res = await GetRepair(id);
+    if (res.status == 200) {
+      form.setFieldsValue({
+        Subject: res.data.Subject,
+        Detail: res.data.Detail,
+        Image: res.data.Image,
+        Location_Details: res.data.Location_Details,
+        Contact: res.data.Contact,
+        Time_Slot: res.data.Time_Slot,
+        Remarks: res.data.Remarks,
+        Status: res.data.Status,
+      });
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบข้อมูลผู้ใช้",
+      });
+      setTimeout(() => {
+        navigate("/repair");
+      }, 2000);
+    }
   };
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
@@ -207,17 +214,17 @@ export default function RepairCreate() {
   };
 
   const onFinish = async (values: RepairInterface) => {
-    // ดึง student ID จาก backend
-    let studentIDResponse = await GetIDByStudentID(myId);
-    if (!studentIDResponse) {
+    values.Image = fileList[0]?.thumbUrl || "";
+    
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      getRepairing(studentId);  // Fetch repair data using studentId
+    } else {
       messageApi.open({
         type: "error",
-        content: "ไม่สามารถดึงข้อมูลนักศึกษาได้!",
+        content: "Student ID on finish is not found.",
       });
-      return;
     }
-    values.Image = fileList[0]?.thumbUrl || "";
-
     // สร้างรายการแจ้งซ่อม
     let res = await CreateRepair(values);
 
@@ -227,7 +234,7 @@ export default function RepairCreate() {
         content: "บันทึกข้อมูลสำเร็จ",
       });
       setTimeout(() => {
-        navigate("/repair");
+        navigate("/repair"); // ตรวจสอบ URL ให้ถูกต้อง
       }, 2000);
     } else {
       messageApi.open({
@@ -236,11 +243,11 @@ export default function RepairCreate() {
       });
     }
   };
-
+  
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      //getRepairing(studentId);  // Fetch repair data using studentId
+      getRepairing(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",
@@ -274,22 +281,6 @@ export default function RepairCreate() {
               onFinish={onFinish}
               autoComplete="off"
             >
-
-
-              <Col xs={24} sm={24} md={24} lg={12}>
-                <Form.Item
-                  label="Reservation ID (ทดสอบ)"
-                  name="ReservationID"
-                  rules={[
-                    {
-                      required: true,
-                      message: "กรุณากรอก Reservation ID หลอกๆ",
-                    },
-                  ]}
-                >
-                  <Input placeholder="กรอก Reservation ID หลอกๆ" />
-                </Form.Item>
-              </Col>
               <Row gutter={[16, 0]}>
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item

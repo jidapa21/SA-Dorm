@@ -138,49 +138,34 @@ async function GetOtherById(id: string) {
 //---------------------   Repairing ---------------------------------
 
 async function CreateRepair(data: RepairInterface) {
-  const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/creat-repair`, requestOptions)
-    .then((res) => {
-      if (res.status == 201) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
-  }
-
-  async function GetIDByStudentID(id: string | null) {
-    const requestOptions = {
-      method: "GET",
-    };
-    let res = await fetch(`${apiUrl}/get-id-student/${id}`, requestOptions);
+  return await axios
+    .post(`${apiUrl}/creat-repair`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
     
-    if (res.status == 200) {
-      return res.json(); // ถ้าสถานะเป็น 200 ให้คืนค่า JSON ที่มี id
-    } else {
-      return false; // ถ้าไม่ใช่ 200 ให้คืนค่า false
-    }
-  }
-
-async function GetRepair(id: Number | undefined) {
-  const requestOptions = {
-    method: "GET"
-  };
-  let res = await fetch(`${apiUrl}/get-repair/${id}`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
 }
+/*
+async function GetIDByStudentID(id: string | null) {
+  const requestOptions = {
+    method: "GET",
+  };
+  let res = await fetch(`${apiUrl}/get-id-student/${id}`, requestOptions);
+
+  if (res.status == 200) {
+    return res.json(); // ถ้าสถานะเป็น 200 ให้คืนค่า JSON ที่มี id
+  } else {
+    return false; // ถ้าไม่ใช่ 200 ให้คืนค่า false
+  }
+}
+*/
+
+async function GetRepair(id: string | undefined) {
+  return await axios
+    .get(`${apiUrl}/get-repair/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 
 async function GetListRepairs() {
   const requestOptions = {
@@ -322,27 +307,27 @@ async function CreateSlip(data: SlipInterface) {
 
 
 
-  async function GetSlip(id: number | undefined) {
-    if (id === undefined) {
-      console.error('Invalid ID');
-      return false;
-    }
-  
-    try {
-      const response = await fetch(`${apiUrl}/slip/${id}`, { method: "GET" });
-      
-      if (response.ok) {
-        return await response.json();
-      } else {
-        console.error('Error fetching slip:', response.status, response.statusText);
-        return false;
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-      return false;
-    }
+async function GetSlip(id: number | undefined) {
+  if (id === undefined) {
+    console.error('Invalid ID');
+    return false;
   }
-  
+
+  try {
+    const response = await fetch(`${apiUrl}/slip/${id}`, { method: "GET" });
+
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error('Error fetching slip:', response.status, response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    return false;
+  }
+}
+
 
 async function GetListSlips() {
   try {
@@ -350,7 +335,7 @@ async function GetListSlips() {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
-    
+
     if (response.ok) {
       return await response.json();
     } else {
@@ -371,7 +356,7 @@ async function UpdateSlip(data: SlipInterface) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
-    
+
     if (response.ok) {
       return await response.json();
     } else {
@@ -405,7 +390,6 @@ export {
   GetOtherById,
   // ----------------- Repairing --------------
   CreateRepair,
-  GetIDByStudentID,
   GetRepair,
   GetListRepairs,
   UpdateRepair,

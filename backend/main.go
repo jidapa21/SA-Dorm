@@ -66,9 +66,6 @@ func main() {
 		router.POST("/create-rent-fee", rentfee.CreateRentFee)
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
-		
-		// Repairing Route GetIDByStudentID
-		//router.POST("/get-id-student", repairing.GetIDByStudentID)
 
 		router.POST("/creat-repair", repairing.CreateRepair)
 		router.GET("/get-repair/:id", repairing.GetRepair)
