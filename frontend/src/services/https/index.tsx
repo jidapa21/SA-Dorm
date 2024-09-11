@@ -311,6 +311,8 @@ async function CreateSlip(data: SlipInterface) {
 
 
 
+
+
   async function GetSlip(id: number | undefined) {
     if (id === undefined) {
       console.error('Invalid ID');
