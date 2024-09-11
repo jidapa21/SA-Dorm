@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Table, Select } from 'antd';
-import ReadRequestDelayingPayment from './ReadRequestDelayingPayment/index'; 
+import ReadRepairing from './ReadRequestDelayingPayment/index';
+
 const { Option } = Select;
 
 interface RecordType {
@@ -8,7 +9,7 @@ interface RecordType {
   date: string;
 }
 
-const RequestDelayingPayment: React.FC = () => {
+const DelayingPayment: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const columns = [
@@ -71,14 +72,16 @@ const RequestDelayingPayment: React.FC = () => {
   ];
 
   const handleDetailsClick = (key: string) => {
-    setSelectedKey(key); };
+    setSelectedKey(key); 
+  };
 
   const handleUpdateStatus = (key: string, status: string) => {
     console.log(`อัพเดทสถานะ ${status} สำหรับ:`, key);
   };
 
   const handleBackClick = () => {
-    setSelectedKey(null);};
+    setSelectedKey(null); 
+  };
 
   return (
     <div style={{ padding: '20px' }}>
@@ -98,7 +101,7 @@ const RequestDelayingPayment: React.FC = () => {
             paddingBottom: '10px',
           }}
         >
-          รายการฟอร์มผ่อนผัน
+          รายการแจ้งซ่อม
         </span>
         <div
           style={{
@@ -119,7 +122,7 @@ const RequestDelayingPayment: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadRequestDelayingPayment key={selectedKey} />
+          <ReadRepairing key={selectedKey} /> 
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -128,8 +131,8 @@ const RequestDelayingPayment: React.FC = () => {
             dataSource={data}
             pagination={false}
             bordered
-            showHeader={false}
-            style={{ maxWidth: '1100px', width: '100%' }} 
+            showHeader={false} 
+            style={{ maxWidth: '1100px', width: '100%' }}
           />
         </div>
       )}
@@ -137,4 +140,4 @@ const RequestDelayingPayment: React.FC = () => {
   );
 };
 
-export default RequestDelayingPayment;
+export default Repairing;

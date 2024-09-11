@@ -1,4 +1,5 @@
 export interface RepairInterface {
+    repairId: string;
     ID?:                number;
     Subject?:           string;
     Detail?:            string;

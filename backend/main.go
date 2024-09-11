@@ -18,7 +18,8 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/slip"
+
+	//"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -66,11 +67,11 @@ func main() {
 		router.POST("/create-rent-fee", rentfee.CreateRentFee)
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
-		
+
 		// Repairing Route
 		router.POST("/creat-repair", repairing.CreateRepair)
 		router.GET("/get-repair/:id", repairing.GetRepair)
-		router.GET("/grt-list-repair", repairing.GetListRepairs)
+		router.GET("/repair-getlist", repairing.GetListRepairs)
 		router.PUT("/update-repair", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route
@@ -91,9 +92,9 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		router.POST("/slip", controller.CreateSlip)
-		router.PATCH("/slip", controller.UpdateSlip)
-		
+		//router.POST("/slip", controller.CreateSlip)
+		//router.PATCH("/slip", controller.UpdateSlip)
+
 	}
 
 	r.GET("/genders", genders.GetAll)

@@ -154,55 +154,72 @@ async function CreateRepair(data: RepairInterface) {
   return res;
   }
 
-async function GetRepair(id: Number | undefined) {
-  const requestOptions = {
-    method: "GET"
-  };
-  let res = await fetch(`${apiUrl}/get-repair/${id}`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
+  async function GetRepair(id: number | undefined) {
+    if (id === undefined) {
+      throw new Error('ID cannot be undefined');
+    }
+  
+    const Authorization = localStorage.getItem("token");
+    const Bearer = localStorage.getItem("token_type");
+    
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
+      }
+    };
+  
+    try {
+      const response = await fetch(`${apiUrl}/get-repair/${id}`, requestOptions);
+      if (response.ok) {
+        return await response.json();
       } else {
+        // ตรวจสอบรายละเอียดของข้อผิดพลาด
+        const errorText = await response.text();
+        console.error(`Error: ${response.status} - ${errorText}`);
         return false;
       }
-    });
-  return res;
-}
-
-async function GetListRepairs() {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  let res = await fetch(`${apiUrl}/get-list-repair`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return false;
+    }
+  }
+  
+  
+  
+  async function GetListRepairs() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
       }
-    });
-  return res;
-}
-
-async function UpdateRepair(data: RepairInterface) {
-  const requestOptions = {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/update-repair/:id`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
+    };
+  
+    try {
+      const response = await fetch(`${apiUrl}/repair-getlist`, requestOptions);
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 401) {
+        console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
       } else {
-        return false;
+        console.error(`Error: ${response.status} - ${response.statusText}`);
       }
-    });
-  return res;
-}
+      return false;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return false;
+    }
+  }
+  
+  async function UpdateRepair(id: string, data: Partial<RepairInterface>) {
+    return await axios
+      .put(`${apiUrl}/repair-update/${id}`, data, requestOptions) // Ensure PUT is used
+      .then((res) => res)
+      .catch((e) => e.response);
+  }
+  
 //---------------------   DelayedPaymentForm ---------------------------------
 async function DelayedPaymentFormUI(data: RepairInterface) {
   return await axios
