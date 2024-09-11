@@ -1,12 +1,12 @@
 package slip
 import (
-	"net/http"
+	/*"net/http"
 
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
-	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"*/
 )
-
+/*
 // POST /users
 func CreateSlip(c *gin.Context) {
 	var slip entity.Slip
@@ -127,4 +127,4 @@ func UpdateSlip(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
-}
+}*/
