@@ -8,6 +8,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetSudentID(c *gin.Context) {
+	db := config.DB()
+	var studentID = entity.Students;
+	db.First(&studentID , studentID.StudentID)
+
+}
 // POST /users
 func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
@@ -54,7 +60,6 @@ func CreateRepair(c *gin.Context) {
 		Status:            	"รอดำเนินการ",
 		ReservationID:     	repairing.ReservationID,
 		Reservation:    	reservation, // โยงความสัมพันธ์กับ Entity Reservation
-		
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
