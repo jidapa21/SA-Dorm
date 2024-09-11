@@ -3,7 +3,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps,TableProps,GetProp} from 'antd';
 import Barcode from 'react-barcode'; // นำเข้า Barcode
 import { SlipInterface } from "../../interfaces/Slip";
-import {CreateSlip, GetListSlips, GetSlip, UpdateSlip } from "./../../services/https";
+import {CreateSlip} from "./../../services/https";
 import { Link, useNavigate, useParams } from "react-router-dom";
 //import qrcode from "../../assets/QR_code.png"
 //import barcode from "../../assets/Barcode.png"
@@ -146,7 +146,40 @@ const props: UploadProps = {
 
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  //const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [Path, setPath] = useState<string>();
 
+  const handleSubmit = async () => {
+    if (!Path) {
+      messageApi.open({
+        type: 'error',
+        content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
+      return;
+    }
+    try {
+      const response = await CreateSlip({ Path });
+
+      if (response.status === 200) {
+        messageApi.open({
+          type: 'success',
+          content: 'ประกาศถูกสร้างเรียบร้อยแล้ว',
+        });
+        setPath('');
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: `เกิดข้อผิดพลาดในการสร้างประกาศ: ${response.data.message || response.statusText}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      messageApi.open({
+        type: 'error',
+        content: `เกิดข้อผิดพลาดในการสร้างประกาศ: ${(error as Error).message}`,
+      });
+    }
+  };
 return (
     <>
       <br />
@@ -219,7 +252,7 @@ return (
               autoComplete="off"
               >
               <Upload
-                  fileList={fileList}
+                  values={Path}
                   onChange={onChange}
                   onPreview={onPreview}
                   beforeUpload={(file) => {
@@ -233,6 +266,15 @@ return (
                 <Button icon={<UploadOutlined />} >Upload</Button>
               </Upload>
             </Form>
+            {contextHolder}
+      <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        <Button 
+          onClick={handleSubmit} 
+          style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }} 
+        >
+          ยืนยัน
+        </Button>
+      </Space>
           </div>
         </div>
     </>

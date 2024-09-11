@@ -290,7 +290,7 @@ async function CreateSlip(data: SlipInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+  let res = await fetch(`${apiUrl}/slip`, requestOptions)
     .then((res) => {
       if (res.status == 201) {
         return res.json();
