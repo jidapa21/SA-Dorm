@@ -139,7 +139,7 @@ async function GetOtherById(id: string) {
 
 async function CreateRepair(data: RepairInterface) {
   return await axios
-    .post(`${apiUrl}/creat-repair`, data, requestOptions)
+    .post(`${apiUrl}/create-repair`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
     

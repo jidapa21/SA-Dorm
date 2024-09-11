@@ -38,106 +38,114 @@ type CombinedData = ReservationInterface & StudentInterface & RepairInterface & 
 
 const myId = localStorage.getItem("id");
 
-interface DataType {
-  ID: number;
-  Subject: string;
-  Detail: string;
-  Image: string;
-  Location_Details: string;
-  Contact: string;
-  Time_Slot: string;
-  Remarks: string;
-  Status: string;
-  AdminID: string;
-  ReservationID: string;
-}
+export default function RepairCreate() {
 
-const columns: ColumnsType<RepairInterface> = [
-  {
-    title: "",
-    render: (record) => (
-      <>
-        {myId == record?.ID ? (
-          <></>
-        ) : (
-          <Button
-            type="primary"
-            htmlType="submit"
-            icon={<PlusOutlined />}
-            onClick={() => CreateRepair(record.ID)}
-          >
-            ยืนยัน
-          </Button>
-        )}
-      </>
-    ),
-  },
-  {
-    title: "ลำดับ",
-    dataIndex: "ID",
-    key: "id",
-  },
-  {
-    title: "หัวข้อการขอรับบริการ",
-    dataIndex: "Subject",
-    key: "subject",
-  },
-  {
-    title: "รายละเอียดการขอรับบริการ",
-    dataIndex: "Detail",
-    key: "detail",
-  },
-  {
-    title: "ภาพประกอบ",
-    dataIndex: "Image",
-    key: "image",
-    width: "15%",
-    render: (text, record, index) => (
-      <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
-    )
-  },
-  {
-    title: "รายละเอียดสถานที่รับบริการ",
-    dataIndex: "Location_Details",
-    key: "location_details",
-  },
-  {
-    title: "ช่องทางติดต่อ",
-    dataIndex: "Contact",
-    key: "contact",
-  },
-  {
-    title: "ช่วงเวลาที่รับบริการ",
-    dataIndex: "Time_Slot",
-    key: "time_slot",
-  },
-  {
-    title: "หมายเหตุ",
-    dataIndex: "Remarks",
-    key: "remarks",
-  },
-  {
-    title: "สถานะ",
-    dataIndex: "Status",
-    key: "status",
-  },
-  {
-    title: "รหัสแอดมิน",
-    dataIndex: "AdminID",
-    key: "adminid",
-  },
-  {
-    title: "รหัสการจอง",
-    dataIndex: "ReservationID",
-    key: "reservationid",
-  },
-  {
-    title: "",
-    render: (record) => (
-      <>
-        {myId === record?.ID ? (
-          <></> // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
-        ) : (
+  interface DataType {
+    ID: number;
+    Subject: string;
+    Detail: string;
+    Image: string;
+    Location_Details: string;
+    Contact: string;
+    Time_Slot: string;
+    Remarks: string;
+    Status: string;
+    AdminID: string;
+    ReservationID: string;
+  }
+
+  const columns: ColumnsType<RepairInterface> = [
+    {
+      title: "",
+      render: (record) => (
+        <>
+          {myId == record?.ID ? (
+            <></>
+          ) : (
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<PlusOutlined />}
+              onClick={() => CreateRepair(record.ID)}
+            >
+              ยืนยัน
+            </Button>
+          )}
+        </>
+      ),
+    },
+    {
+      title: "ลำดับ",
+      dataIndex: "ID",
+      key: "id",
+    },
+    {
+      title: "หัวข้อการขอรับบริการ",
+      dataIndex: "Subject",
+      key: "subject",
+    },
+    {
+      title: "รายละเอียดการขอรับบริการ",
+      dataIndex: "Detail",
+      key: "detail",
+    },
+    {
+      title: "ภาพประกอบ",
+      dataIndex: "Image",
+      key: "image",
+      width: "15%",
+      render: (text, record, index) => (
+        <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
+      )
+    },
+    {
+      title: "รายละเอียดสถานที่รับบริการ",
+      dataIndex: "Location_Details",
+      key: "location_details",
+    },
+    {
+      title: "ช่องทางติดต่อ",
+      dataIndex: "Contact",
+      key: "contact",
+    },
+    {
+      title: "ช่วงเวลาที่รับบริการ",
+      dataIndex: "Time_Slot",
+      key: "time_slot",
+    },
+    {
+      title: "หมายเหตุ",
+      dataIndex: "Remarks",
+      key: "remarks",
+    },
+    {
+      title: "สถานะ",
+      dataIndex: "Status",
+      key: "status",
+    },
+    {
+      title: "รหัสแอดมิน",
+      dataIndex: "AdminID",
+      key: "adminid",
+    },
+    {
+      title: "รหัสการจอง",
+      dataIndex: "ReservationID",
+      key: "reservationid",
+    },
+    {
+      title: "",
+      render: (record) => (
+        <>
+          {myId === record?.ID ? (
+
+            messageApi.open({
+              type: "error",
+              content: "Student ID on finish is not found.",
+            })
+
+          // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
+          ) : (
           <Button
             type="primary"
             htmlType="submit"
@@ -146,15 +154,13 @@ const columns: ColumnsType<RepairInterface> = [
           >
             ยืนยัน
           </Button>
-        )}
-      </>
-    )
-  },
-];
+          )}
+        </>
+      )
+    },
+  ];
 
-const data: DataType[] = [];
-
-export default function RepairCreate() {
+  const data: DataType[] = [];
 
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
@@ -215,7 +221,7 @@ export default function RepairCreate() {
 
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0]?.thumbUrl || "";
-    
+
     const studentId = localStorage.getItem("id");
     if (studentId) {
       getRepairing(studentId);  // Fetch repair data using studentId
@@ -243,7 +249,7 @@ export default function RepairCreate() {
       });
     }
   };
-  
+
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
