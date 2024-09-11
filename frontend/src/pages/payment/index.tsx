@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { UploadOutlined } from '@ant-design/icons';
-import { Button, Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps, TableProps, GetProp } from 'antd';
+import { PlusOutlined,UploadOutlined } from '@ant-design/icons';
+import { Button, Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps, TableProps, GetProp, DatePicker } from 'antd';
 import Barcode from 'react-barcode'; // นำเข้า Barcode
 import { SlipInterface } from "../../interfaces/Slip";
-import { CreateSlip } from "./../../services/https";
+import { CreateSlip, fetchExpenses } from "./../../services/https";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+const formattedDate = "2024-09-11"; // ตัวอย่างวันที่ในรูปแบบ string
+const date = new Date(formattedDate); // แปลงเป็น Date
 
 const Index: React.FC = () => {
   const [form] = Form.useForm();
@@ -15,53 +18,21 @@ const Index: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [slip, setSlip] = useState<SlipInterface>();
-  const [messageApi, contextHolder] = message.useMessage();
+  const [expenses, setExpenses] = useState<ExpenseInterface[]>([]);
+  const [messageApi] = message.useMessage();
   const navigate = useNavigate();
   
-  const showModal = () => setIsModalOpen(true);
-  const handleOk = () => setIsModalOpen(false);
-  
-  const props: UploadProps = {
-    name: 'file',
-    action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-    headers: { authorization: 'authorization-text' },
-    onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
+    useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const expenseData = await fetchExpenses();
+        setExpenses(expenseData);
+      } catch (error) {
+        console.error('Error fetching expenses:', error);
       }
-      if (info.file.status === 'done') {
-        message.success(`${info.file.name} file uploaded successfully`);
-      } else if (info.file.status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-  };
-
-  interface DataType {
-    date: string;
-    list: string;
-    amount: string;
-    remark: string;
-  }
-
-  const columns: TableProps<DataType>['columns'] = [
-    { title: 'วันที่', dataIndex: 'date', key: 'date' },
-    { title: 'รายการ', dataIndex: 'list', key: 'list' },
-    { title: 'จำนวน', dataIndex: 'amount', key: 'amount' },
-    { title: 'หมายเหตุ', key: 'remark' },
-  ];
-
-  const data: DataType[] = [
-    { date: '02-05-65', list: 'ค่าหอพัก', amount: "2900.00", remark: '' },
-    { date: '02-05-65', list: 'ค่าไฟฟ้า', amount: "165.00", remark: '' },
-    { date: '02-05-65', list: 'ค่าน้ำ', amount: "100.00", remark: '' },
-  ];
-
-  useEffect(() => {
-    const total = data.reduce((sum, record) => sum + parseFloat(record.amount || '0'), 0);
-    setTotalAmount(total);
-  }, [data]);
+    };
+    fetchData();
+  }, []);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -81,29 +52,81 @@ const Index: React.FC = () => {
     const imgWindow = window.open(src);
     imgWindow?.document.write(image.outerHTML);
   };
+  
+const onFinish = async (values: SlipInterface) => {
+  if (fileList.length === 0) {
+    messageApi.open({
+      type: "error",
+      content: "กรุณาอัพโหลดไฟล์ก่อน",
+    });
+    return;
+  }
+  
+  values.Path = fileList[0].thumbUrl;
 
-  const onFinish = async (values: SlipInterface) => {
-    console.log('Values to be sent:', values); // ตรวจสอบข้อมูลที่ส่งไป
-    values.Path = fileList[0]?.thumbUrl;
-    values.ID = slip?.ID;
-  
-    let res = await CreateSlip(values);
-    console.log('Response from API:', res); // ตรวจสอบการตอบสนองจาก API
-  
+  try {
+    const res = await CreateSlip(values);
+
     if (res) {
-      messageApi.open({ 
-        type: "success", 
-        content: "บันทึกข้อมูลสำเร็จ",
+      messageApi.open({
+        type: "success",
+        content: "อัพโหลดรูปภาพสำเร็จ",
       });
-      setTimeout(() => navigate("/slip"), 2000);
+      setTimeout(() => {
+        navigate("/slip");
+      }, 2000);
     } else {
-      messageApi.open({ 
-        type: "error", 
-        content: "เกิดข้อผิดพลาด !",
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ!",
       });
     }
-  };
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ:", error);
+    messageApi.open({
+      type: "error",
+      content: "เกิดข้อผิดพลาดในการเชื่อมต่อ!",
+    });
+  }
+};
+
   
+
+  const showModal = () => setIsModalOpen(true);
+  const handleOk = () => setIsModalOpen(false);
+ 
+  interface ExpenseInterface {
+    RentID?: number;
+    ElectricityID?: number;
+    WaterID?: number;
+  }
+
+  interface DataType {
+    date: Date;
+    list: string;
+    amount: number;
+    remark: string;
+  }
+
+  const columns: TableProps<DataType>['columns'] = [
+    { title: 'วันที่', dataIndex: 'date', key: 'date',render: (date: Date) => date.toLocaleDateString(), }, 
+    { title: 'รายการ', dataIndex: 'list', key: 'list' },
+    { title: 'จำนวน', dataIndex: 'amount', key: 'amount' },
+    { title: 'หมายเหตุ', key: 'remark' }, 
+  ];
+
+  const [expense] = expenses;
+
+  const data: DataType[] = [
+    { date: new Date(), list: 'ค่าหอพัก', amount: 199, remark: '' }, //expense.RentID ?? 0, remark: '' },
+    { date: new Date(), list: 'ค่าไฟฟ้า', amount: 23 , remark: '' }, //expense.ElectricityID ?? 0, remark: '' },
+    { date: new Date(), list: 'ค่าน้ำ', amount:10 , remark: '' },//expense.WaterID ?? 0, remark: '' },
+  ];
+
+  useEffect(() => {
+    const total = data.reduce((sum, record) => sum + record.amount, 0);
+    setTotalAmount(total);
+  }, [data]);
 
   const handleSubmit = () => {
     form.submit(); // Use form.submit() to trigger form submission
@@ -153,24 +176,23 @@ const Index: React.FC = () => {
       </Modal>  
       <div className='text-container'>
         <div className='text-7'>
-          <Form
-            name="basic"
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-          >
             <Upload
+              fileList={fileList}
               onChange={onChange}
               onPreview={onPreview}
-              beforeUpload={() => true} // อัพโหลดอัตโนมัติ
+              beforeUpload={(file) => {
+                setFileList([...fileList, file]);
+                return false; // Prevent automatic upload
+              }}
               maxCount={1}
               multiple={false}
-              listType="picture"
+              listType="picture-card"
             >
-              <Button icon={<UploadOutlined />}>Upload หลักฐานการชำระเงินที่นี่</Button>
-            </Upload>
-          </Form>
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>อัพโหลด</div>
+              </div>
+            </Upload> 
         </div>
       </div>
     </>

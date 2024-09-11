@@ -11,6 +11,8 @@ import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import axios from "axios";
+import { ExpenseInterface } from '../../interfaces/Expense'; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
+
 
 const apiUrl = "http://localhost:8000";
 
@@ -370,6 +372,19 @@ async function UpdateSlip(data: SlipInterface) {
     return false;
   }
 }
+async function fetchExpenses(): Promise<ExpenseInterface[]> {
+  try {
+    const response = await fetch('/api/expenses');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data: ExpenseInterface[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch expenses:', error);
+    return []; // คืนค่าเป็นอาร์เรย์เปล่าหากเกิดข้อผิดพลาด
+  }
+}
 
 
 export {
@@ -413,4 +428,5 @@ export {
   GetSlip,
   GetListSlips,
   UpdateSlip,
+  fetchExpenses,
 };

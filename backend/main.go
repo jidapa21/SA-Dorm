@@ -92,7 +92,7 @@ func main() {
 
 		//Slip Routes
 		router.POST("/slip", controller.CreateSlip)
-		router.PATCH("/slip", controller.UpdateSlip)
+		router.PATCH("/slip/:id", controller.UpdateSlip)
 		
 	}
 

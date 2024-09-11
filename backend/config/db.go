@@ -113,15 +113,6 @@ func SetupDatabase() {
 		}
 	}
 
-	/*
-		Status1 := entity.Repairing{Status: "รอดำเนินการ"}
-		Status2 := entity.Repairing{Status: "กำลังดำเนินการ"}
-		Status3 := entity.Repairing{Status: "เสร็จสิ้น"}
-		db.FirstOrCreate(&Status1, &entity.Repairing{Status: "รอดำเนินการ"})
-		db.FirstOrCreate(&Status2, &entity.Repairing{Status: "กำลังดำเนินการ"})
-		db.FirstOrCreate(&Status3, &entity.Repairing{Status: "เสร็จสิ้น"})
-	*/
-
 	// Seed ข้อมูล student
 	studentHashedPassword, _ := HashPassword("1234567890123")
 	Birthday, _ := time.Parse("2006-01-02", "1988-11-12")
@@ -228,4 +219,34 @@ expense1 := entity.Expense{
     ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
 }
 db.FirstOrCreate(&expense1, entity.Expense{Remark: " "})
+
+func SeedSlip(db *gorm.DB) {
+	// หา Expense ที่จะเชื่อมโยงกับ Slip
+	var expense entity.Expense
+	db.First(&expense, 1) // ใช้ ID ของ Expense ที่ต้องการ หรือดึงมาโดยใช้ query
+
+	// หา Admin ที่จะเชื่อมโยงกับ Slip
+	var admin entity.Admins
+	db.First(&admin, 1) // ใช้ ID ของ Admin ที่ต้องการ หรือดึงมาโดยใช้ query
+
+	// สร้างข้อมูล Slip
+	slip1 := entity.Slip{
+		Path:      "uploads/slips/slip1.png", // กำหนด path ของ slip
+		Date:      time.Now(),               // วันเวลาที่สร้าง slip
+		AdminID:   admin.ID,                 // เชื่อมโยงกับ Admin
+		ExpenseID: expense.ID,               // เชื่อมโยงกับ Expense
+	}
+
+	// Insert ข้อมูล Slip ถ้าไม่ซ้ำ
+	db.FirstOrCreate(&slip1, entity.Slip{Path: "uploads/slips/slip1.png"})
+
+	// เพิ่ม Slip เพิ่มเติมตามต้องการ
+	slip2 := entity.Slip{
+		Path:      "uploads/slips/slip2.png",
+		Date:      time.Now(),
+		AdminID:   admin.ID,  // ใช้ admin เดิม
+		ExpenseID: expense.ID, // ใช้ expense เดิม หรือเปลี่ยนเป็น Expense อื่น
+	}
+	db.FirstOrCreate(&slip2, entity.Slip{Path: "uploads/slips/slip2.png"})
+	}
 }
