@@ -1,71 +1,103 @@
-import React from 'react';
-import { Card, Form, Input, Divider, Row, Col } from "antd";
+import React, { useState, useEffect } from 'react';
+import { Card, Form, Input, Divider, Spin, Alert } from "antd";
+import { GetDelayedPaymentForm } from '../../../../services/https'; // Import your API functions
+import { DelayedPaymentFormInterface } from "../../../../interfaces/delayedpaymentform";
+import dayjs from 'dayjs'; // Import dayjs for date formatting
 
-const ReadRequestDelayingPayment: React.FC = () => {
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString();
+const ReadDelayingPayment: React.FC<{ ID: string }> = ({ ID }) => {
+  const [formValues, setFormValues] = useState<DelayedPaymentFormInterface | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const formValues = {
-    dorm_payment: "1000 บาท",
-    electricly_bill: "500 บาท",
-    water_bill: "300 บาท",
-    because_of: "ต้องการผ่อนผันเนื่องจากเหตุผลทางการเงิน",
-    due_date: formattedDate // สมมุติข้อมูลวันครบกำหนด
-  };
+  useEffect(() => {
+    const fetchDelayedPaymentForm = async () => {
+      setLoading(true);
+      try {
+        const response = await GetDelayedPaymentForm(ID);
+        if (response) {
+          setFormValues(response);
+        } else {
+          setError('Failed to fetch payment form details.');
+        }
+      } catch (e) {
+        setError('An error occurred while fetching payment form details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDelayedPaymentForm();
+  }, [ID]);
+
+  const formattedDate = formValues && formValues.Due_Date ? dayjs(formValues.Due_Date).format('DD/MM/YYYY') : '';
 
   return (
     <div className="container">
       <Card title="แบบฟอร์มขอผ่อนผันการชำระ" bordered={false} style={{ width: '100%' }}>
         <div className="form-header">
           <p>ผู้ทำเรื่อง: B191563 มนัสเต สวัสดิกะ</p>
-          <p>วันที่ปัจจุบัน: {formattedDate}</p>
+          <p>วันที่ปัจจุบัน: {dayjs().format('DD/MM/YYYY')}</p>
         </div>
         
         <Divider />
 
-        <Form
-          name="delaying-payment-form"
-          layout="vertical"
-          initialValues={formValues}
-        >
-          <Form.Item
-            label="ค่าหอพัก"
-            name="dorm_payment"
+        {loading ? (
+          <Spin tip="Loading...">
+            <div style={{ minHeight: '200px' }}></div>
+          </Spin>
+        ) : error ? (
+          <Alert message="Error" description={error} type="error" />
+        ) : (
+          <Form
+            name="delaying-payment-form"
+            layout="vertical"
+            initialValues={{
+              dorm_payment: formValues?.Dorm_Payment,
+              electricly_bill: formValues?.Electricly_Bill,
+              water_bill: formValues?.Water_Bill,
+              because_of: formValues?.Because_Of,
+              due_date: formattedDate,
+            }}
           >
-            <Input readOnly />
-          </Form.Item>
+            <Form.Item
+              label="ค่าหอพัก"
+              name="dorm_payment"
+            >
+              <Input readOnly />
+            </Form.Item>
 
-          <Form.Item
-            label="ค่าไฟฟ้า"
-            name="electricly_bill"
-          >
-            <Input readOnly />
-          </Form.Item>
+            <Form.Item
+              label="ค่าไฟฟ้า"
+              name="electricly_bill"
+            >
+              <Input readOnly />
+            </Form.Item>
 
-          <Form.Item
-            label="ค่าน้ำ"
-            name="water_bill"
-          >
-            <Input readOnly />
-          </Form.Item>
+            <Form.Item
+              label="ค่าน้ำ"
+              name="water_bill"
+            >
+              <Input readOnly />
+            </Form.Item>
 
-          <Form.Item
-            label="เนื่องจาก"
-            name="because_of"
-          >
-            <Input.TextArea readOnly />
-          </Form.Item>
+            <Form.Item
+              label="เนื่องจาก"
+              name="because_of"
+            >
+              <Input.TextArea readOnly />
+            </Form.Item>
 
-          <Form.Item
-            label="ชำระภายในวันที่"
-            name="due_date"
-          >
-            <Input readOnly />
-          </Form.Item>
-        </Form>
+            <Form.Item
+              label="ชำระภายในวันที่"
+              name="due_date"
+            >
+              <Input readOnly />
+            </Form.Item>
+          </Form>
+        )}
       </Card>
     </div>
   );
 };
 
-export default ReadRequestDelayingPayment;
+export default ReadDelayingPayment;

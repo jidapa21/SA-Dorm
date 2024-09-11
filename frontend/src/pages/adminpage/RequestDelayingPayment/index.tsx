@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
-import { Button, Table, Select } from 'antd';
-import ReadRepairing from './ReadRequestDelayingPayment/index';
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Typography, Card } from 'antd';
+import ReadDelayingPayment from './ReadRequestDelayingPayment/index';
+import { ListDelayedPaymentForms } from '../../../services/https';
+import { DelayedPaymentFormInterface } from "../../../interfaces/delayedpaymentform";
 
-const { Option } = Select;
+const { Title } = Typography;
 
-interface RecordType {
+interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface {
   key: string;
   date: string;
 }
 
 const DelayingPayment: React.FC = () => {
+  const [repairs, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRepairs = async () => {
+      try {
+        const data = await ListDelayedPaymentForms();
+        if (data) {
+          const transformedData = data.map((item: DelayedPaymentFormInterface, index: number) => ({
+            ...item,
+            key: item.ID?.toString() || index.toString(),
+            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
+          }));
+          setRepairs(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching repairs:', error);
+      }
+    };
+
+    fetchRepairs();
+  }, []);
+
+  const handleDetailsClick = (ID: string) => {
+    setSelectedKey(ID);
+  };
+
+  const handleBackClick = () => {
+    setSelectedKey(null);
+  };
 
   const columns = [
     {
@@ -20,35 +51,20 @@ const DelayingPayment: React.FC = () => {
           dataIndex: 'date',
           key: 'date',
           render: (text: string) => (
-            <div style={{ textAlign: 'center' }}>{text}</div> 
+            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
           ),
         },
         {
           key: 'details',
-          render: (_: any, record: RecordType) => (
+          render: (_: any, record: TableRequestDelayingPaymentRecord) => (
             <div style={{ textAlign: 'center' }}>
               <Button
-                type="link"
+                type="primary"
                 onClick={() => handleDetailsClick(record.key)}
+                style={{ marginTop: '8px' }}
               >
                 ดูรายละเอียด
               </Button>
-            </div>
-          ),
-        },
-        {
-          key: 'update',
-          render: (_: any, record: RecordType) => (
-            <div style={{ textAlign: 'center' }}>
-              <Select
-                defaultValue="อัพเดทสถานะ"
-                style={{ width: 120 }}
-                onChange={(value) => handleUpdateStatus(record.key, value)}
-              >
-                <Option value="pending">Pending</Option>
-                <Option value="inProgress">In Progress</Option>
-                <Option value="completed">Completed</Option>
-              </Select>
             </div>
           ),
         },
@@ -56,88 +72,61 @@ const DelayingPayment: React.FC = () => {
     },
   ];
 
-  const data: RecordType[] = [
-    {
-      key: '1',
-      date: '2024-08-01',
-    },
-    {
-      key: '2',
-      date: '2024-08-02',
-    },
-    {
-      key: '3',
-      date: '2024-08-03',
-    },
-  ];
-
-  const handleDetailsClick = (key: string) => {
-    setSelectedKey(key); 
-  };
-
-  const handleUpdateStatus = (key: string, status: string) => {
-    console.log(`อัพเดทสถานะ ${status} สำหรับ:`, key);
-  };
-
-  const handleBackClick = () => {
-    setSelectedKey(null); 
-  };
-
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
       <div
         style={{
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
           marginBottom: '20px',
-          position: 'relative',
         }}
       >
-        <span
-          style={{
-            fontSize: '25px',
-            position: 'relative',
-            paddingBottom: '10px',
-          }}
-        >
+        <Title level={2} style={{ margin: 0, color: '#333' }}>
           รายการแจ้งซ่อม
-        </span>
+        </Title>
         <div
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderBottom: '3px solid #000',
+            width: '100%',
+            maxWidth: '600px',
+            height: '3px',
+            backgroundColor: '#1890ff',
+            marginTop: '5px',
+            borderRadius: '2px',
           }}
         />
       </div>
       {selectedKey ? (
         <div>
           <Button
-            type="primary"
+            type="default"
             onClick={handleBackClick}
-            style={{ marginBottom: '16px' }}
+            style={{ marginBottom: '16px', borderColor: '#d9d9d9', color: '#1890ff' }}
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadRepairing key={selectedKey} /> 
+          <ReadDelayingPayment ID={selectedKey} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-            bordered
-            showHeader={false} 
-            style={{ maxWidth: '1100px', width: '100%' }}
-          />
+          <Card
+            bordered={true}
+            style={{ width: '100%', maxWidth: '1100px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
+          >
+            <Table
+              columns={columns}
+              dataSource={repairs}
+              pagination={false}
+              bordered
+              showHeader={false}
+              style={{ backgroundColor: '#FFFFFF' }}
+            />
+          </Card>
         </div>
       )}
     </div>
   );
 };
 
-export default Repairing;
+export default DelayingPayment;

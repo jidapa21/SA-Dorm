@@ -101,6 +101,13 @@ func UpdateRepair(c *gin.Context) {
 
     db := config.DB()
 
+    // ดึง adminID จาก context
+    adminID, exists := c.Get("admin_id")
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found in context"})
+        return
+    }
+
     // Find the existing repair record
     var existingRepair entity.Repairing
     result := db.First(&existingRepair, id)
@@ -116,7 +123,10 @@ func UpdateRepair(c *gin.Context) {
     }
 
     // Update only the 'Status' field
-    if err := db.Model(&existingRepair).Update("Status", payload.Status).Error; err != nil {
+    if err := db.Model(&existingRepair).Updates(map[string]interface{}{
+        "Status":   payload.Status,
+        "AdminID":  adminID, // บันทึก adminID ที่อัปเดตสถานะ
+    }).Error; err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
         return
     }

@@ -11,6 +11,6 @@ type Announcement struct {
 	Title   string    `json:"title"`
 	Content string    `json:"content"`
 	Date    time.Time `json:"date"`
-	AdminID uint      `json:"admin_id"`           // บันทึก ID ของผู้ที่สร้าง
-	Admin   Admins    `gorm:"foreignKey:AdminID"` // foreign key ของ Admin
+	AdminID uint      `json:"admin_id"`
+	Admin   *Admins   `gorm:"foreignKey:AdminID"`
 }

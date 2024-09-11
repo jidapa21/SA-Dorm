@@ -3,6 +3,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"dormitory.com/dormitory/entity"
@@ -41,7 +42,7 @@ func SetupDatabase() {
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
-	
+
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
@@ -138,94 +139,108 @@ func SetupDatabase() {
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
-    reservation := &entity.Reservation{
-        ReservationDate: ReservationDate,
-        StudentID:       User.ID,
-        DormID:          4,
-        RoomID:          100,
-    }
-    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
+	reservation := &entity.Reservation{
+		ReservationDate: ReservationDate,
+		StudentID:       User.ID,
+		DormID:          4,
+		RoomID:          100,
+	}
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
-	adminhashedPassword, _ := HashPassword("Ad01")
-	AdminUser := &entity.Admins{
+	adminHashedPassword1, err := HashPassword("Ad01")
+	if err != nil {
+		log.Fatalf("Error hashing password: %v", err)
+	}
+	AdminUser1 := &entity.Admins{
 		Username:  "jetnipat",
-		FirstName: "Jetnipat ",
-		LastName:  "kunjai",
+		FirstName: "Jetnipat",
+		LastName:  "Kunjai",
 		Phone:     "061xxxxxxx",
-		Password:  adminhashedPassword,
+		Password:  adminHashedPassword1,
 	}
 
-	db.FirstOrCreate(AdminUser, &entity.Admins{
-		Username: "jetnipat",
-	})
+	db.FirstOrCreate(&AdminUser1, entity.Admins{Username: "jetnipat"})
+
+	adminHashedPassword2, err := HashPassword("147")
+	if err != nil {
+		log.Fatalf("Error hashing password: %v", err)
+	}
+	AdminUser2 := &entity.Admins{
+		Username:  "Jetsadaphon",
+		FirstName: "Jetsadaphon",
+		LastName:  "Pinjai",
+		Phone:     "061xxxxxxx",
+		Password:  adminHashedPassword2,
+	}
+
+	db.FirstOrCreate(&AdminUser2, entity.Admins{Username: "Jetsadaphon"})
 
 	repairing := &entity.Repairing{
-		ID: 				1,
-        Subject:          	"อ่างล้างมือตัน",
-        Detail:           	"ทำเศษอาหารตก",
-        Image:            	"yes",
-        Location_Details: 	"ห้องน้ำชั้น 1 หอ 4",
-        Contact:          	"097-153-1219",
-        Time_Slot:        	"09:00-16:00 น.",
-        Status:           	"รอดำเนินการ",
-		ReservationID:    	reservation.ID,
-        AdminID:          	1,
-    }
-    db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
-
+		ID:               1,
+		Subject:          "อ่างล้างมือตัน",
+		Detail:           "ทำเศษอาหารตก",
+		Image:            "yes",
+		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
+		Contact:          "097-153-1219",
+		Time_Slot:        "09:00-16:00 น.",
+		Status:           "รอดำเนินการ",
+		ReservationID:    reservation.ID,
+		AdminID:          1,
+	}
+	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
-var reservations []entity.Reservation
-db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
+	var reservations []entity.Reservation
+	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
 
-var rentFee1 entity.RentFee
-for _, reservation := range reservations {
-    var amount float64
+	var rentFee1 entity.RentFee
+	for _, reservation := range reservations {
+		var amount float64
 
-    // ตรวจสอบประเภทของ Dorm ผ่าน Reservation
-    switch reservation.Dorm.Type {
-    case "หอพักชาย 1", "หอพักหญิง 3":
-        amount = 6500.00
-    case "หอพักชาย 2", "หอพักหญิง 4":
-        amount = 2900.00
-    }
+		// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
+		switch reservation.Dorm.Type {
+		case "หอพักชาย 1", "หอพักหญิง 3":
+			amount = 6500.00
+		case "หอพักชาย 2", "หอพักหญิง 4":
+			amount = 2900.00
+		}
 
-    // สร้างข้อมูล RentFee
-    rentFee1 = entity.RentFee{
-        Amount:        amount, 
-        ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
-    }
+		// สร้างข้อมูล RentFee
+		rentFee1 = entity.RentFee{
+			Amount:        amount,
+			ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
+		}
 
-    // ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
-    db.Where("reservation_id = ?", reservation.ID).FirstOrCreate(&rentFee1)
-}
+		// ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
+		db.Where("reservation_id = ?", reservation.ID).FirstOrCreate(&rentFee1)
+	}
 
-// Seed ข้อมูล WaterFee
-var waterFee1 entity.WaterFee
-waterFee1 = entity.WaterFee{Amount: 100.00}
-db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
+	// Seed ข้อมูล WaterFee
+	var waterFee1 entity.WaterFee
+	waterFee1 = entity.WaterFee{Amount: 100.00}
+	db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
 
-// Seed ข้อมูล ElectricityFee
-var electricityFee1 entity.ElectricityFee
-electricityFee1 = entity.ElectricityFee{Amount: 150.00}
+	// Seed ข้อมูล ElectricityFee
+	var electricityFee1 entity.ElectricityFee
+	electricityFee1 = entity.ElectricityFee{Amount: 150.00}
 
-// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
-result := db.Where("amount = ?", electricityFee1.Amount).FirstOrCreate(&electricityFee1)
+	// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
+	result := db.Where("amount = ?", electricityFee1.Amount).FirstOrCreate(&electricityFee1)
 
-// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
-if result.RowsAffected > 0 {
-    // อัพเดตข้อมูลที่มีอยู่
-    db.Model(&electricityFee1).Updates(entity.ElectricityFee{Amount: 150.00})
-}
+	// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
+	if result.RowsAffected > 0 {
+		// อัพเดตข้อมูลที่มีอยู่
+		db.Model(&electricityFee1).Updates(entity.ElectricityFee{Amount: 150.00})
+	}
 
-// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
-expense1 := entity.Expense{
-    Remark:           "ค่าใช้จ่ายสำหรับเดือนนี้",
-    Status:           "Pending",
-    RentFeeID:        rentFee1.ID,          // เชื่อมโยง RentFee
-    WaterFeeID:       waterFee1.ID,         // เชื่อมโยง WaterFee
-    ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
-}
-db.FirstOrCreate(&expense1, entity.Expense{Remark: "ค่าใช้จ่ายสำหรับเดือนนี้"})
+	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
+	expense1 := entity.Expense{
+		Remark:           "ค่าใช้จ่ายสำหรับเดือนนี้",
+		Status:           "Pending",
+		RentFeeID:        rentFee1.ID,        // เชื่อมโยง RentFee
+		WaterFeeID:       waterFee1.ID,       // เชื่อมโยง WaterFee
+		ElectricityFeeID: electricityFee1.ID, // เชื่อมโยง ElectricityFee
+	}
+	db.FirstOrCreate(&expense1, entity.Expense{Remark: "ค่าใช้จ่ายสำหรับเดือนนี้"})
 }

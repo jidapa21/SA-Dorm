@@ -23,7 +23,7 @@ const Repairing: React.FC = () => {
           const transformedData = data.map((item: RepairInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
+            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
           setRepairs(transformedData);
         }

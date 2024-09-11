@@ -215,10 +215,10 @@ async function CreateRepair(data: RepairInterface) {
   
   async function UpdateRepair(id: string, data: Partial<RepairInterface>) {
     return await axios
-      .put(`${apiUrl}/repair-update/${id}`, data, requestOptions) // Ensure PUT is used
+      .put(`${apiUrl}/repair-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
       .then((res) => res)
       .catch((e) => e.response);
-  }
+}
   
 //---------------------   DelayedPaymentForm ---------------------------------
 async function DelayedPaymentFormUI(data: RepairInterface) {
