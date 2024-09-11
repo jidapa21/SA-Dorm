@@ -160,19 +160,34 @@ func SetupDatabase() {
 		Username: "jetnipat",
 	})
 
-	repairing := &entity.Repairing{
-		ID: 				1,
-        Subject:          	"อ่างล้างมือตัน",
-        Detail:           	"ทำเศษอาหารตก",
-        Image:            	"yes",
-        Location_Details: 	"ห้องน้ำชั้น 1 หอ 4",
-        Contact:          	"097-153-1219",
-        Time_Slot:        	"09:00-16:00 น.",
-        Status:           	"รอดำเนินการ",
-		ReservationID:    	reservation.ID,
-        AdminID:          	1,
-    }
-    db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
+	// ข้อมูลสำหรับ repairing1
+repairing1 := &entity.Repairing{
+	ID:                1,
+	Subject:           "อ่างล้างมือตันจ้า",
+	Detail:            "ทำเศษอาหารตก",
+	Image:             "yes",
+	Location_Details:  "ห้องน้ำชั้น 1 หอ 4",
+	Contact:           "097-153-1219",
+	Time_Slot:         "09:00-16:00 น.",
+	Status:            "รอดำเนินการ",
+	ReservationID:     reservation.ID,
+}
+db.FirstOrCreate(&repairing1, entity.Repairing{ID: 1})
+
+// ข้อมูลสำหรับ repairing2 (ที่แตกต่างจาก repairing1)
+repairing2 := &entity.Repairing{
+	ID:                2,
+	Subject:           "ปัญหาไฟฟ้าขัดข้อง",
+	Detail:            "ไฟฟ้าดับในห้องน้ำ",
+	Image:             "no",
+	Location_Details:  "ห้องน้ำชั้น 2 หอ 3",
+	Contact:           "097-153-1220",
+	Time_Slot:         "10:00-17:00 น.",
+	Status:            "กำลังดำเนินการ",
+	ReservationID:     reservation.ID,
+}
+db.FirstOrCreate(&repairing2, entity.Repairing{ID: 2})
+
 
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง

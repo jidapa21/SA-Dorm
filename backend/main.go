@@ -70,8 +70,9 @@ func main() {
 		// Repairing Route
 		router.POST("/repair", repairing.CreateRepair)
 		router.GET("/repair/:id", repairing.GetRepair)
-		router.GET("/repair", repairing.GetListRepairs)
-		router.PUT("/repair", repairing.UpdateRepair)
+		router.GET("/repair-getlist", repairing.GetListRepairs)
+		router.PUT("/repair-update/:id", repairing.UpdateRepair) 
+
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)
