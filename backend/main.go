@@ -18,7 +18,7 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/slip"
+	//"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,9 @@ func main() {
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
 		
-		// Repairing Route
+		// Repairing Route GetIDByStudentID
+		//router.POST("/get-id-student", repairing.GetIDByStudentID)
+
 		router.POST("/creat-repair", repairing.CreateRepair)
 		router.GET("/get-repair/:id", repairing.GetRepair)
 		router.GET("/grt-list-repair", repairing.GetListRepairs)
@@ -91,8 +93,8 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		router.POST("/slip", controller.CreateSlip)
-		router.PATCH("/slip", controller.UpdateSlip)
+		//router.POST("/slip", slip.CreateSlip)
+		//router.PATCH("/slip", slip.UpdateSlip)
 		
 	}
 

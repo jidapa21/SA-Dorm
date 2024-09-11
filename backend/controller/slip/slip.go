@@ -1,12 +1,13 @@
 package slip
 import (
+	/*
 	"net/http"
 
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
-	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"*/
 )
-
+/*
 // POST /users
 func CreateSlip(c *gin.Context) {
 	var slip entity.Slip
@@ -20,7 +21,7 @@ func CreateSlip(c *gin.Context) {
 
 	// ค้นหา reservation ด้วย id
 	var reservation entity.Reservation
-	db.First(&reservation, repairing.ReservationID)
+	db.First(&reservation, slip.ReservationID)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
 		return
@@ -127,4 +128,4 @@ func UpdateSlip(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
-}
+}*/

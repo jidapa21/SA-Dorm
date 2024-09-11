@@ -29,78 +29,164 @@ import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-import { GetStudentsById, CreateRepair } from "./../../services/https";
+import { GetStudentsById, CreateRepair, GetIDByStudentID } from "./../../services/https";
 import "./../repair/index.css";
 import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface;
 
+const myId = localStorage.getItem("id");
+
+interface DataType {
+  ID: number;
+  Subject: string;
+  Detail: string;
+  Image: string;
+  Location_Details: string;
+  Contact: string;
+  Time_Slot: string;
+  Remarks: string;
+  Status: string;
+  AdminID: string;
+  ReservationID: string;
+}
+
+const columns: ColumnsType<RepairInterface> = [
+  {
+    title: "",
+    render: (record) => (
+      <>
+        {myId == record?.ID ? (
+          <></>
+        ) : (
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<PlusOutlined />}
+            onClick={() => GetIDByStudentID(record.ID)}
+          >
+            ยืนยัน
+          </Button>
+        )}
+      </>
+    ),
+  },
+  {
+    title: "ลำดับ",
+    dataIndex: "ID",
+    key: "id",
+  },
+  {
+    title: "หัวข้อการขอรับบริการ",
+    dataIndex: "Subject",
+    key: "subject",
+  },
+  {
+    title: "รายละเอียดการขอรับบริการ",
+    dataIndex: "Detail",
+    key: "detail",
+  },
+  {
+    title: "ภาพประกอบ",
+    dataIndex: "Image",
+    key: "image",
+    width: "15%",
+    render: (text, record, index) => (
+      <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
+    )
+  },
+  {
+    title: "รายละเอียดสถานที่รับบริการ",
+    dataIndex: "Location_Details",
+    key: "location_details",
+  },
+  {
+    title: "ช่องทางติดต่อ",
+    dataIndex: "Contact",
+    key: "contact",
+  },
+  {
+    title: "ช่วงเวลาที่รับบริการ",
+    dataIndex: "Time_Slot",
+    key: "time_slot",
+  },
+  {
+    title: "หมายเหตุ",
+    dataIndex: "Remarks",
+    key: "remarks",
+  },
+  {
+    title: "สถานะ",
+    dataIndex: "Status",
+    key: "status",
+  },
+  {
+    title: "เพศ",
+    dataIndex: "AdminID",
+    key: "adminid",
+  },
+  {
+    title: "เพศ",
+    dataIndex: "ReservationID",
+    key: "reservationid",
+  },
+  {
+    title: "",
+    render: (record) => (
+      <>
+        {myId === record?.ID ? (
+          <></> // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
+        ) : (
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<PlusOutlined />}
+            onClick={() => CreateRepair(record)}
+          >
+            ยืนยัน
+          </Button>
+        )}
+      </>
+    )
+  },
+];
+
+const data: DataType[] = [];
+
 export default function RepairCreate() {
+
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [studentData, setStudentData] = useState<StudentInterface | null>(null);
   const [repairing, setRepairing] = useState<RepairInterface | null>(null);
-  const [reservationData, setReservationData] = useState<{
-    reservation: ReservationInterface | null;
-    student: StudentInterface | null;
-    dorm: DormInterface | null;
-    room: RoomInterface | null;
-  }>({
-    reservation: null,
-    student: null,
-    dorm: null,
-    room: null,
-  });
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const getStudentData = async (id: string) => {
-    try {
-      const studentRes = await GetStudentsById(id);
-      if (studentRes.status === 200) {
-        setStudentData(studentRes.data);
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "Error fetching data",
-        });
-        setStudentData(null);
-      }
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch student data.",
-      });
-      setStudentData(null);
-    }
+  // Model
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState<String>();
+  const [deleteId, setDeleteId] = useState<Number>();
+
+  const getIDByStudentID = async () => {
+    let res = await GetIDByStudentID(myId); // เรียกใช้ฟังก์ชันที่แก้ไขแล้ว
+    return res;
   };
 
-  const getRepairData = async (id: string) => {
-    try {
-      const response = await fetch(`/api/repairs/${id}`);
-      const data = await response.json();
-      
-      // Extract reservation from data
-      const reservation = data.Reservation;
-      const student = reservation.Student;
-      const dorm = reservation.Dorm;
-      const room = reservation.Room;
-      
-      setRepairing(data);
-      setReservationData({
-        reservation,
-        student,
-        dorm,
-        room,
-      });
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch repair data.",
-      });
-    }
+  const getRepairing = async () => {/*
+  let res = await setRepairing();
+  if (res.status == 200) {
+    setRepairing(res.data);
+  } else {
+    setRepairing([]);
+    messageApi.open({
+      type: "error",
+      content: res.data.error,
+    });
+  }*/
   };
-  
+
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -120,36 +206,41 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  const showSuccessMessage = useCallback(() => {
-    messageApi.open({
-      type: "success",
-      content: "Successfully saved data",
-    });
-  }, [messageApi]);
-
-  const showErrorMessage = useCallback(() => {
-    messageApi.open({
-      type: "error",
-      content: "An error occurred!",
-    });
-  }, [messageApi]);
-
   const onFinish = async (values: RepairInterface) => {
-    values.Image = fileList[0]?.thumbUrl || '';
-    values.ID = repairing?.ID;
+    // ดึง student ID จาก backend
+    let studentIDResponse = await GetIDByStudentID(myId);
+    if (!studentIDResponse) {
+      messageApi.open({
+        type: "error",
+        content: "ไม่สามารถดึงข้อมูลนักศึกษาได้!",
+      });
+      return;
+    }
+    values.Image = fileList[0]?.thumbUrl || "";
+
+    // สร้างรายการแจ้งซ่อม
     let res = await CreateRepair(values);
+
     if (res) {
-      showSuccessMessage();
-      setTimeout(() => navigate("/repair"), 2000);
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      setTimeout(() => {
+        navigate("/repair");
+      }, 2000);
     } else {
-      showErrorMessage();
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด!",
+      });
     }
   };
 
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getRepairData(studentId);  // Fetch repair data using studentId
+      //getRepairing(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",
@@ -157,6 +248,7 @@ export default function RepairCreate() {
       });
     }
   }, []);
+
   return (
     <>
       <Space direction="vertical">
@@ -170,21 +262,7 @@ export default function RepairCreate() {
               autoComplete="off"
             >
               <Space direction="vertical">
-                {repairing && reservationData.reservation ? (
-                  <>
-                    {reservationData.student && (
-                      <>
-                        <Text>Student ID: {reservationData.student.StudentID}</Text>
-                        <Text>Name: {reservationData.student.FirstName} {reservationData.student.LastName}</Text>
-                      </>
-                    )}
-                    {reservationData.dorm && reservationData.room && (
-                      <>
-                        <Text>Dorm: {reservationData.dorm.ID} Room: {reservationData.room.RoomNumber}</Text>
-                      </>
-                    )}
-                  </>
-                ) : (<Text></Text>)}
+
               </Space>
             </Form>
 
@@ -196,6 +274,22 @@ export default function RepairCreate() {
               onFinish={onFinish}
               autoComplete="off"
             >
+
+
+              <Col xs={24} sm={24} md={24} lg={12}>
+                <Form.Item
+                  label="Reservation ID (ทดสอบ)"
+                  name="ReservationID"
+                  rules={[
+                    {
+                      required: true,
+                      message: "กรุณากรอก Reservation ID หลอกๆ",
+                    },
+                  ]}
+                >
+                  <Input placeholder="กรอก Reservation ID หลอกๆ" />
+                </Form.Item>
+              </Col>
               <Row gutter={[16, 0]}>
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item

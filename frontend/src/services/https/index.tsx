@@ -154,6 +154,19 @@ async function CreateRepair(data: RepairInterface) {
   return res;
   }
 
+  async function GetIDByStudentID(id: string | null) {
+    const requestOptions = {
+      method: "GET",
+    };
+    let res = await fetch(`${apiUrl}/get-id-student/${id}`, requestOptions);
+    
+    if (res.status == 200) {
+      return res.json(); // ถ้าสถานะเป็น 200 ให้คืนค่า JSON ที่มี id
+    } else {
+      return false; // ถ้าไม่ใช่ 200 ให้คืนค่า false
+    }
+  }
+
 async function GetRepair(id: Number | undefined) {
   const requestOptions = {
     method: "GET"
@@ -193,7 +206,7 @@ async function UpdateRepair(data: RepairInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/update-repair/:id`, requestOptions)
+  let res = await fetch(`${apiUrl}/update-repair`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -373,6 +386,7 @@ export {
   GetOtherById,
   // ----------------- Repairing --------------
   CreateRepair,
+  GetIDByStudentID,
   GetRepair,
   GetListRepairs,
   UpdateRepair,

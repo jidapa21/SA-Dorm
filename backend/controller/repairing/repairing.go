@@ -7,23 +7,50 @@ import (
 	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
 )
-
+/*
+func GetIDByStudentID(c *gin.Context) {
+	studentID := c.Param("id")
+	var id entity.Students
+	db := config.DB()                                                     
+	results := db.Where("student_id = ?", studentID).First(&id) // ค้นหาจาก student_id
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"id": id.ID}) // ส่งค่า ID กลับไป
+}
+*/
 // POST /users
-func CreateRepair(c *gin.Context) {
+func CreateRepair(c1 *gin.Context,c2 *gin.Context) {
 	var repairing entity.Repairing
+	var sid entity.Students
+	var reservation entity.Reservation
+	studentID := c1.Param("id")
 
-	if err := c.ShouldBindJSON(&repairing); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	db := config.DB()      
+
+	results := db.Where("student_id = ?", studentID).First(&sid) // ค้นหาจาก student_id
+	if results.Error != nil {
+		c1.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
 		return
 	}
 
-	db := config.DB()
+	// หาว่า StudentID อยู่ใน Reservation หรือไม่
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c1.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+	if err := c2.ShouldBindJSON(&repairing); err != nil {
+		c2.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// ค้นหา reservation ด้วย id
-	var reservation entity.Reservation
 	db.First(&reservation, repairing.ReservationID)
 	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
+		c2.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
 		return
 	}
 
@@ -31,7 +58,7 @@ func CreateRepair(c *gin.Context) {
 	var dorm entity.Dorm
 	db.First(&dorm, repairing.Reservation.DormID)
 	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "dorm_ID not found"})
+		c2.JSON(http.StatusNotFound, gin.H{"error": "dorm_ID not found"})
 		return
 	}
 
@@ -39,32 +66,30 @@ func CreateRepair(c *gin.Context) {
 	var room entity.Room
 	db.First(&room, repairing.Reservation.RoomID)
 	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "room_ID not found"})
+		c2.JSON(http.StatusNotFound, gin.H{"error": "room_ID not found"})
 		return
 	}
 
 	rp := entity.Repairing{
-		Subject:           	repairing.Subject,
-		Detail:            	repairing.Detail,
-		Image:             	repairing.Image,
-		Location_Details:  	repairing.Location_Details,
-		Contact:           	repairing.Contact,
-		Time_Slot:         	repairing.Time_Slot,
-		Remarks:           	repairing.Remarks,
-		Status:            	"รอดำเนินการ",
-		ReservationID:     	repairing.ReservationID,
-		Reservation:    	reservation, // โยงความสัมพันธ์กับ Entity Reservation
-		
+		Subject:          repairing.Subject,
+		Detail:           repairing.Detail,
+		Image:            repairing.Image,
+		Location_Details: repairing.Location_Details,
+		Contact:          repairing.Contact,
+		Time_Slot:        repairing.Time_Slot,
+		Remarks:          repairing.Remarks,
+		Status:           "รอดำเนินการ",
+		ReservationID:    repairing.ReservationID,
+		Reservation:      reservation, // โยงความสัมพันธ์กับ Entity Reservation
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c1.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+	c2.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
-
 
 // GET /Repairing/:id
 func GetRepair(c *gin.Context) {
@@ -90,7 +115,6 @@ func GetRepair(c *gin.Context) {
 	c.JSON(http.StatusOK, repairing)
 }
 
-
 // GET /Repairings
 func GetListRepairs(c *gin.Context) {
 	var repairings []entity.Repairing
@@ -113,7 +137,6 @@ func GetListRepairs(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, repairings)
 }
-
 
 // PATCH /repairings
 func UpdateRepair(c *gin.Context) {
