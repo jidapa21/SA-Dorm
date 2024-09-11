@@ -1,24 +1,3 @@
-/*import { Col, Row,Divider} from "antd";
-function Listpages() {
-  
-  
-  return (
-    <div >
-      <Row>
-        <Col span={12}>
-          <h2 style={{color: '#1f1f1f'}}>รายชื่อผู้พักร่วม</h2>
-        </Col>
-      </Row>
-      
-      <Divider />
-      
-      
-    </div>
-  );
-}
-
-export default Listpages;*/
-
 import React from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
@@ -99,27 +78,27 @@ const Listpages: React.FC = () => {
     },
   ];
   
-  
   return (
     <>
-      <br />
-      <div className="flex">
-        <div className='text-topic'>รายชื่อผู้พักร่วม</div>
-        <div className="text-right">Non-Air Conditioner</div>
-      </div>
-      <br />
+      <Row className="row-container" >
+        <Col><h2 style={{ color: '#1f1f1f' }}>รายชื่อผู้พักร่วม</h2></Col>
+        <Col><h2 className="heading-red">Non-Air conditioner</h2></Col>
+      </Row>
       <Divider />
-      <div className="flex">
-        <div className='box'>ห้อง 4100</div>
-        <div className='text-sub'>ปีการศึกษา 1/2565</div>
-      </div>
+      <Row>
+        <Col>
+          <div className="box">ห้อง 4100</div>
+        </Col>
+        <Col>
+          <div className="text-sub">ปีการศึกษา 1/2565</div>
+        </Col>
+      </Row>
       <Divider />
       <div className='text-container'></div>  
         <Table columns={columns} dataSource={data} pagination={false} />
       <br/>
     </>
   );
-  
 }
 
 

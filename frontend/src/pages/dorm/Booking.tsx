@@ -1,11 +1,13 @@
-import React from 'react';
+//import React from 'react';
 import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { Col, Row,Divider} from "antd";
+import { Button, Flex } from 'antd';
 import "./Bsub.css";
 
 
 const Booking: React.FC = () => {
+  
   interface DataType {
     key: string;
     name: string;
@@ -78,24 +80,29 @@ const Booking: React.FC = () => {
     },
   ];
   
-  
   return (
     <>
-      <br />
-      <div className="flex">
-        <div className='text-topic'>รายชื่อผู้พักร่วม</div>
-        <div className="text-right">Non-Air Conditioner</div>
-      </div>
-      <br />
+      <Row className="row-container" >
+        <Col><h2 style={{ color: '#1f1f1f' }}>รายชื่อผู้จองร่วม</h2></Col>
+        <Col><h2 className="heading-red">Non-Air conditioner</h2></Col>
+      </Row>
       <Divider />
-      <div className="flex">
-        <div className='box'>ห้อง 4100</div>
-        <div className='text-sub'>ปีการศึกษา 1/2565</div>
-      </div>
+      <Row>
+        <Col>
+          <div className="box">ห้อง 4100</div>
+        </Col>
+        <Col>
+          <div className="text-sub">ปีการศึกษา 1/2565</div>
+        </Col>
+      </Row>
       <Divider />
       <div className='text-container'></div>  
         <Table columns={columns} dataSource={data} pagination={false} />
       <br/>
+      <div className="flex-right">
+        <Button className="custom-button dashed-button " type="dashed">ยกเลิก</Button>
+        <Button className="custom-button primary-button" type="primary">ยืนยัน</Button>
+      </div>
     </>
   );
 }

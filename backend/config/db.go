@@ -86,7 +86,7 @@ func SetupDatabase() {
 	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
 	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
 
-	for roomNumber := 1100; roomNumber <= 4109; roomNumber++ {
+	for roomNumber := 1100; roomNumber <= 4309; roomNumber++ {
 		// คำนวณ DormID จากหลักพันของ RoomNumber
 		if (roomNumber >= 1100 && roomNumber <= 1109) ||
 			(roomNumber >= 1200 && roomNumber <= 1209) ||

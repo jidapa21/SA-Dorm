@@ -1,4 +1,4 @@
-package slip
+/*package slip
 import (
 	"net/http"
 
@@ -127,4 +127,4 @@ func UpdateSlip(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
-}
+}*/
