@@ -142,7 +142,6 @@ async function CreateRepair(data: RepairInterface) {
     .post(`${apiUrl}/create-repair`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
-    
 }
 /*
 async function GetIDByStudentID(id: string | null) {

@@ -16,7 +16,7 @@ func CreateRepair(c *gin.Context) {
     var room entity.Room
 
 	
-    studentID := c.Param("id")
+    studentID := c.MustGet("student_id").(string)
     if studentID == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
         return

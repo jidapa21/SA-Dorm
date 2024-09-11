@@ -240,7 +240,7 @@ export default function RepairCreate() {
         content: "บันทึกข้อมูลสำเร็จ",
       });
       setTimeout(() => {
-        navigate("/repair"); // ตรวจสอบ URL ให้ถูกต้อง
+         // ตรวจสอบ URL ให้ถูกต้อง
       }, 2000);
     } else {
       messageApi.open({
