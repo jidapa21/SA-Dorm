@@ -101,20 +101,26 @@ func GetAnnouncements(c *gin.Context) {
 }
 
 func GetAnnouncementByID(c *gin.Context) {
-	id := c.Param("id")
-	var announcement entity.Announcement
-	db := config.DB()
-	if db == nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
-		return
-	}
+    id := c.Param("id")
+    if id == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "ID parameter is missing"})
+        return
+    }
 
-	if err := db.Preload("Admin").First(&announcement, id).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    var announcement entity.Announcement
+    db := config.DB()
+    if db == nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Database connection not initialized"})
+        return
+    }
 
-	c.JSON(http.StatusOK, announcement)
+    // ตรวจสอบการใช้ Preload และ First
+    if err := db.Preload("Admin").First(&announcement, "id = ?", id).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Announcement not found"})
+        return
+    }
+
+    c.JSON(http.StatusOK, announcement)
 }
 
 func DeleteAnnouncement(c *gin.Context) {
