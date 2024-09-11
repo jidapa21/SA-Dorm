@@ -10,12 +10,22 @@ import (
 // POST /users
 func CreateSlip(c *gin.Context) {
 	var slip entity.Slip
+	var sid entity.Students
+    var reservation entity.Reservation
+    var dorm entity.Dorm
+    var room entity.Room
+	var Expense entity.Expense
 
 	studentID := c.MustGet("student_id").(string)
+    if studentID == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+        return
+    }
+	/*studentID := c.MustGet("student_id").(string)
 	if err := c.ShouldBindJSON(&slip); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
+	}*/
 
 	db := config.DB()
 
@@ -31,8 +41,8 @@ func CreateSlip(c *gin.Context) {
 	rp := entity.Slip{
 		Path:           slip.Path,
 		Date:         	slip.date,
-		ExpenseID:     	slip.ReservationID,
-		Expense:    	slip, 
+		ExpenseID:     	expense.ID,
+		Expense:    	expense, 
 		
 	}
 

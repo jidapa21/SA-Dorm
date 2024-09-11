@@ -287,7 +287,12 @@ async function DeleteAnnouncementById(id: string) {
 //-------------slip--------------------------------------------------------------------------------------------------------------
 
 async function CreateSlip(data: SlipInterface) {
-  const requestOptions = {
+  return await axios
+  .post(`${apiUrl}/create-slip`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+  /*const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -305,8 +310,8 @@ async function CreateSlip(data: SlipInterface) {
   } catch (error) {
     console.error('Fetch Error:', error);
     return false;
-  }
-}
+  }*/
+
 
 
 
@@ -314,7 +319,12 @@ async function CreateSlip(data: SlipInterface) {
 
 
   async function GetSlip(id: number | undefined) {
-    if (id === undefined) {
+    return await axios
+    .get(`${apiUrl}/get-slip/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+    /*if (id === undefined) {
       console.error('Invalid ID');
       return false;
     }
@@ -333,10 +343,26 @@ async function CreateSlip(data: SlipInterface) {
       return false;
     }
   }
-  
+  */
 
 async function GetListSlips() {
-  try {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`${apiUrl}/get-list-slip`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
+  /*try {
     const response = await fetch(`${apiUrl}/slip`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -352,11 +378,27 @@ async function GetListSlips() {
     console.error('Network error:', error);
     return false;
   }
-}
+}*/
 
 
 async function UpdateSlip(data: SlipInterface) {
-  try {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+  let res = await fetch(`${apiUrl}/update-slip`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
+  
+  /*try {
     const response = await fetch(`${apiUrl}/slip`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -373,7 +415,9 @@ async function UpdateSlip(data: SlipInterface) {
     console.error('Network error:', error);
     return false;
   }
-}
+}*/
+
+
 async function fetchExpenses(): Promise<ExpenseInterface[]> {
   try {
     const response = await fetch('/api/expenses');

@@ -11,6 +11,8 @@ import (
 // GET /get-expense/:id
 func GetExpense(c *gin.Context) {
 	ID := c.Param("id")
+	var remark entity.Remark,
+    var status entity.Status,
 	var rentFee entity.RentFee
 	var waterFee entity.WaterFee
 	var electricityFee entity.ElectricityFee
@@ -34,17 +36,21 @@ func GetExpense(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ElectricityFee not found"})
 		return
 	}
-	/*
-		// สร้างโครงสร้าง Expense
-		expense := entity.Expense{
-			RentFee:        rentFee,
-			WaterFee:       waterFee,
-			ElectricityFee: electricityFee,
-		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Expense fetched successfully",
-			"data":    expense,
-		})
-	*/
+	rp := entity.Expense{
+        Remark:			expense.Remark,
+        Status:			expense.Status,
+        RentID:			rentfee.ID,
+        RentFee:		rentfee,
+		WaterID:		waterfee.ID,
+        WaterFee:		waterfee,
+		ElecID:			electricityfee.ID,
+        ElectricityFee:	electricityfee,
+    }
+	if err := db.Create(&rp).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }

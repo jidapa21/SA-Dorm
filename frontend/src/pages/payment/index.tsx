@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps,TableProps,GetProp} from 'antd';
+import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps,TableProps,GetProp, Input} from 'antd';
 import Barcode from 'react-barcode'; // นำเข้า Barcode
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "./index.css";
@@ -18,6 +18,7 @@ import { ExpenseInterface } from '../../interfaces/Expense';
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface;
 
+const { TextArea } = Input;
 const myId = localStorage.getItem("id");
 
 const Index: React.FC = () => {
@@ -97,6 +98,7 @@ const Index: React.FC = () => {
       const [messageApi, contextHolder] = message.useMessage();
       const [studentData, setStudentData] = useState<StudentInterface | null>(null);
       const [slip, setSlip] = useState<SlipInterface | null>(null);
+      const [Path, setPath] = useState('');
 
       const [fileList, setFileList] = useState<UploadFile[]>([]);
       const [form] = Form.useForm();
@@ -211,6 +213,37 @@ const getSlip = async (id: number) => {
     }
   }, []);
   */
+  const handleSubmit = async () => {
+    if (!fileList) {
+      messageApi.open({
+        type: 'error',
+        content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+      });
+      return;
+    }
+    try {
+      const response = await CreateSlip({Path});
+
+      if (response.status === 200) {
+        messageApi.open({
+          type: 'success',
+          content: 'ประกาศถูกสร้างเรียบร้อยแล้ว',
+        });
+        setPath('');
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: `เกิดข้อผิดพลาดในการอัพโหลด: ${response.data.message || response.statusText}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      messageApi.open({
+        type: 'error',
+        content: `เกิดข้อผิดพลาดในการอัพโหลด: ${(error as Error).message}`,
+      });
+    }
+  };
 
 return (
     <>
@@ -278,7 +311,7 @@ return (
               onFinish={onFinish}
               autoComplete="off"
               >
-              <Upload
+              /<Upload
                   fileList={fileList}
                   onChange={onChange}
                   onPreview={onPreview}
@@ -293,14 +326,15 @@ return (
                 <Button icon={<UploadOutlined />} >Upload</Button>
               </Upload>
                 <Form.Item>
-                        <Space>
-                          <Button
-                            type="primary"
-                            htmlType="submit"
-                            icon={<PlusOutlined />}
-                          >
-                            ยืนยัน
-                        </Button>
+                        
+                        {contextHolder}
+      <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        <Button 
+          onClick={handleSubmit} 
+          style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }} 
+        >
+          ยืนยัน
+        </Button>
                     </Space>
                 </Form.Item>
             </Form>
