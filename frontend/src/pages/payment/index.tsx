@@ -318,30 +318,27 @@ return (
               onFinish={onFinish}
               autoComplete="off"
             >
-              <Form.Item
-                name="upload"
-                label="Upload"
-                valuePropName="fileList"
-                getValueFromEvent={(e) => e.fileList}
-                rules={[{ required: true, message: 'กรุณาอัพโหลดไฟล์ก่อน' }]}
-              >
-                  <Upload
-                    fileList={fileList}
-                    onChange={onChange}
-                    onPreview={onPreview}
-                    beforeUpload={beforeUpload}
-                    maxCount={1}
-                    multiple={false}
-                    listType="picture"
+              <Form.Item>
+                <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                  <Form.Item
+                    name="upload"
+                    label="อัพโหลดไฟล์ที่นี่"
+                    valuePropName="fileList"
+                    getValueFromEvent={(e) => e.fileList}
+                    rules={[{ required: true, message: 'กรุณาอัพโหลดไฟล์ก่อน!' }]}
                   >
-                    <Button icon={<UploadOutlined />} >Upload</Button>
-                  </Upload>
+                    <Upload
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={onPreview}
+                      beforeUpload={beforeUpload}
+                      maxCount={1}
+                      multiple={false}
+                      listType="picture"
+                    >
+                      <Button icon={<UploadOutlined />} >Upload</Button>
+                    </Upload>
                 </Form.Item>
-                
-                {contextHolder}
-
-                <Form.Item>
-                  <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                     <Button
                       type="primary"
                       htmlType="submit"
@@ -349,6 +346,7 @@ return (
                     >
                       ยืนยัน
                     </Button>
+                    {contextHolder}
                   </Space>
                 </Form.Item>
               </Form>
