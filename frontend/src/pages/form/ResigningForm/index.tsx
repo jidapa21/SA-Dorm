@@ -218,10 +218,8 @@ export default function Index() {
               >
                 <Radio.Group onChange={onChange} value={value}>
                   <Space direction="vertical">
-                    <Radio value="rest_home">บ้านพัก</Radio>
-                    <Radio value="dormitory_outside">
-                      หอพักภายนอกมหาวิทยาลัย
-                    </Radio>
+                    <Radio value="บ้านพัก">บ้านพัก</Radio>
+                    <Radio value="หอพักภายนอกมหาวิทยาลัย">หอพักภายนอกมหาวิทยาลัย</Radio>
                   </Space>
                 </Radio.Group>
               </Form.Item>
