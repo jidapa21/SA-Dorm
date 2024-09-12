@@ -102,6 +102,8 @@ const Index: React.FC = () => {
 
       const [fileList, setFileList] = useState<UploadFile[]>([]);
       const [form] = Form.useForm();
+      //const response = await CreateSlip({Path});
+
 
       // Model
     const [open, setOpen] = useState(false);
@@ -217,23 +219,26 @@ const getSlip = async (id: number) => {
     if (!fileList) {
       messageApi.open({
         type: 'error',
-        content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+        content: 'กรุณาอัพโหลดรูปภาพ',
       });
       return;
     }
     try {
-      const response = await CreateSlip({Path});
-
-      if (response.status === 200) {
+      const response = await CreateSlip({ Path });
+  
+      if (response && response.status === 200) {
         messageApi.open({
           type: 'success',
-          content: 'ประกาศถูกสร้างเรียบร้อยแล้ว',
+          content: 'อัพโหลดรูปภาพสำเร็จ',
         });
         setPath('');
       } else {
+        const errorMessage = response && response.data && response.data.message ? 
+          response.data.message : 
+          response.statusText || 'เกิดข้อผิดพลาดในการอัพโหลด';
         messageApi.open({
           type: 'error',
-          content: `เกิดข้อผิดพลาดในการอัพโหลด: ${response.data.message || response.statusText}`,
+          content: `เกิดข้อผิดพลาดในการอัพโหลด: ${errorMessage}`,
         });
       }
     } catch (error) {
@@ -244,6 +249,7 @@ const getSlip = async (id: number) => {
       });
     }
   };
+  
 
 return (
     <>
@@ -311,7 +317,7 @@ return (
               onFinish={onFinish}
               autoComplete="off"
               >
-              /<Upload
+              <Upload
                   fileList={fileList}
                   onChange={onChange}
                   onPreview={onPreview}
@@ -328,13 +334,13 @@ return (
                 <Form.Item>
                         
                         {contextHolder}
-      <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-        <Button 
-          onClick={handleSubmit} 
-          style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }} 
-        >
-          ยืนยัน
-        </Button>
+                <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                  <Button 
+                    onClick={handleSubmit} 
+                    style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }} 
+                  >
+                    ยืนยัน
+                </Button>
                     </Space>
                 </Form.Item>
             </Form>

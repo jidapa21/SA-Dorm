@@ -199,8 +199,8 @@ waterFee = entity.WaterFee{Amount: 100.00}
 db.FirstOrCreate(&waterFee, &entity.WaterFee{Amount: 100.00})
 
 // Seed ข้อมูล ElectricityFee
-var electricityFee1 entity.ElectricityFee
-electricityFee1 = entity.ElectricityFee{Amount: 150.00}
+var electricityFee entity.ElectricityFee
+electricityFee = entity.ElectricityFee{Amount: 150.00}
 
 // ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
 result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee1)
@@ -208,18 +208,18 @@ result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electrici
 // หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
 if result.RowsAffected > 0 {
     // อัพเดตข้อมูลที่มีอยู่
-    db.Model(&electricityFee1).Updates(entity.ElectricityFee{Amount: 150.00})
+    db.Model(&electricityFee).Updates(entity.ElectricityFee{Amount: 150.00})
 }
 
 // Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
 expense := entity.Expense{
-    Remark:           " ",
+    Remark:           " ทำ",
     Status:           "กำลังดำเนินการ",
     RentFeeID:        rentFee1.ID,          // เชื่อมโยง RentFee
     WaterFeeID:       waterFee1.ID,         // เชื่อมโยง WaterFee
     ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
 }
-db.FirstOrCreate(&expense1, entity.Expense{Remark: " "})
+db.FirstOrCreate(&expense, entity.Expense{Remark: " ทำ"})
 
 func SeedSlip(db *gorm.DB) {
 	// หา Expense ที่จะเชื่อมโยงกับ Slip
