@@ -175,7 +175,7 @@ export default function RepairCreate() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
-
+/*
   const getRepairing = async (id: string) => {
     let res = await GetRepair(id);
     if (res.status == 200) {
@@ -199,7 +199,7 @@ export default function RepairCreate() {
       }, 2000);
     }
   };
-
+*/
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -224,7 +224,7 @@ export default function RepairCreate() {
 
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getRepairing(studentId);  // Fetch repair data using studentId
+      //getRepairing(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",
@@ -253,7 +253,7 @@ export default function RepairCreate() {
   useEffect(() => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      getRepairing(studentId);  // Fetch repair data using studentId
+      //getRepairing(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",

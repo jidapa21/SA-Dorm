@@ -41,7 +41,7 @@ func SetupDatabase() {
 		&entity.Dorm{},
 		&entity.Room{},
 		&entity.Reservation{},
-	
+
 		&entity.Repairing{},
 		&entity.DelayedPaymentForm{},
 		&entity.En_ExitingForm{},
@@ -138,13 +138,13 @@ func SetupDatabase() {
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
-    reservation := &entity.Reservation{
-        ReservationDate: ReservationDate,
-        StudentID:       User.ID,
-        DormID:          4,
-        RoomID:          100,
-    }
-    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
+	reservation := &entity.Reservation{
+		ReservationDate: ReservationDate,
+		StudentID:       User.ID,
+		DormID:          4,
+		RoomID:          100,
+	}
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
@@ -161,71 +161,71 @@ func SetupDatabase() {
 	})
 
 	repairing := &entity.Repairing{
-		ID: 				1,
-        Subject:          	"อ่างล้างมือตัน",
-        Detail:           	"ทำเศษอาหารตก",
-        Image:            	"yes",
-        Location_Details: 	"ห้องน้ำชั้น 1 หอ 4",
-        Contact:          	"097-153-1219",
-        Time_Slot:        	"09:00-16:00 น.",
-        Status:           	"รอดำเนินการ",
-		ReservationID:    	reservation.ID,
-        AdminID:          	1,
-    }
-    db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
-
+		ID:               1,
+		Subject:          "อ่างล้างมือตัน",
+		Detail:           "ทำเศษอาหารตก",
+		Image:            "yes",
+		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
+		Contact:          "097-153-1219",
+		Time_Slot:        "09:00-16:00 น.",
+		Status:           "รอดำเนินการ",
+		ReservationID:    reservation.ID,
+		AdminID:          1,
+	}
+	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
-var reservations []entity.Reservation
-db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
+	var reservations []entity.Reservation
+	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
 
-var rentFee1 entity.RentFee
-for _, reservation := range reservations {
-    var amount float64
+	var rentFee entity.RentFee
 
-    // ตรวจสอบประเภทของ Dorm ผ่าน Reservation
-    switch reservation.Dorm.Type {
-    case "หอพักชาย 1", "หอพักหญิง 3":
-        amount = 6500.00
-    case "หอพักชาย 2", "หอพักหญิง 4":
-        amount = 2900.00
-    }
+	for _, reservation := range reservations {
+		var amount float64
 
-    // สร้างข้อมูล RentFee
-    rentFee1 = entity.RentFee{
-        Amount:        amount, 
-        ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
-    }
+		// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
+		switch reservation.Dorm.Type {
+		case "หอพักชาย 1", "หอพักหญิง 3":
+			amount = 6500.00
+		case "หอพักชาย 2", "หอพักหญิง 4":
+			amount = 3900.00
+		}
 
-    // ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
-    db.Where("reservation_id = ?", reservation.ID).FirstOrCreate(&rentFee1)
-}
+		// สร้างข้อมูล RentFee
+		rentFee = entity.RentFee{
+			Amount:        amount,
+			ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
+		}
 
-// Seed ข้อมูล WaterFee
-var waterFee1 entity.WaterFee
-waterFee1 = entity.WaterFee{Amount: 100.00}
-db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
+		// ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
+		db.Where("reservation_id = ?", reservation.Dorm.Type ).FirstOrCreate(&rentFee)
+	}
 
-// Seed ข้อมูล ElectricityFee
-var electricityFee1 entity.ElectricityFee
-electricityFee1 = entity.ElectricityFee{Amount: 150.00}
+	// Seed ข้อมูล WaterFee
+	var waterFee entity.WaterFee
+	waterFee1 := entity.WaterFee{Amount: 100.00}
+	db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
 
-// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
-result := db.Where("amount = ?", electricityFee1.Amount).FirstOrCreate(&electricityFee1)
+	// Seed ข้อมูล ElectricityFee
+	var electricityFee entity.ElectricityFee
+	electricityFee1 := entity.ElectricityFee{Amount: 150.00}
 
-// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
-if result.RowsAffected > 0 {
-    // อัพเดตข้อมูลที่มีอยู่
-    db.Model(&electricityFee1).Updates(entity.ElectricityFee{Amount: 150.00})
-}
+	// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
+	result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee1)
 
-// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
-expense1 := entity.Expense{
-    Remark:           " ",
-    Status:           "กำลังดำเนินการ",
-    RentFeeID:        rentFee1.ID,          // เชื่อมโยง RentFee
-    WaterFeeID:       waterFee1.ID,         // เชื่อมโยง WaterFee
-    ElectricityFeeID: electricityFee1.ID,   // เชื่อมโยง ElectricityFee
-}
-db.FirstOrCreate(&expense1, entity.Expense{Remark: " "})
+	// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
+	if result.RowsAffected > 0 {
+		// อัพเดตข้อมูลที่มีอยู่
+		db.Model(&electricityFee).Updates(entity.ElectricityFee{Amount: 150.00})
+	}
+
+	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
+	expense := entity.Expense{
+		Remark:           " ทำ",
+		Status:           "กำลังดำเนินการ",
+		RentFeeID:        rentFee.ID,        // เชื่อมโยง RentFee
+		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
+		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
+	}
+	db.FirstOrCreate(&expense, entity.Expense{Remark: " ทำ"})
 }

@@ -9,32 +9,58 @@ import (
 )
 
 // POST /users
-func DelayedPaymentFormUI(c *gin.Context) {
+func CreateDelayedPaymentForm(c *gin.Context) {
 	var delayedpaymentform entity.DelayedPaymentForm
+    var sid entity.Students
+    var reservation entity.Reservation
+    var dorm entity.Dorm
+    var room entity.Room
 
-	// bind เข้าตัวแปร user
-	if err := c.ShouldBindJSON(&delayedpaymentform); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    studentID := c.MustGet("student_id").(string)
+    if studentID == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+        return
+    }
 
-	db := config.DB()
+    db := config.DB()
+    results := db.Where("student_id = ?", studentID).First(&sid)
+    if results.Error != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+        return
+    }
 
-	// ค้นหา reservation ด้วย id
-	var reservation entity.Reservation
-	if err := db.First(&reservation, delayedpaymentform.ReservationID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
-		return
-	}
+    db.Where("student_id = ?", sid.ID).First(&reservation)
+    if reservation.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+        return
+    }
 
-	// สร้าง repairing
+    if err := c.ShouldBindJSON(&delayedpaymentform); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    db.First(&dorm, reservation.DormID)
+    if dorm.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
+        return
+    }
+
+    db.First(&room, reservation.RoomID)
+    if room.ID == 0 {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+        return
+    }
+
+	// สร้าง DelayedPaymentForm
 	d := entity.DelayedPaymentForm{
 		Electricly_Bill:	delayedpaymentform.Electricly_Bill,
 		Water_Bill:			delayedpaymentform.Water_Bill,
 		Because_Of:			delayedpaymentform.Because_Of,
 		Due_Date:			delayedpaymentform.Due_Date,
 		Status:   			"รอดำเนินการ",
-		ReservationID:  	delayedpaymentform.ReservationID,
+        ReservationID:    	reservation.ID,
+        Reservation:      	reservation,
 	}
 
 	// บันทึก
