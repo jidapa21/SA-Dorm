@@ -11,14 +11,49 @@ import (
 // GET /get-expense/:id
 func GetExpense(c *gin.Context) {
 	ID := c.Param("id")
-	var remark entity.Remark,
-    var status entity.Status,
-	var rentFee entity.RentFee
-	var waterFee entity.WaterFee
-	var electricityFee entity.ElectricityFee
+	var expense entity.Expense
+	var rentfee entity.RentFee
+	var waterfee entity.WaterFee
+	var electricityfee entity.ElectricityFee
 
 	db := config.DB()
 
+	// ดึงข้อมูล Expense ที่มี ID ตรงกับพารามิเตอร์
+    if err := db.Preload("RentFees").Preload("ElectricityFees").Preload("WaterFees").First(&expense, ID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Expense not found"})
+        return
+    }
+
+    // ดึงข้อมูล RentFee, WaterFee และ ElectricityFee ตาม ID ที่ระบุ
+    if err := db.First(&rentfee, expense.RentFeeID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "RentFee not found"})
+        return
+    }
+
+    if err := db.First(&waterfee, expense.WaterFeeID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "WaterFee not found"})
+        return
+    }
+
+    if err := db.First(&electricityfee, expense.ElectricityFeeID).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "ElectricityFee not found"})
+        return
+    }
+
+	rp := entity.Expense{
+        Remark:            expense.Remark,
+        Status:            expense.Status,
+        RentFeeID:         rentfee.ID,
+        RentFee:          &rentfee,
+        WaterFeeID:        waterfee.ID,
+        WaterFee:         &waterfee,
+        ElectricityFeeID: electricityfee.ID,
+        ElectricityFee:  &electricityfee,
+    }
+
+    c.JSON(http.StatusOK, rp)
+}
+/*
 	// ดึงข้อมูล RentFee
 	if err := db.First(&rentFee, "id = ?", ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "RentFee not found"})
@@ -40,7 +75,7 @@ func GetExpense(c *gin.Context) {
 	rp := entity.Expense{
         Remark:			expense.Remark,
         Status:			expense.Status,
-        RentID:			rentfee.ID,
+        RentID:	  		rentfee.ID,
         RentFee:		rentfee,
 		WaterID:		waterfee.ID,
         WaterFee:		waterfee,
@@ -54,3 +89,4 @@ func GetExpense(c *gin.Context) {
 
     c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
+	*/

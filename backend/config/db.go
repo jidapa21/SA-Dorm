@@ -168,11 +168,26 @@ func SetupDatabase() {
 		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
 		Contact:          "097-153-1219",
 		Time_Slot:        "09:00-16:00 น.",
-		Status:           "รอดำเนินการ",
+		Status:           "เสร็จแล้ว",
 		ReservationID:    reservation.ID,
 		AdminID:          1,
 	}
 	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
+
+	electricityFee := entity.ElectricityFee{
+		ID:           	1,
+		Amount:         150,
+		ReservationID:        reservation.ID,   
+	}
+	db.FirstOrCreate(&electricityFee, entity.Expense{ID:1})
+
+
+	waterFee := entity.WaterFee{
+		ID:           	1,
+		Amount:         100,
+		ReservationID:        reservation.ID,   
+	}
+	db.FirstOrCreate(&waterFee, entity.WaterFee{ID:1})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
 	var reservations []entity.Reservation
@@ -188,7 +203,7 @@ func SetupDatabase() {
 		case "หอพักชาย 1", "หอพักหญิง 3":
 			amount = 6500.00
 		case "หอพักชาย 2", "หอพักหญิง 4":
-			amount = 3900.00
+			amount = 2900.00
 		}
 
 		// สร้างข้อมูล RentFee
@@ -201,17 +216,8 @@ func SetupDatabase() {
 		db.Where("reservation_id = ?", reservation.Dorm.Type ).FirstOrCreate(&rentFee)
 	}
 
-	// Seed ข้อมูล WaterFee
-	var waterFee entity.WaterFee
-	waterFee1 := entity.WaterFee{Amount: 100.00}
-	db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
-
-	// Seed ข้อมูล ElectricityFee
-	var electricityFee entity.ElectricityFee
-	electricityFee1 := entity.ElectricityFee{Amount: 150.00}
-
 	// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
-	result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee1)
+	result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee)
 
 	// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
 	if result.RowsAffected > 0 {
@@ -228,4 +234,19 @@ func SetupDatabase() {
 		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
 	}
 	db.FirstOrCreate(&expense, entity.Expense{Remark: " ทำ"})
+
+
+	var expense1 entity.Expense
+// ใช้ Preload เพื่อโหลดข้อมูลที่เชื่อมโยงกับ RentFee, WaterFee และ ElectricityFee
+db.Preload("RentFees").Preload("WaterFees").Preload("ElectricityFees").First(&expense1, expense1.ID)
+	
+
+	// Seed ข้อมูล Slip 
+	slip := entity.Slip{
+		Path:           "รูปสลิป",
+		Date:           time.Now(),
+		AdminID:        rentFee.ID,       
+		ExpenseID:      expense.ID,      
+	}
+	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})
 }

@@ -288,7 +288,7 @@ async function DeleteAnnouncementById(id: string) {
 
 async function CreateSlip(data: SlipInterface) {
   return await axios
-  .post(`${apiUrl}/create-slip`, data, requestOptions)
+  .post(`${apiUrl}/slip`, data, requestOptions)
   .then((res) => res)
   .catch((e) => e.response);
 }
@@ -311,10 +311,6 @@ async function CreateSlip(data: SlipInterface) {
     console.error('Fetch Error:', error);
     return false;
   }*/
-
-
-
-
 
 
 

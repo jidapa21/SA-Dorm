@@ -7,13 +7,16 @@ import (
 )
 type Slip struct {
 	gorm.Model
+	ID		uint    `gorm:"primaryKey;autoIncrement"`
 	Path    string `json:"path"`
 	Date	time.Time `json:"date"`
-
-	AdminID		uint      `json:"admin_id"`
-	Admin		*Admins `gorm:"foreignKey: AdminID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"admin"`
+	
+    // AdminID ทำหน้าที่เป็น FK
+    AdminID     uint    `json:"admin_id"`
+    Admin       *Admins `gorm:"foreignKey:AdminID"`
 
 	ExpenseID	uint      `json:"ex_id"`
 	Expense		*Expense `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
+	
 
 }

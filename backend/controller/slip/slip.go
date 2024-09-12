@@ -10,11 +10,7 @@ import (
 // POST /users
 func CreateSlip(c *gin.Context) {
 	var slip entity.Slip
-	var sid entity.Students
-    var reservation entity.Reservation
-    var dorm entity.Dorm
-    var room entity.Room
-	var Expense entity.Expense
+    var expense entity.Expense
 
 	studentID := c.MustGet("student_id").(string)
     if studentID == "" {
@@ -30,19 +26,19 @@ func CreateSlip(c *gin.Context) {
 	db := config.DB()
 
 	// ค้นหา reservation ด้วย id
-	var reservation entity.Reservation
-	db.First(&reservation, slip.ReservationID)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
+	var expenses entity.Expense
+	db.First(&expenses, slip.ExpenseID)
+	if expenses.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "expense_ID not found"})
 		return
 	}
 
 
 	rp := entity.Slip{
 		Path:           slip.Path,
-		Date:         	slip.date,
+		Date:         	slip.Date,
 		ExpenseID:     	expense.ID,
-		Expense:    	expense, 
+		Expense:    	&expense, 
 		
 	}
 
@@ -59,11 +55,11 @@ func CreateSlip(c *gin.Context) {
 func GetSlip(c *gin.Context) {
 	ID := c.Param("id")
 	var slip entity.Slip
-	var reservation entity.Reservation
+	var expense entity.Expense
 
 	db := config.DB()
-	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
-		if err := db.Preload("id").First(&reservation, ID).Error; err != nil {
+	if err := db.Preload("Expense").First(&slip, ID).Error; err != nil {
+		if err := db.Preload("id").First(&expense, ID).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 	}
@@ -74,11 +70,11 @@ func GetSlip(c *gin.Context) {
 // GET /Slip
 func GetListSlips(c *gin.Context) {
 	var slips []entity.Slip
-	var reservation []entity.Reservation
+	var expense []entity.Expense
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
-		if err := db.Preload("id").Find(&reservation).Error; err != nil {
+	if err := db.Preload("Expense").Find(&slips).Error; err != nil {
+		if err := db.Preload("id").Find(&expense).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
@@ -98,11 +94,11 @@ func UpdateSlip(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(slip.Status); err != nil {
+	if err := c.ShouldBindJSON(slip.Path); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}
-	if err := db.Save(slip.Status).Error; err != nil {
+	if err := db.Save(slip.Path).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}

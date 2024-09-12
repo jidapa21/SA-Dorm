@@ -91,8 +91,8 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		router.POST("/slip", controller.CreateSlip)
-		router.PATCH("/slip/:id", controller.UpdateSlip)
+		router.POST("/slip", slip.CreateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
 		
 	}
 

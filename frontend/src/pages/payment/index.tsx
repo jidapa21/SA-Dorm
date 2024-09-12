@@ -37,7 +37,7 @@ const Index: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  interface ExpenseInterface {
+  interface SlipInterface {
     ID: number;
     Path: string;
     Date: Date;
@@ -157,7 +157,7 @@ const getSlip = async (id: number) => {
     imgWindow?.document.write(path.outerHTML);
   };
 
-  const onFinish = async (values: SlipInterface) => {
+  const onFinish = async (Path: SlipInterface) => {
     if (fileList.length === 0) {
       messageApi.open({
         type: "error",
@@ -170,10 +170,10 @@ const getSlip = async (id: number) => {
     const fileUrl = file.url || (file.originFileObj ? URL.createObjectURL(file.originFileObj) : '');
 
     // Make sure to use the correct URL or File path
-    values.Path = fileUrl;
+    Path.Path = fileUrl;
   
     try {
-      const res = await CreateSlip(values);
+      const res = await CreateSlip(Path);
   
       if (res) {
         messageApi.open({
