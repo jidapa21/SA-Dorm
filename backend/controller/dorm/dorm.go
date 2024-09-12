@@ -42,7 +42,7 @@ func ListDorms(c *gin.Context) {
 	c.JSON(http.StatusOK, dorms)
 }
 
-// PATCH /dorm
+// PUT /dorm/:id
 func UpdateDorm(c *gin.Context) {
 	var dorm entity.Dorm
 

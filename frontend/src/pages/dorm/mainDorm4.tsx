@@ -18,10 +18,9 @@ const style: React.CSSProperties = {
 
 const MainDorm4: React.FC = () => (
   <>
-    <Row>
-      <Col span={12}>
-        <h2 style={{color: '#1f1f1f'}}>จองหอพักหญิง 4</h2>
-      </Col>
+    <Row className="row-container" >
+      <Col><h2 style={{ color: '#1f1f1f' }}>จองหอพักหญิง 4</h2></Col>
+      <Col><h2 className="heading-red">Non-Air conditioner</h2></Col>
     </Row>
     <Divider />
     <Divider orientation="left">ชั้นที่ 1</Divider>

@@ -10,9 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// POST /student-create
+// POST /CreateReservation
 func CreateReservation(c *gin.Context) {
 	var reservation entity.Reservation
+	var studentCheck entity.Students
+	var dormCheck entity.Dorm
+	var roomCheck entity.Room
 
 	// bind เข้าตัวแปร reservation
 	if err := c.ShouldBindJSON(&reservation); err != nil {
@@ -21,10 +24,6 @@ func CreateReservation(c *gin.Context) {
 	}
 
 	db := config.DB()
-
-	var studentCheck entity.Students
-	var dormCheck entity.Dorm
-	var roomCheck entity.Room
 
 	// Check if the dorm with the provided DormID exists
 	if result := db.Where("id = ?", reservation.DormID).First(&dormCheck); result.Error != nil {
@@ -45,6 +44,14 @@ func CreateReservation(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
 	}
+
+	/**********************************************************/
+	studentID := c.MustGet("student_id").(string)
+    if studentID == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+        return
+    }
+	/**********************************************************/
 
 	// Check if the student with the provided StudentID exists
 	if result := db.Where("student_id = ?", reservation.StudentID).First(&studentCheck); result.Error != nil {
@@ -78,41 +85,8 @@ func CreateReservation(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created successfully", "data": rs})
 }
 
-// function Get โดยในตัวอย่างเป็นการตั้งใจใช้คำสั่ง SELECT … WHERE id =... เพื่อดึงข้อมูล student ออกมาตาม primary key ที่กำหนด ผ่าน func DB.Raw(...)
-// GET /get-student/:id
-func GetStudent(c *gin.Context) {
-	ID := c.Param("id")
-	var student entity.Students
-
-	db := config.DB()
-	results := db.Preload("Gender").First(&student, ID)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-	if student.ID == 0 {
-		c.JSON(http.StatusNoContent, gin.H{})
-		return
-	}
-	c.JSON(http.StatusOK, student)
-}
-
-// GET /list-student
-func ListStudent(c *gin.Context) {
-
-	var students []entity.Students
-
-	db := config.DB()
-	results := db.Preload("Gender").Find(&students)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, students)
-}
-
 // DELETE /delete-student/:id
-func DeleteStudent(c *gin.Context) {
+func DeleteReservation(c *gin.Context) {
 	id := c.Param("id")
 	db := config.DB()
 	if tx := db.Exec("DELETE FROM students WHERE id = ?", id); tx.RowsAffected == 0 {
@@ -123,20 +97,21 @@ func DeleteStudent(c *gin.Context) {
 }
 
 // PATCH /update-student
-func UpdateStudent(c *gin.Context) {
-	var student entity.Students
-	StudentID := c.Param("id")
+func UpdateReservation(c *gin.Context) {
+	var reservation entity.Reservation
+	id := c.Param("id")
+
 	db := config.DB()
-	result := db.First(&student, StudentID)
+	result := db.First(&reservation, id)
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(&student); err != nil {
+	if err := c.ShouldBindJSON(&reservation); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}
-	result = db.Save(&student)
+	result = db.Save(&reservation)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return

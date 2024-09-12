@@ -10,6 +10,10 @@ import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
+
+import { DormInterface } from "../../interfaces/Dorm";
+import { RoomInterface } from "../../interfaces/Room";
+import { ReservationInterface } from "../../interfaces/Reservation";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
@@ -353,6 +357,71 @@ async function UpdateSlip(data: SlipInterface) {
   return res;
 }
 
+//------------Dorm------------//
+async function GetDorm(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListDorms(data: DormInterface) {
+  return await axios
+    .post(`${apiUrl}/ListDorms`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateDorm(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+//------------Room------------//
+async function GetRoom(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListRoom(data: RoomInterface) {
+  return await axios
+    .post(`${apiUrl}/ListRoom`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function DeleteRoom(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateRoom(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+//------------Reservation------------//
+async function CreateReservation(data: ReservationInterface) {
+  return await axios
+    .post(`${apiUrl}/CreateReservation`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function DeleteReservation(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateReservation(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 export {
   SignInStudent,
   SignInAdmin,
@@ -394,4 +463,17 @@ export {
   GetSlip,
   GetListSlips,
   UpdateSlip,
+  //------------Dorm------------//
+  GetDorm,
+  ListDorms,
+  UpdateDorm,
+  //------------Room------------//
+  GetRoom,
+  ListRoom,
+  DeleteRoom,
+  UpdateRoom,
+  //------------Reservation------------//
+  CreateReservation,
+  DeleteReservation,
+  UpdateReservation
 };

@@ -22,6 +22,11 @@ import (
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
+
+	//-------dorm-room-reservation-------//
+	"dormitory.com/dormitory/controller/dorm"
+	"dormitory.com/dormitory/controller/room"
+	"dormitory.com/dormitory/controller/reservation"
 )
 
 const PORT = "8000"
@@ -94,6 +99,19 @@ func main() {
 		/*----------------------------------------------router.POST("/slip", controller.CreateSlip)
 		------------------------------------------------router.PATCH("/slip", controller.UpdateSlip)*/
 		
+		// Dorm
+		router.GET("/GetDorm/:id", dorm.GetDorm)
+		router.GET("/ListDorms", dorm.ListDorms)
+		router.PUT("/UpdateDorm/:id", dorm.UpdateDorm)
+		// Room
+		router.GET("/GetRoom/:id", room.GetRoom)
+		router.GET("/ListRoom", room.ListRoom)
+		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
+		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
+		// Reservation
+		router.POST("/CreateReservation", reservation.CreateReservation)
+		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
+		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
 	}
 
 	r.GET("/genders", genders.GetAll)

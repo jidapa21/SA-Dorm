@@ -113,6 +113,33 @@ func SetupDatabase() {
 		}
 	}
 
+
+	roomAvailable := []entity.Room{
+		{Available: 0},
+		{Available: 1},
+		{Available: 2},
+		{Available: 3},
+	}
+	for _, available := range roomAvailable {
+		db.FirstOrCreate(&available, entity.Room{Available: available.Available})
+	}
+
+	roomStatus := []entity.Room{
+		{DormStatus: "ห้องว่าง"},
+		{DormStatus: "ห้องเต็ม"},
+		{DormStatus: "อยู่ระว่างการซ่อมบำรุง"},
+	}
+	for _, RoomStatus := range roomStatus {
+		db.FirstOrCreate(&RoomStatus, entity.Room{DormStatus: RoomStatus.DormStatus})
+	}
+
+	Air := entity.Dorm{Type: "มีเครื่องปรับอากาศ"}
+	NonAir := entity.Dorm{Type: "ไม่มีเครื่องปรับอากาศ"}
+	db.FirstOrCreate(&Air, &entity.Dorm{Type: "มีเครื่องปรับอากาศ"})
+	db.FirstOrCreate(&NonAir, &entity.Dorm{Type: "ไม่มีเครื่องปรับอากาศ"})
+	
+
+
 	/*
 		Status1 := entity.Repairing{Status: "รอดำเนินการ"}
 		Status2 := entity.Repairing{Status: "กำลังดำเนินการ"}

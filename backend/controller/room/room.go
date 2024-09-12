@@ -41,7 +41,7 @@ func ListRoom(c *gin.Context) {
 }
 
 // DELETE /rooms/:id
-func DeleteRooms(c *gin.Context) {
+func DeleteRoom(c *gin.Context) {
 
 	id := c.Param("id")
 	db := config.DB()
