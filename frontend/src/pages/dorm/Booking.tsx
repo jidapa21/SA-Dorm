@@ -62,22 +62,6 @@ const Booking: React.FC = () => {
       year: 3,
       roomRate: '2,900',
     },
-    {
-      key: 'B',
-      name: 'Jim Green',
-      sid: 'B6554321',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-    {
-      key: 'C',
-      name: 'Joe Black',
-      sid: 'B6543210',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
   ];
   
   return (

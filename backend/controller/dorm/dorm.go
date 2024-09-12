@@ -30,7 +30,6 @@ func GetDorm(c *gin.Context) {
 
 // GET /dorms
 func ListDorms(c *gin.Context) {
-
 	var dorms []entity.Dorm
 
 	db := config.DB()

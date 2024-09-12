@@ -77,14 +77,14 @@ func SetupDatabase() {
 	db.FirstOrCreate(&hasLicense, &entity.License{License: "มี"})
 	db.FirstOrCreate(&noLicense, &entity.License{License: "ไม่มี"})
 
-	DormMale1 := entity.Dorm{Type: "หอพักชาย 1", GenderID: GenderMale.ID}
-	DormMale2 := entity.Dorm{Type: "หอพักชาย 2", GenderID: GenderMale.ID}
-	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3", GenderID: GenderFemale.ID}
-	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4", GenderID: GenderFemale.ID}
-	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
-	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
-	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
-	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
+	DormMale1 := entity.Dorm{DormName: "หอพักชาย 1", Type: "มีเครื่องปรับอากาศ", GenderID: GenderMale.ID}
+	DormMale2 := entity.Dorm{DormName: "หอพักชาย 2", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderMale.ID}
+	DormFemale3 := entity.Dorm{DormName: "หอพักหญิง 3", Type: "มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID}
+	DormFemale4 := entity.Dorm{DormName: "หอพักหญิง 4", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID}
+	db.FirstOrCreate(&DormMale1, &entity.Dorm{DormName: "หอพักชาย 1"})
+	db.FirstOrCreate(&DormMale2, &entity.Dorm{DormName: "หอพักชาย 2"})
+	db.FirstOrCreate(&DormFemale3, &entity.Dorm{DormName: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale4, &entity.Dorm{DormName: "หอพักหญิง 4"})
 
 	for roomNumber := 1100; roomNumber <= 4309; roomNumber++ {
 		// คำนวณ DormID จากหลักพันของ RoomNumber
@@ -107,38 +107,13 @@ func SetupDatabase() {
 			room := entity.Room{
 				RoomNumber: uint(roomNumber),
 				DormID:     dormID, // DormID จะเป็น 1, 2, 3 หรือ 4 ตาม RoomNumber
+				Available:	3,
+				DormStatus: "ห้องว่าง",
 			}
 			// บันทึก Room ลงในฐานข้อมูล
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
-
-
-	roomAvailable := []entity.Room{
-		{Available: 0},
-		{Available: 1},
-		{Available: 2},
-		{Available: 3},
-	}
-	for _, available := range roomAvailable {
-		db.FirstOrCreate(&available, entity.Room{Available: available.Available})
-	}
-
-	roomStatus := []entity.Room{
-		{DormStatus: "ห้องว่าง"},
-		{DormStatus: "ห้องเต็ม"},
-		{DormStatus: "อยู่ระว่างการซ่อมบำรุง"},
-	}
-	for _, RoomStatus := range roomStatus {
-		db.FirstOrCreate(&RoomStatus, entity.Room{DormStatus: RoomStatus.DormStatus})
-	}
-
-	Air := entity.Dorm{Type: "มีเครื่องปรับอากาศ"}
-	NonAir := entity.Dorm{Type: "ไม่มีเครื่องปรับอากาศ"}
-	db.FirstOrCreate(&Air, &entity.Dorm{Type: "มีเครื่องปรับอากาศ"})
-	db.FirstOrCreate(&NonAir, &entity.Dorm{Type: "ไม่มีเครื่องปรับอากาศ"})
-	
-
 
 	/*
 		Status1 := entity.Repairing{Status: "รอดำเนินการ"}
