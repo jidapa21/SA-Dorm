@@ -12,11 +12,11 @@ interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface 
 }
 
 const DelayingPayment: React.FC = () => {
-  const [repairs, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
+  const [delayingPayment, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRepairs = async () => {
+    const fetchDelayingPayment = async () => {
       try {
         const data = await ListDelayedPaymentForms();
         if (data) {
@@ -32,7 +32,7 @@ const DelayingPayment: React.FC = () => {
       }
     };
 
-    fetchRepairs();
+    fetchDelayingPayment();
   }, []);
 
   const handleDetailsClick = (ID: string) => {
@@ -84,7 +84,7 @@ const DelayingPayment: React.FC = () => {
         }}
       >
         <Title level={2} style={{ margin: 0, color: '#333' }}>
-          รายการแจ้งซ่อม
+        แบบฟอร์มขอผ่อนผันการชำระ
         </Title>
         <div
           style={{
@@ -116,7 +116,7 @@ const DelayingPayment: React.FC = () => {
           >
             <Table
               columns={columns}
-              dataSource={repairs}
+              dataSource={delayingPayment}
               pagination={false}
               bordered
               showHeader={false}

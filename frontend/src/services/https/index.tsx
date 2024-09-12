@@ -10,6 +10,7 @@ import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
+import { GenderInterface } from "../../interfaces/gender";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
@@ -31,16 +32,60 @@ async function SignInStudent(data: SignInStudentInterface) {
     .catch((e) => e.response);
 }
 async function SignInAdmin(data: SignInAdminInterface) {
-  return await axios
-    .post(`${apiUrl}/signin-admin`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+  try {
+    const response = await axios.post(`${apiUrl}/signin-admin`, data, requestOptions);
+    
+    // ตรวจสอบว่ามีข้อมูล adminID ในการตอบกลับ
+    if (response.data && response.data.adminID) {
+      // เก็บ adminID ลงใน localStorage
+      localStorage.setItem('adminID', response.data.adminID.toString());
+      
+      // เปลี่ยนเส้นทางไปยังหน้าแอดมินหรือหน้าอื่นๆ ตามต้องการ
+      // navigate('/admin-dashboard');
+    }
+    
+    return response;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // จัดการข้อผิดพลาดที่เกิดจาก Axios
+      console.error('Axios error:', error.message);
+      return error.response;
+    } else if (error instanceof Error) {
+      // จัดการข้อผิดพลาดทั่วไป
+      console.error('General error:', error.message);
+      return { data: { message: error.message } };
+    } else {
+      // จัดการกรณีที่ไม่รู้จักประเภทของข้อผิดพลาด
+      console.error('Unknown error:', error);
+      return { data: { message: 'An unknown error occurred' } };
+    }
+  }
 }
+async function GetAdminByID(id: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/admin/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching admin data', error);
+    throw new Error('Error fetching admin data');
+  }
+}
+
 async function ListStudents() {
   return await axios
     .get(`${apiUrl}/list-student`, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
+}
+async function Getgender() {
+  try {
+      const response = await axios.get(`${apiUrl}/get-gender`, requestOptions);
+      console.log('Response from Getgender:', response.data); // ตรวจสอบข้อมูลที่ได้รับ
+      return response.data;
+  } catch (error) {
+      console.error('Error fetching genders:', error);
+      throw error;
+  }
 }
 async function GetStudentsById(id: string) {
   return await axios
@@ -373,7 +418,9 @@ async function UpdateSlip(data: SlipInterface) {
 export {
   SignInStudent,
   SignInAdmin,
+  GetAdminByID,
   ListStudents,
+  Getgender,
   GetStudentsById,
   UpdateStudentsById,
   DeleteStudentsById,

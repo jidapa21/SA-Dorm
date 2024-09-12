@@ -46,6 +46,7 @@ func main() {
 		router.GET("/list-student", student.ListStudent)
 		router.GET("/get-student/:id", student.GetStudent)
 		router.DELETE("/delete-student/:id", student.DeleteStudent)
+		router.GET("/get-gender", genders.GetAll)
 		// CreatePersonalDetails Route
 		router.POST("/create-personal-detail", personaldetails.CreatePersonalDetails)
 		// Personal Route
@@ -90,6 +91,7 @@ func main() {
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
+		router.GET("/admin/:id", admin.GetAdminByID)
 
 		//Slip Routes
 		//router.POST("/slip", controller.CreateSlip)

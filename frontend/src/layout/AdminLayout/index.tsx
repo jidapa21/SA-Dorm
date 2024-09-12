@@ -1,12 +1,9 @@
-// AdminLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Routes, Route } from 'react-router-dom';
 import { Layout, Menu, Button } from 'antd';
 import './index.css';
-import userImage from '../../assets/profile.jfif';
 import Logo from '../../assets/logo.png';
 import AdminRoutes from '../../routes/AdminRoutes'; 
-
 const { Sider, Content } = Layout;
 
 const AdminLayout: React.FC = () => {
@@ -14,7 +11,7 @@ const AdminLayout: React.FC = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['1']);
   const navigate = useNavigate();
   const location = useLocation();
-  const isLoggedInAdmin = true;
+
 
   useEffect(() => {
     const path = location.pathname;
@@ -37,8 +34,11 @@ const AdminLayout: React.FC = () => {
       case '/PaymentConfirmation':
         setSelectedKeys(['paymentConfirmation']);
         break;
-      case '/AdminManagement': // New menu item
+      case '/AdminManagement':
         setSelectedKeys(['adminManagement']);
+        break;
+      case '/ManageStudents':
+          setSelectedKeys(['manageStudents']);
         break;
       default:
         setSelectedKeys([]);
@@ -46,10 +46,9 @@ const AdminLayout: React.FC = () => {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    // ลบค่าการล็อกอินจาก localStorage
+    localStorage.removeItem('adminID');
     localStorage.removeItem('isLoginAdmin');
     localStorage.removeItem('isLoginStudent');
-    // เปลี่ยนเส้นทางไปยังหน้า Login
     navigate('/login');
   };
 
@@ -76,13 +75,8 @@ const AdminLayout: React.FC = () => {
         onCollapse={setCollapsed} 
         className="custom-sider"
       >
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60px', margin: '16px auto' }}>
-          <img src={Logo} alt="Logo" style={{ width: '40%' }} />
-        </div>
-        <div className="user-info-container">
-          <img src={userImage} alt="User" />
-          <div className="id">12345</div>
-          <div className="name">John Doe</div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px ', marginTop: '1px' }}>
+          <img src={Logo} alt="Logo" style={{ width: '60%' }} />
         </div>
         <Menu className='custom-menu' mode="inline" selectedKeys={selectedKeys}>
           <Menu.Item key="1">
@@ -97,10 +91,13 @@ const AdminLayout: React.FC = () => {
           <Menu.Item key="paymentConfirmation">
             <Link to="/PaymentConfirmation">ยืนยันการชำระ</Link>
           </Menu.Item>
-          <Menu.Item key="adminManagement"> {/* New menu item */}
+          <Menu.Item key="adminManagement">
             <Link to="/AdminManagement">จัดการแอดมิน</Link>
           </Menu.Item>
-        </Menu>
+          <Menu.Item key="manageStudents">
+            <Link to="/ManageStudents">จัดการนักศึกษา</Link>
+          </Menu.Item>
+          </Menu>
         <div className="logout-container">
           <Button className="logout-button" type="primary" onClick={handleLogout}>
             ออกจากระบบ
@@ -110,7 +107,7 @@ const AdminLayout: React.FC = () => {
       <Layout>
         <Content className="custom-content" style={{ padding: 24 }}>
           <Routes>
-            {AdminRoutes(isLoggedInAdmin)[0].children?.map((route) => (
+            {AdminRoutes(true)[0].children?.map((route) => (
               <Route key={route.path} path={route.path} element={route.element} />
             ))}
           </Routes>

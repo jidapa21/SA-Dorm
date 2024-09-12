@@ -1,3 +1,5 @@
+
+
 export interface StudentInterface {
     ID?: number;
     StudentID?: string;
@@ -8,5 +10,4 @@ export interface StudentInterface {
     Year?: number;
     Major?: string;
     GenderID?: number;  
-
   }

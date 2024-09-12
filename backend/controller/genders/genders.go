@@ -9,8 +9,11 @@ import (
 )
 
 func GetAll(c *gin.Context) {
-	db := config.DB()
-	var genders []entity.Genders
-	db.Find(&genders)
-	c.JSON(http.StatusOK, &genders)
+	db := config.DB() // เชื่อมต่อฐานข้อมูล
+	var genders []entity.Genders // สร้าง slice สำหรับเก็บข้อมูลเพศ
+	if err := db.Find(&genders).Error; err != nil { // ตรวจสอบการดึงข้อมูล
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, genders) // ส่งข้อมูลเพศไปยัง client
 }
