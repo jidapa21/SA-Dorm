@@ -286,7 +286,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="หัวข้อการขอรับบริการ"
-                    name="Subject"
+                    name="subject"
                     rules={[
                       {
                         required: true,
@@ -300,7 +300,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                   <Form.Item
                     label="ภาพประกอบ"
-                    name="Image"
+                    name="image"
                     valuePropName="fileList"
                   >
                     <ImgCrop rotationSlider>
@@ -324,7 +324,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="รายละเอียดการขอรับบริการ"
-                    name="Detail"
+                    name="detail"
                     rules={[
                       {
                         required: true,
@@ -338,7 +338,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="รายละเอียดสถานที่รับบริการ"
-                    name="Location_Details"
+                    name="location_details"
                     rules={[
                       {
                         required: true,
@@ -357,7 +357,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="ช่องทางติดต่อ"
-                    name="Contact"
+                    name="contact"
                     rules={[
                       {
                         required: true,
@@ -371,7 +371,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="ช่วงเวลาที่รับบริการ"
-                    name="Time_Slot"
+                    name="time_slot"
                     rules={[
                       {
                         required: true,

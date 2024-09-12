@@ -88,11 +88,11 @@ const handleDeleteAdmin = async (id: any) => {
 };
 
     const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
+        { title: 'ID', dataIndex: 'AdminID', key: 'AdminID' },
         { title: 'Username', dataIndex: 'username', key: 'username' },
-        { title: 'First Name', dataIndex: 'FirstName', key: 'firstName' },
-        { title: 'Last Name', dataIndex: 'LastName', key: 'lastName' },
-        { title: 'Phone', dataIndex: 'Phone', key: 'phone' },
+        { title: 'First Name', dataIndex: 'first_name', key: 'FirstName' },
+        { title: 'Last Name', dataIndex: 'last_name', key: 'LastName' },
+        { title: 'Phone', dataIndex: 'phone', key: 'phone' },
         {
             title: 'Action',
             key: 'action',

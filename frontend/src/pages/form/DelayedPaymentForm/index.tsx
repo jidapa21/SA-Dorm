@@ -8,6 +8,7 @@ import {
   DatePicker,
   Card,
   Divider,
+  InputNumber,
   Typography,
   message,
 } from "antd";
@@ -86,7 +87,7 @@ export default function DelayedPaymentFormCreate() {
       title: "ชำระภายในวันที่",
       dataIndex: "Due_Date",
       key: "due_date",
-      render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
+      //render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
     },
     {
       title: "สถานะ",
@@ -130,44 +131,30 @@ export default function DelayedPaymentFormCreate() {
 
   const data: DataType[] = [];
 
+  
   const handleReset = () => {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
 
   const onFinish = async (values: DelayedPaymentFormInterface) => {
     const studentId = localStorage.getItem("id");
-    if (!studentId) {
+    if (studentId) {
+    } else {
       messageApi.open({
         type: "error",
-        content: "Student ID not found.",
+        content: "Student ID on finish is not found.",
       });
-      return;
     }
-
-    // ตรวจสอบค่าและการแปลงประเภท
-    values.Dorm_Payment = parseFloat(values.Dorm_Payment?.toString() || "0");
-    values.Electricly_Bill = parseFloat(
-      values.Electricly_Bill?.toString() || "0"
-    );
-    values.Water_Bill = parseFloat(values.Water_Bill?.toString() || "0");
-
-    // ตรวจสอบและแปลง Due_Date
-    if (typeof values.Due_Date === "object" && values.Due_Date !== null) {
-      values.Due_Date = dayjs(values.Due_Date).toDate();
-    }
-
-    console.log("Submitting values:", values); // ตรวจสอบข้อมูลก่อนส่ง
-
-    try {
-      let res = await CreateDelayedPaymentForm(values);
-      console.log("Response:", res);
+ 
+    let res = await CreateDelayedPaymentForm(values);
+    console.log(res);
+    if (res) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",
       });
       form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-    } catch (error) {
-      console.error("Error:", error);
+    } else {
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาด!",
@@ -210,22 +197,37 @@ export default function DelayedPaymentFormCreate() {
           <Row gutter={64}>
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item label="ค่าหอพัก" name="Dorm_Payment">
-                <Input placeholder="2400.00" />
+                <InputNumber
+                  placeholder="2400.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
               </Form.Item>
             </Col>
-            <Row/>
+            <Row />
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item label="ค่าไฟฟ้า" name="Electricly_Bill">
-                <Input placeholder="100.00" />
+                <InputNumber
+                  placeholder="100.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
               </Form.Item>
             </Col>
-            <Row/>
+            <Row />
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item label="ค่าน้ำ" name="Water_Bill">
-                <Input placeholder="50.00" />
+                <InputNumber
+                  placeholder="50.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
               </Form.Item>
             </Col>
-            <Row/>
+            <Row />
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="เนื่องจาก"
@@ -240,7 +242,7 @@ export default function DelayedPaymentFormCreate() {
                 <Input.TextArea placeholder="รายรับไม่พอจ่าย" />
               </Form.Item>
             </Col>
-            <Row/>
+            <Row />
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="ชำระภายในวันที่"

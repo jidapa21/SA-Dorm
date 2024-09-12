@@ -87,7 +87,7 @@ func main() {
 		// ResigningForm Route
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
 
-		// Announcement Routes 
+		// Announcement Routes
 		router.POST("/create-announcement", announcement.CreateAnnouncement)
 		router.GET("/announcements", announcement.GetAnnouncements)
 		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
@@ -98,6 +98,7 @@ func main() {
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
+		router.GET("/admin/:id", admin.GetAdminByID)
 
 		//Slip Routes
 		router.POST("/slip", slip.CreateSlip)

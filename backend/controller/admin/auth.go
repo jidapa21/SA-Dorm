@@ -121,3 +121,21 @@ func DeleteAdmin(c *gin.Context) {
 
     c.JSON(http.StatusOK, gin.H{"message": "Admin deleted successfully"})
 }
+func GetAdminByID(c *gin.Context) {
+    // รับค่า ID จากพารามิเตอร์เส้นทาง
+    idStr := c.Param("id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+        return
+    }
+
+    var admin entity.Admins
+    // ค้นหาข้อมูลแอดมินตาม ID
+    if err := config.DB().Where("id = ?", id).First(&admin).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
+        return
+    }
+
+    c.JSON(http.StatusOK, admin)
+}

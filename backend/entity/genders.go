@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Genders struct {
 	gorm.Model
-	Gender string
+	Gender string `json:"gender"`
 
-	Student []Students `gorm:"foreignKey:GenderID"`
+	Student []Students `gorm:"foreignKey:gender_id"`
 	Dorms []Dorm `gorm:"foreignKey:GenderID"`
 }

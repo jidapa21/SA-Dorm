@@ -144,6 +144,7 @@ export default function EnExitingFormCreate() {
 
     let res = await CreateEn_ExitingForm(values);
     console.log(res);
+    console.log("Date: "+typeof values.Date_Request);
     if (res) {
       messageApi.open({
         type: "success",
@@ -222,7 +223,7 @@ export default function EnExitingFormCreate() {
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="เนื่องจาก"
-                name="Because_of"
+                name="Because_Of"
                 rules={[{ required: true, message: "กรุณากรอกเหตุผล !" }]}
               >
                 <Input.TextArea />
@@ -232,7 +233,7 @@ export default function EnExitingFormCreate() {
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="วันที่ขออนุญาติ"
-                name="Date_request"
+                name="Date_Request"
                 rules={[
                   { required: true, message: "กรุณาเลือกวัน/เดือน/ปี !" },
                 ]}

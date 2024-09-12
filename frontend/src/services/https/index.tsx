@@ -30,10 +30,43 @@ async function SignInStudent(data: SignInStudentInterface) {
     .catch((e) => e.response);
 }
 async function SignInAdmin(data: SignInAdminInterface) {
-  return await axios
-    .post(`${apiUrl}/signin-admin`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+  try {
+    const response = await axios.post(`${apiUrl}/signin-admin`, data, requestOptions);
+    
+    // ตรวจสอบว่ามีข้อมูล adminID ในการตอบกลับ
+    if (response.data && response.data.adminID) {
+      // เก็บ adminID ลงใน localStorage
+      localStorage.setItem('adminID', response.data.adminID.toString());
+      
+      // เปลี่ยนเส้นทางไปยังหน้าแอดมินหรือหน้าอื่นๆ ตามต้องการ
+      // navigate('/admin-dashboard');
+    }
+    
+    return response;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // จัดการข้อผิดพลาดที่เกิดจาก Axios
+      console.error('Axios error:', error.message);
+      return error.response;
+    } else if (error instanceof Error) {
+      // จัดการข้อผิดพลาดทั่วไป
+      console.error('General error:', error.message);
+      return { data: { message: error.message } };
+    } else {
+      // จัดการกรณีที่ไม่รู้จักประเภทของข้อผิดพลาด
+      console.error('Unknown error:', error);
+      return { data: { message: 'An unknown error occurred' } };
+    }
+  }
+}
+async function GetAdminByID(id: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/admin/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching admin data', error);
+    throw new Error('Error fetching admin data');
+  }
 }
 async function ListStudents() {
   return await axios
@@ -254,17 +287,13 @@ async function CreateAdmin(data: AadminInterface) {
 }
 async function DeleteAdmin(id: number) {
   try {
-    const response = await axios.delete(
-      `${apiUrl}/admin/${id}`,
-      requestOptions
-    );
+    const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
     return response;
   } catch (error) {
-    console.error("Error deleting admin:", error);
+    console.error('Error deleting admin:', error);
     throw error;
   }
-}
-async function ListAnnouncements() {
+} async function ListAnnouncements() {
   return await axios
     .get(`${apiUrl}/list-announcement`, requestOptions)
     .then((res) => res)

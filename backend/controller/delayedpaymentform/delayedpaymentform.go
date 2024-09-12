@@ -6,11 +6,6 @@ import (
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
-
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
 )
 
 // POST /users
@@ -26,9 +21,7 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
 		return
 	}
-
-	c.ShouldBindJSON(&delayedpaymentform)
-
+	
 	db := config.DB()
 	results := db.Where("student_id = ?", studentID).First(&sid)
 	if results.Error != nil {
@@ -56,49 +49,6 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 	db.First(&room, reservation.RoomID)
 	if room.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-		return
-	}
-	/*
-	       // Convert pointer values to float64
-	       var electricBill, waterBill, dormpayment float64
-	   	if delayedpaymentform.Electricly_Bill != nil {
-	           dormpayment = *delayedpaymentform.Dorm_Payment
-	       } else {
-	   		c.JSON(http.StatusNotFound, gin.H{"error": "dormpayment is null"})
-	   		return
-	   	}
-	       if delayedpaymentform.Electricly_Bill != nil {
-	           electricBill = *delayedpaymentform.Electricly_Bill
-	       } else {
-	   		c.JSON(http.StatusNotFound, gin.H{"error": "electricBill is null"})
-	   		return
-	   	}
-	       if delayedpaymentform.Water_Bill != nil {
-	           waterBill = *delayedpaymentform.Water_Bill
-	       } else {
-	   		c.JSON(http.StatusNotFound, gin.H{"error": "waterBill is null"})
-	   		return
-	   	}
-	*/
-	// อ่านเนื้อหาของคำขอ
-	var requestBody []byte
-	if c.Request.Body != nil {
-		var err error
-		requestBody, err = io.ReadAll(c.Request.Body)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to read request body"})
-			return
-		}
-		// รีเซ็ต body
-		c.Request.Body = io.NopCloser(bytes.NewBuffer(requestBody))
-	}
-
-	// แสดงเนื้อหาที่อ่านได้
-	fmt.Println(string(requestBody))
-
-	// แปลง JSON เป็นโครงสร้างข้อมูล
-	if err := json.Unmarshal(requestBody, &delayedpaymentform); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON format"})
 		return
 	}
 
