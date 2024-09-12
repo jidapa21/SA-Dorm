@@ -119,6 +119,7 @@ useEffect(() => {
   setTotalAmount(total);
 }, [data]);
 
+/*
 const getSlip = async (id: number) => {
     let res = await GetSlip(id);
     if (res.status == 200) {
@@ -136,7 +137,7 @@ const getSlip = async (id: number) => {
       }, 2000);
     }
   };
-
+*/
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -180,7 +181,7 @@ const getSlip = async (id: number) => {
           content: "อัพโหลดรูปภาพสำเร็จ",
         });
         setTimeout(() => {
-          navigate("/slip");
+          navigate("/payment");
         }, 2000);
       } else {
         messageApi.open({
@@ -316,34 +317,42 @@ return (
               layout="vertical"
               onFinish={onFinish}
               autoComplete="off"
+            >
+              <Form.Item
+                name="upload"
+                label="Upload"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => e.fileList}
+                rules={[{ required: true, message: 'กรุณาอัพโหลดไฟล์ก่อน' }]}
               >
-              <Upload
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={(file) => {
-                    setFileList([...fileList, file]);
-                    return false;
-                  }}
-                  maxCount={1}
-                  multiple={false}
-                  listType="picture"
-              >
-                <Button icon={<UploadOutlined />} >Upload</Button>
-              </Upload>
-                <Form.Item>
-                        
-                        {contextHolder}
-                <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                  <Button 
-                    onClick={handleSubmit} 
-                    style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }} 
+                  <Upload
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={beforeUpload}
+                    maxCount={1}
+                    multiple={false}
+                    listType="picture"
                   >
-                    ยืนยัน
-                </Button>
-                    </Space>
+                    <Button icon={<UploadOutlined />} >Upload</Button>
+                  </Upload>
                 </Form.Item>
-            </Form>
+                
+                {contextHolder}
+
+                <Form.Item>
+                  <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }}
+                    >
+                      ยืนยัน
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
+
           </div>
         </div>
     </>
