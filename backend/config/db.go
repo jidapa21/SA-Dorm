@@ -174,6 +174,47 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
 
+	dormPayment := 2900.00
+	elecBill := 100.00
+	waterBill := 50.00
+	dueDate,_ := time.Parse("2006-01-02", "2564-05-12")
+	delayedpaymentform := &entity.DelayedPaymentForm{
+		ID:               	1,
+		Dorm_Payment:		&dormPayment,
+    	Electricly_Bill:	&elecBill,
+    	Water_Bill:			&waterBill,
+    	Because_Of:			"รายได้ไม่พอ",
+		Due_Date:			dueDate,
+		Status:           	"รอดำเนินการ",
+		ReservationID:    	reservation.ID,
+		AdminID:          	1,
+	}
+	db.FirstOrCreate(delayedpaymentform, &entity.DelayedPaymentForm{ID: 1})
+
+	dateRequest,_ := time.Parse("2006-01-02", "2564-05-12")
+	en_exitingform := &entity.En_ExitingForm{
+		ID:               	1,
+		Request:         	"ขอกลับหอพักหลังเวลาปิดหอพัก",
+		Because_Of:      	"ทำงานโปรเจคจบ",
+		Date_Request:    	dateRequest,
+		Status:           	"รอดำเนินการ",
+		ReservationID:    	reservation.ID,
+		AdminID:          	1,
+	}
+	db.FirstOrCreate(en_exitingform, &entity.En_ExitingForm{ID: 1})
+
+	date,_ := time.Parse("2006-01-02", "2564-05-12")
+	resigningform := &entity.ResigningForm{
+		ID:               	1,
+		Date:          		date,
+		Because_Of:    		"ไม่สะดวกอยู่หอพักหลายคน",
+		Accommodation: 		"หอพักภายนอกมหาวิทยาลัย",
+		Status:           	"รอดำเนินการ",
+		ReservationID:    	reservation.ID,
+		AdminID:          	1,
+	}
+	db.FirstOrCreate(resigningform, &entity.ResigningForm{ID: 1})
+
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
 	var reservations []entity.Reservation
 	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย

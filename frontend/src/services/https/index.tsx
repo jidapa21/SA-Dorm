@@ -3,7 +3,7 @@ import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-import { SlipInterface } from "../../interfaces/Slip";
+import { SlipInterface } from "../../interfaces/slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
@@ -22,7 +22,6 @@ const requestOptions = {
     Authorization: `${Bearer} ${Authorization}`,
   },
 };
-
 
 async function SignInStudent(data: SignInStudentInterface) {
   return await axios
@@ -165,7 +164,6 @@ async function GetRepair(id: string | undefined) {
     .catch((e) => e.response);
 }
 
-
 async function GetListRepairs() {
   const requestOptions = {
     method: "GET",
@@ -173,14 +171,15 @@ async function GetListRepairs() {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`${apiUrl}/get-list-repair`, requestOptions)
-    .then((res) => {
+  let res = await fetch(`${apiUrl}/get-list-repair`, requestOptions).then(
+    (res) => {
       if (res.status == 200) {
         return res.json();
       } else {
         return false;
       }
-    });
+    }
+  );
   return res;
 }
 
@@ -190,18 +189,19 @@ async function UpdateRepair(data: RepairInterface) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/update-repair`, requestOptions)
-    .then((res) => {
+  let res = await fetch(`${apiUrl}/update-repair`, requestOptions).then(
+    (res) => {
       if (res.status == 200) {
         return res.json();
       } else {
         return false;
       }
-    });
+    }
+  );
   return res;
 }
 //---------------------   DelayedPaymentForm ---------------------------------
-async function DelayedPaymentFormUI(data: RepairInterface) {
+async function CreateDelayedPaymentForm(data: DelayedPaymentFormInterface) {
   return await axios
     .post(`${apiUrl}/create-delayedpaymentform`, data, requestOptions)
     .then((res) => res)
@@ -225,6 +225,14 @@ async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+//---------------------   CreateEn_ExitingForm ---------------------------------
+async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
+  return await axios
+    .post(`${apiUrl}/create-en_exitingform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+//---------------------   Admin ---------------------------------
 async function Adminlist() {
   return await axios
     .get(`${apiUrl}/GetAllAdmins`, requestOptions)
@@ -239,13 +247,17 @@ async function CreateAdmin(data: AadminInterface) {
 }
 async function DeleteAdmin(id: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
+    const response = await axios.delete(
+      `${apiUrl}/admin/${id}`,
+      requestOptions
+    );
     return response;
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    console.error("Error deleting admin:", error);
     throw error;
   }
-} async function ListAnnouncements() {
+}
+async function ListAnnouncements() {
   return await axios
     .get(`${apiUrl}/list-announcement`, requestOptions)
     .then((res) => res)
@@ -280,94 +292,70 @@ async function DeleteAnnouncementById(id: string) {
     .catch((e) => e.response);
 }
 //-------------slip--------------------------------------------------------------------------------------------------------------
-
 async function CreateSlip(data: SlipInterface) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-
-  try {
-    const response = await fetch(`${apiUrl}/slip`, requestOptions);
-    if (response.ok) {
-      return await response.json();
+  let res = await fetch(`${apiUrl}/repair`, requestOptions).then((res) => {
+    if (res.status == 201) {
+      return res.json();
     } else {
-      const errorText = await response.text();
-      console.error('API Error:', errorText);
       return false;
     }
-  } catch (error) {
-    console.error('Fetch Error:', error);
-    return false;
-  }
+  });
+  return res;
 }
 
-
-
-
-async function GetSlip(id: number | undefined) {
-  if (id === undefined) {
-    console.error('Invalid ID');
-    return false;
-  }
-
-  try {
-    const response = await fetch(`${apiUrl}/slip/${id}`, { method: "GET" });
-
-    if (response.ok) {
-      return await response.json();
+async function GetSlip(id: Number | undefined) {
+  const requestOptions = {
+    method: "GET",
+  };
+  let res = await fetch(`${apiUrl}/slip/${id}`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
     } else {
-      console.error('Error fetching slip:', response.status, response.statusText);
       return false;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    return false;
-  }
+  });
+  return res;
 }
-
 
 async function GetListSlips() {
-  try {
-    const response = await fetch(`${apiUrl}/slip`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-
-    if (response.ok) {
-      return await response.json();
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`${apiUrl}/slip`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
     } else {
-      console.error('Error fetching slips list:', response.status, response.statusText);
       return false;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    return false;
-  }
+  });
+  return res;
 }
-
 
 async function UpdateSlip(data: SlipInterface) {
-  try {
-    const response = await fetch(`${apiUrl}/slip`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
 
-    if (response.ok) {
-      return await response.json();
+  let res = await fetch(`${apiUrl}/slip`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
     } else {
-      console.error('Error updating slip:', response.status, response.statusText);
       return false;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    return false;
-  }
-}
+  });
 
+  return res;
+}
 
 export {
   SignInStudent,
@@ -393,10 +381,12 @@ export {
   GetListRepairs,
   UpdateRepair,
   // ----------------- DelayedPaymentForm --------------
-  DelayedPaymentFormUI,
+  CreateDelayedPaymentForm,
   GetDelayedPaymentForm,
   ListDelayedPaymentForms,
   UpdateDelayedPaymentForm,
+  CreateEn_ExitingForm,
+  // ----------------- En_ExitingForm --------------
   ListAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,

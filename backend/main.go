@@ -7,7 +7,6 @@ import (
 	"dormitory.com/dormitory/controller/address"
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
-	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -18,7 +17,9 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-	//"dormitory.com/dormitory/controller/slip"
+	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/en_exitingform"
+	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -77,7 +78,10 @@ func main() {
 		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
 		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
 		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
-		// Announcement Routes
+		//
+		// En_ExitingForm Route
+		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
+		// Announcement Routes 
 		router.POST("/create-announcement", announcement.CreateAnnouncement)
 		router.GET("/announcements", announcement.GetAnnouncements)
 		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
@@ -90,8 +94,8 @@ func main() {
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 
 		//Slip Routes
-		//router.POST("/slip", slip.CreateSlip)
-		//router.PATCH("/slip", slip.UpdateSlip)
+		router.POST("/slip", slip.CreateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
 		
 	}
 

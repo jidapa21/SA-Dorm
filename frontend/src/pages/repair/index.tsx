@@ -17,7 +17,12 @@ import {
   UploadProps,
   Spin,
 } from "antd";
-import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  UploadOutlined,
+  DeleteOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -29,17 +34,24 @@ import { RepairInterface } from "./../../interfaces/repairing";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-import { GetStudentsById, CreateRepair, GetRepair } from "./../../services/https";
+import {
+  GetStudentsById,
+  CreateRepair,
+  GetRepair,
+} from "./../../services/https";
 import "./../repair/index.css";
 import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface;
+type CombinedData = ReservationInterface &
+  StudentInterface &
+  RepairInterface &
+  DormInterface &
+  RoomInterface;
 
 const myId = localStorage.getItem("id");
 
 export default function RepairCreate() {
-
   interface DataType {
     ID: number;
     Subject: string;
@@ -55,25 +67,6 @@ export default function RepairCreate() {
   }
 
   const columns: ColumnsType<RepairInterface> = [
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {myId == record?.ID ? (
-            <></>
-          ) : (
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PlusOutlined />}
-              onClick={() => CreateRepair(record.ID)}
-            >
-              ยืนยัน
-            </Button>
-          )}
-        </>
-      ),
-    },
     {
       title: "ลำดับ",
       dataIndex: "ID",
@@ -95,8 +88,12 @@ export default function RepairCreate() {
       key: "image",
       width: "15%",
       render: (text, record, index) => (
-        <img src={record.Image} className="w3-left w3-circle w3-margin-right" width="100%" />
-      )
+        <img
+          src={record.Image}
+          className="w3-left w3-circle w3-margin-right"
+          width="100%"
+        />
+      ),
     },
     {
       title: "รายละเอียดสถานที่รับบริการ",
@@ -138,25 +135,23 @@ export default function RepairCreate() {
       render: (record) => (
         <>
           {myId === record?.ID ? (
-
             messageApi.open({
               type: "error",
               content: "Student ID on finish is not found.",
             })
-
-          // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
           ) : (
-          <Button
-            type="primary"
-            htmlType="submit"
-            icon={<PlusOutlined />}
-            onClick={() => CreateRepair(record)}
-          >
-            ยืนยัน
-          </Button>
+            // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<PlusOutlined />}
+              onClick={() => CreateRepair(record)}
+            >
+              ยืนยัน
+            </Button>
           )}
         </>
-      )
+      ),
     },
   ];
 
@@ -175,31 +170,31 @@ export default function RepairCreate() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState<String>();
   const [deleteId, setDeleteId] = useState<Number>();
-/*
-  const getRepairing = async (id: string) => {
-    let res = await GetRepair(id);
-    if (res.status == 200) {
-      form.setFieldsValue({
-        Subject: res.data.Subject,
-        Detail: res.data.Detail,
-        Image: res.data.Image,
-        Location_Details: res.data.Location_Details,
-        Contact: res.data.Contact,
-        Time_Slot: res.data.Time_Slot,
-        Remarks: res.data.Remarks,
-        Status: res.data.Status,
-      });
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "ไม่พบข้อมูลผู้ใช้",
-      });
-      setTimeout(() => {
-        navigate("/repair");
-      }, 2000);
-    }
-  };
-*/
+  /*
+    const getRepairing = async (id: string) => {
+      let res = await GetRepair(id);
+      if (res.status == 200) {
+        form.setFieldsValue({
+          Subject: res.data.Subject,
+          Detail: res.data.Detail,
+          Image: res.data.Image,
+          Location_Details: res.data.Location_Details,
+          Contact: res.data.Contact,
+          Time_Slot: res.data.Time_Slot,
+          Remarks: res.data.Remarks,
+          Status: res.data.Status,
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "ไม่พบข้อมูลผู้ใช้",
+        });
+        setTimeout(() => {
+          navigate("/repair");
+        }, 2000);
+      }
+    };
+  */
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -233,14 +228,16 @@ export default function RepairCreate() {
     }
     // สร้างรายการแจ้งซ่อม
     let res = await CreateRepair(values);
-
+    console.log(res);
     if (res) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",
       });
+      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      setFileList([]); // รีเซ็ตไฟล์อัปโหลด
       setTimeout(() => {
-         // ตรวจสอบ URL ให้ถูกต้อง
+        // ตรวจสอบ URL ให้ถูกต้อง
       }, 2000);
     } else {
       messageApi.open({
@@ -269,13 +266,10 @@ export default function RepairCreate() {
           <Card>
             <h2>แจ้งซ่อม</h2>
             <Divider />
-            <Form
-              name="repairDetails"
-              layout="vertical"
-              autoComplete="off"
-            >
+            <Form name="repairDetails" layout="vertical" autoComplete="off">
               <Space direction="vertical">
-
+                <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
+                <Text>อาคาร 4 ห้อง 414A</Text>
               </Space>
             </Form>
 
@@ -283,9 +277,10 @@ export default function RepairCreate() {
 
             <Form
               name="basic2"
+              form={form}
               layout="vertical"
               onFinish={onFinish}
-              autoComplete="off"
+              autoComplete="on"
             >
               <Row gutter={[16, 0]}>
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
@@ -321,7 +316,7 @@ export default function RepairCreate() {
                         multiple={false}
                         listType="picture"
                       >
-                        <Button icon={<UploadOutlined />} >Upload</Button>
+                        <Button icon={<UploadOutlined />}>Upload</Button>
                       </Upload>
                     </ImgCrop>
                   </Form.Item>
@@ -355,10 +350,7 @@ export default function RepairCreate() {
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                  <Form.Item
-                    label="หมายเหตุ"
-                    name="Remarks"
-                  >
+                  <Form.Item label="หมายเหตุ" name="Remarks">
                     <Input />
                   </Form.Item>
                 </Col>

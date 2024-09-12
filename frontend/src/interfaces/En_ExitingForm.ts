@@ -3,7 +3,7 @@ export interface En_ExitingFormInterface {
 	Date_Submission?:	Date;
 	Request?:			string;
     Because_Of?:		string;
-	Date_Reques?:		Date;
+	Date_Request?:		Date;
     Status?:			string;
     AdminID?:           string;
     ReservationID?:         string;
