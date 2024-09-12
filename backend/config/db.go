@@ -170,7 +170,8 @@ func SetupDatabase() {
 var reservations []entity.Reservation
 db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
 
-var rentFee1 entity.RentFee
+var rentFee entity.RentFee
+
 for _, reservation := range reservations {
     var amount float64
 
@@ -179,11 +180,11 @@ for _, reservation := range reservations {
     case "หอพักชาย 1", "หอพักหญิง 3":
         amount = 6500.00
     case "หอพักชาย 2", "หอพักหญิง 4":
-        amount = 2900.00
+        amount = 3900.00
     }
 
     // สร้างข้อมูล RentFee
-    rentFee1 = entity.RentFee{
+    rentFee = entity.RentFee{
         Amount:        amount, 
         ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
     }
@@ -193,16 +194,16 @@ for _, reservation := range reservations {
 }
 
 // Seed ข้อมูล WaterFee
-var waterFee1 entity.WaterFee
-waterFee1 = entity.WaterFee{Amount: 100.00}
-db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
+var waterFee entity.WaterFee
+waterFee = entity.WaterFee{Amount: 100.00}
+db.FirstOrCreate(&waterFee, &entity.WaterFee{Amount: 100.00})
 
 // Seed ข้อมูล ElectricityFee
 var electricityFee1 entity.ElectricityFee
 electricityFee1 = entity.ElectricityFee{Amount: 150.00}
 
 // ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
-result := db.Where("amount = ?", electricityFee1.Amount).FirstOrCreate(&electricityFee1)
+result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee1)
 
 // หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
 if result.RowsAffected > 0 {
@@ -211,7 +212,7 @@ if result.RowsAffected > 0 {
 }
 
 // Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
-expense1 := entity.Expense{
+expense := entity.Expense{
     Remark:           " ",
     Status:           "กำลังดำเนินการ",
     RentFeeID:        rentFee1.ID,          // เชื่อมโยง RentFee
@@ -230,23 +231,15 @@ func SeedSlip(db *gorm.DB) {
 	db.First(&admin, 1) // ใช้ ID ของ Admin ที่ต้องการ หรือดึงมาโดยใช้ query
 
 	// สร้างข้อมูล Slip
-	slip1 := entity.Slip{
-		Path:      "uploads/slips/slip1.png", // กำหนด path ของ slip
-		Date:      time.Now(),               // วันเวลาที่สร้าง slip
-		AdminID:   admin.ID,                 // เชื่อมโยงกับ Admin
-		ExpenseID: expense.ID,               // เชื่อมโยงกับ Expense
-	}
+slip := entity.Slip{
+	Path:      "uploads/slips/slip1.png", // กำหนด path ของ slip
+	Date:      time.Now(),               // วันเวลาที่สร้าง slip
+	AdminID:   admin.ID,                 // เชื่อมโยงกับ Admin
+	ExpenseID: expense.ID,               // เชื่อมโยงกับ Expense
+}
 
-	// Insert ข้อมูล Slip ถ้าไม่ซ้ำ
-	db.FirstOrCreate(&slip1, entity.Slip{Path: "uploads/slips/slip1.png"})
+// Insert ข้อมูล Slip ถ้าไม่ซ้ำ
+db.FirstOrCreate(&slip, entity.Slip{Path: "uploads/slips/slip1.png"})
+}
 
-	// เพิ่ม Slip เพิ่มเติมตามต้องการ
-	slip2 := entity.Slip{
-		Path:      "uploads/slips/slip2.png",
-		Date:      time.Now(),
-		AdminID:   admin.ID,  // ใช้ admin เดิม
-		ExpenseID: expense.ID, // ใช้ expense เดิม หรือเปลี่ยนเป็น Expense อื่น
-	}
-	db.FirstOrCreate(&slip2, entity.Slip{Path: "uploads/slips/slip2.png"})
-	}
 }
