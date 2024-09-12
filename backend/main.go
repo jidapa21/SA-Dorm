@@ -19,6 +19,7 @@ import (
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/controller/en_exitingform"
+	"dormitory.com/dormitory/controller/resigningform"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
@@ -68,6 +69,7 @@ func main() {
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
 
+		// Repair Route
 		router.POST("/create-repair", repairing.CreateRepair)
 		router.GET("/get-repair/:id", repairing.GetRepair)
 		router.GET("/grt-list-repair", repairing.GetListRepairs)
@@ -78,9 +80,13 @@ func main() {
 		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
 		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
 		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
-		//
+		
 		// En_ExitingForm Route
 		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
+		
+		// ResigningForm Route
+		router.POST("/create-resigningform", resigningform.CreateResigningForm)
+
 		// Announcement Routes 
 		router.POST("/create-announcement", announcement.CreateAnnouncement)
 		router.GET("/announcements", announcement.GetAnnouncements)

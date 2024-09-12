@@ -232,6 +232,13 @@ async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+//---------------------   CreateEn_ExitingForm ---------------------------------
+async function CreateResigningForm(data: ResigningFormInterface) {
+  return await axios
+    .post(`${apiUrl}/create-resigningform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 //---------------------   Admin ---------------------------------
 async function Adminlist() {
   return await axios
@@ -385,8 +392,11 @@ export {
   GetDelayedPaymentForm,
   ListDelayedPaymentForms,
   UpdateDelayedPaymentForm,
-  CreateEn_ExitingForm,
   // ----------------- En_ExitingForm --------------
+  CreateEn_ExitingForm,
+  // ----------------- ResigningForm --------------
+  CreateResigningForm,
+  // ----------------- Announcements --------------
   ListAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,

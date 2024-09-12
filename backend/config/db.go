@@ -191,9 +191,11 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(delayedpaymentform, &entity.DelayedPaymentForm{ID: 1})
 
+	dateSubmission,_ := time.Parse("2024-01-02", "2567-05-12")
 	dateRequest,_ := time.Parse("2006-01-02", "2564-05-12")
 	en_exitingform := &entity.En_ExitingForm{
 		ID:               	1,
+		Date_Submission:	dateSubmission,
 		Request:         	"ขอกลับหอพักหลังเวลาปิดหอพัก",
 		Because_Of:      	"ทำงานโปรเจคจบ",
 		Date_Request:    	dateRequest,

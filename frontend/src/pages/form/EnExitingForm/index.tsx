@@ -35,6 +35,9 @@ export default function EnExitingFormCreate() {
     Request: string;
     Because_Of: string;
     Date_Request: Date;
+    Status: string;
+    ReservationID: number;
+    AdminID: number;
   }
 
   const columns: ColumnsType<En_ExitingFormInterface> = [
@@ -46,22 +49,37 @@ export default function EnExitingFormCreate() {
     {
       title: "วันที่ส่งเรื่อง",
       dataIndex: "Date_Submission",
-      key: "Date_Submission",
+      key: "date_submission",
     },
     {
       title: "เรื่องที่ขอ",
       dataIndex: "Request",
-      key: "Request",
+      key: "request",
     },
     {
       title: "เนื่องจาก",
       dataIndex: "Because_Of",
-      key: "Because_Of",
+      key: "because_of",
     },
     {
       title: "วันที่ขออนุญาติ",
       dataIndex: "Date_Request",
-      key: "Date_Request",
+      key: "date_request",
+    },
+    {
+      title: "สถานะ",
+      dataIndex: "Status",
+      key: "status",
+    },
+    {
+      title: "รหัสแอดมิน",
+      dataIndex: "AdminID",
+      key: "adminid",
+    },
+    {
+      title: "รหัสการจอง",
+      dataIndex: "ReservationID",
+      key: "reservationid",
     },
     {
       title: "",
@@ -113,16 +131,17 @@ export default function EnExitingFormCreate() {
   };
 
   const onFinish = async (values: En_ExitingFormInterface) => {
+    values.Request = value.toString(); // กำหนดค่า Request จาก Radio Group
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      //getRepairing(studentId);  // Fetch repair data using studentId
+      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       messageApi.open({
         type: "error",
         content: "Student ID on finish is not found.",
       });
     }
-    // สร้างรายการแจ้งซ่อม
+
     let res = await CreateEn_ExitingForm(values);
     console.log(res);
     if (res) {
@@ -131,9 +150,6 @@ export default function EnExitingFormCreate() {
         content: "บันทึกข้อมูลสำเร็จ",
       });
       form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-      setTimeout(() => {
-        // ตรวจสอบ URL ให้ถูกต้อง
-      }, 2000);
     } else {
       messageApi.open({
         type: "error",
@@ -159,12 +175,7 @@ export default function EnExitingFormCreate() {
       <Card>
         <h2>แบบฟอร์มขออนุญาติเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืนนอกหอพัก</h2>
         <Divider />
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          autoComplete="on"
-        >
+        <Form name="En_ExitingForm" form={form} layout="vertical">
           <Row justify="space-between" align="middle">
             <Col>
               <Space direction="vertical">
@@ -176,14 +187,20 @@ export default function EnExitingFormCreate() {
               <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
             </Col>
           </Row>
-
-          <br />
-
+        </Form>
+        <br />
+        <Form
+          name="ResigningForm"
+          form={form}
+          layout="horizontal"
+          onFinish={onFinish}
+          autoComplete="on"
+        >
           <Row gutter={64}>
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="เรื่องที่ขอ:"
-                name="request"
+                name="Request"
                 rules={[
                   { required: true, message: "กรุณาเลือกเรื่องที่ขออนุญาติ !" },
                 ]}
@@ -205,7 +222,7 @@ export default function EnExitingFormCreate() {
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="เนื่องจาก"
-                name="because_of"
+                name="Because_of"
                 rules={[{ required: true, message: "กรุณากรอกเหตุผล !" }]}
               >
                 <Input.TextArea />
@@ -215,7 +232,7 @@ export default function EnExitingFormCreate() {
             <Col xs={24} sm={24} md={24} lg={24} xl={24}>
               <Form.Item
                 label="วันที่ขออนุญาติ"
-                name="date_request"
+                name="Date_request"
                 rules={[
                   { required: true, message: "กรุณาเลือกวัน/เดือน/ปี !" },
                 ]}

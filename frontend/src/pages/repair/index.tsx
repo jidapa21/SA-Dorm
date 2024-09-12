@@ -62,8 +62,8 @@ export default function RepairCreate() {
     Time_Slot: string;
     Remarks: string;
     Status: string;
-    AdminID: string;
-    ReservationID: string;
+    ReservationID: number;
+    AdminID: number;
   }
 
   const columns: ColumnsType<RepairInterface> = [
