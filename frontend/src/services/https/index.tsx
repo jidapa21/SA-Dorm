@@ -247,7 +247,137 @@ async function CreateRepair(data: RepairInterface) {
       .then((res) => res)
       .catch((e) => e.response);
 }
+  //---------------------   En_ExitingForm ---------------------------------
+  async function GetEn_ExitingForm(id: number | undefined) {
+    if (id === undefined) {
+      throw new Error('ID cannot be undefined');
+    }
   
+    const Authorization = localStorage.getItem("token");
+    const Bearer = localStorage.getItem("token_type");
+    
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
+      }
+    };
+  
+    try {
+      const response = await fetch(`${apiUrl}/get-En_ExitingForm/${id}`, requestOptions);
+      if (response.ok) {
+        return await response.json();
+      } else {
+        // ตรวจสอบรายละเอียดของข้อผิดพลาด
+        const errorText = await response.text();
+        console.error(`Error: ${response.status} - ${errorText}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return false;
+    }
+  }
+  
+  
+  
+  async function ListEn_ExitingForm() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+      }
+    };
+  
+    try {
+      const response = await fetch(`${apiUrl}/En_ExitingForm-getlist`, requestOptions);
+      if (response.ok) {
+        return await response.json();
+      } else if (response.status === 401) {
+        console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+      } else {
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+      }
+      return false;
+    } catch (error) {
+      console.error('Fetch error:', error);
+      return false;
+    }
+  }
+  
+  async function UpdateEn_ExitingForm(id: string, data: Partial<RepairInterface>) {
+    return await axios
+      .put(`${apiUrl}/En_ExitingForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+      .then((res) => res)
+      .catch((e) => e.response);
+} 
+//---------------------   ResigningForm ---------------------------------
+async function GetResigningForm(id: number | undefined) {
+  if (id === undefined) {
+    throw new Error('ID cannot be undefined');
+  }
+
+  const Authorization = localStorage.getItem("token");
+  const Bearer = localStorage.getItem("token_type");
+  
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
+    }
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/get-EResigningForm/${id}`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // ตรวจสอบรายละเอียดของข้อผิดพลาด
+      const errorText = await response.text();
+      console.error(`Error: ${response.status} - ${errorText}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
+
+
+
+async function ListResigningForm() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+    }
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/ResigningForm-getlist`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else if (response.status === 401) {
+      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+    }
+    return false;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
+
+async function UpdateResigningForm(id: string, data: Partial<RepairInterface>) {
+  return await axios
+    .put(`${apiUrl}/ResigningForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);}
 //---------------------   DelayedPaymentForm ---------------------------------
 async function DelayedPaymentFormUI(data: RepairInterface) {
   return await axios
@@ -255,11 +385,36 @@ async function DelayedPaymentFormUI(data: RepairInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-async function GetDelayedPaymentForm(id: string) {
-  return await axios
-    .get(`${apiUrl}/get-delayedpaymentform/${id}`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+async function GetDelayedPaymentForm(id: number | undefined) {
+  if (id === undefined) {
+    throw new Error('ID cannot be undefined');
+  }
+
+  const Authorization = localStorage.getItem("token");
+  const Bearer = localStorage.getItem("token_type");
+  
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
+    }
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/get-delayedpaymentform/${id}`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // ตรวจสอบรายละเอียดของข้อผิดพลาด
+      const errorText = await response.text();
+      console.error(`Error: ${response.status} - ${errorText}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
 }
 
 async function ListDelayedPaymentForms() {
@@ -287,9 +442,9 @@ async function ListDelayedPaymentForms() {
   }
 }
 
-async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
+async function UpdateDelayedPaymentForm(id: string, data: Partial<RepairInterface>) {
   return await axios
-    .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions)
+    .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
     .catch((e) => e.response);
 }
@@ -456,9 +611,15 @@ export {
   Adminlist,
   CreateAdmin,
   DeleteAdmin,
-  //---------------Slip-------------
   CreateSlip,
   GetSlip,
   GetListSlips,
   UpdateSlip,
+  GetEn_ExitingForm,
+  ListEn_ExitingForm,
+  UpdateEn_ExitingForm,
+  GetResigningForm,
+  ListResigningForm,
+  UpdateResigningForm,
+
 };

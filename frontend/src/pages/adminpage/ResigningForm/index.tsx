@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Typography, Card } from 'antd';
 import ReadResignationForm from './ReadResignationForm/index';
-import { GetListResignationForm } from '../../../services/https';
+import { ListResigningForm } from '../../../services/https';
 import { ResigningFormInterface } from "../../../interfaces/ResigningForm";
 
 const { Title } = Typography;
@@ -18,7 +18,7 @@ const ResigningForm: React.FC = () => {
   useEffect(() => {
     const fetchRepairs = async () => {
       try {
-        const data = await GetListResignationForm();
+        const data = await ListResigningForm();
         if (data) {
           const transformedData = data.map((item: ResigningFormInterface, index: number) => ({
             ...item,

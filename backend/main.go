@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -19,7 +20,7 @@ import (
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/reservation"
-	//"dormitory.com/dormitory/controller/slip"
+	"dormitory.com/dormitory/controller/resigningform"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,16 @@ func main() {
 		router.GET("/get-repair/:id", repairing.GetRepair)
 		router.GET("/repair-getlist", repairing.GetListRepairs)
 		router.PUT("/repair-update/:id", repairing.UpdateRepair)
+		// En_ExitingForm Route
+		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
+		router.GET("/get-En_ExitingForm/:id", en_exitingform.GetEn_ExitingForm)
+		router.GET("/En_ExitingForm-getlist", en_exitingform.ListEn_ExitingForm)
+		router.PUT("/En_ExitingForm-update/:id", en_exitingform.UpdateEn_ExitingForm)
+		// ResigningForm Route
+		router.POST("/create-resigningform", resigningform.CreateResigningForm)
+		router.GET("/get-ResigningForm/:id", resigningform.GetResigningForm)
+		router.GET("/En_ResigningForm-getlist", resigningform.ListResigningForm)
+		router.PUT("/En_ResigningForm-update/:id", resigningform.UpdateResigningForm)
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)

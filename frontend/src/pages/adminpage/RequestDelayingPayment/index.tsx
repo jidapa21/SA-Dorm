@@ -49,7 +49,7 @@ const DelayingPayment: React.FC = () => {
       children: [
         {
             title: 'สภานะ',
-            dataIndex: 'Status',
+            dataIndex: 'status',
             key: 'Status',
             render: (text: string) => (
               <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
@@ -107,7 +107,7 @@ const DelayingPayment: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadDelayingPayment ID={selectedKey} />
+          <ReadDelayingPayment ID={Number(selectedKey)} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>

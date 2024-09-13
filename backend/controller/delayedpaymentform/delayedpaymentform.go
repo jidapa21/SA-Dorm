@@ -88,8 +88,8 @@ func UpdateDelayedPaymentForm(c *gin.Context) {
 	}
 
 	// Find the existing repair record
-	var existingRepair entity.Repairing
-	result := db.First(&existingRepair, id)
+	var existingDelayedPaymentForm entity.DelayedPaymentForm
+	result := db.First(&existingDelayedPaymentForm, id)
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
 		return
@@ -102,7 +102,7 @@ func UpdateDelayedPaymentForm(c *gin.Context) {
 	}
 
 	// Update only the 'Status' field
-	if err := db.Model(&existingRepair).Updates(map[string]interface{}{
+	if err := db.Model(&existingDelayedPaymentForm).Updates(map[string]interface{}{
 		"Status":  payload.Status,
 		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
 	}).Error; err != nil {

@@ -7,12 +7,12 @@ import (
 
 type DelayedPaymentForm struct {
     gorm.Model
-    Dorm_Payment		*float64
-    Electricly_Bill		*float64
-    Water_Bill			*float64
-    Because_Of			string
-	Due_Date			time.Time
-    Status				string
+    Dorm_Payment     *float64  `json:"dorm_payment"`
+    Electricly_Bill  *float64  `json:"electricly_bill"`
+    Water_Bill       *float64  `json:"water_bill"`
+    Because_Of      string    `json:"because_of"`
+    Due_Date        time.Time `json:"due_date"`
+    Status           string    `json:"status"`
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`
