@@ -23,6 +23,14 @@ const requestOptions = {
     Authorization: `${Bearer} ${Authorization}`,
   },
 };
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  const tokenType = localStorage.getItem("token_type");
+  return {
+    "Content-Type": "application/json",
+    Authorization: tokenType ? `${tokenType} ${token}` : undefined,
+  };
+};
 
 
 async function SignInStudent(data: SignInStudentInterface) {
@@ -32,45 +40,20 @@ async function SignInStudent(data: SignInStudentInterface) {
     .catch((e) => e.response);
 }
 async function SignInAdmin(data: SignInAdminInterface) {
-  try {
-    const response = await axios.post(`${apiUrl}/signin-admin`, data, requestOptions);
-    
-    // ตรวจสอบว่ามีข้อมูล adminID ในการตอบกลับ
-    if (response.data && response.data.adminID) {
-      // เก็บ adminID ลงใน localStorage
-      localStorage.setItem('adminID', response.data.adminID.toString());
-      
-      // เปลี่ยนเส้นทางไปยังหน้าแอดมินหรือหน้าอื่นๆ ตามต้องการ
-      // navigate('/admin-dashboard');
-    }
-    
-    return response;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      // จัดการข้อผิดพลาดที่เกิดจาก Axios
-      console.error('Axios error:', error.message);
-      return error.response;
-    } else if (error instanceof Error) {
-      // จัดการข้อผิดพลาดทั่วไป
-      console.error('General error:', error.message);
-      return { data: { message: error.message } };
-    } else {
-      // จัดการกรณีที่ไม่รู้จักประเภทของข้อผิดพลาด
-      console.error('Unknown error:', error);
-      return { data: { message: 'An unknown error occurred' } };
-    }
-  }
+  return await axios
+    .post(`${apiUrl}/signin-admin`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 async function GetAdminByID(id: number) {
   try {
-    const response = await axios.get(`${apiUrl}/admin/${id}`);
+    const response = await axios.get(`${apiUrl}/admin/${id}`, { headers: getAuthHeaders() });
     return response.data;
   } catch (error) {
     console.error('Error fetching admin data', error);
     throw new Error('Error fetching admin data');
   }
 }
-
 async function ListStudents() {
   return await axios
     .get(`${apiUrl}/list-student`, requestOptions)
@@ -278,12 +261,32 @@ async function GetDelayedPaymentForm(id: string) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
 async function ListDelayedPaymentForms() {
-  return await axios
-    .get(`${apiUrl}/list-delayedpaymentform`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+    }
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/list-delayedpaymentform`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else if (response.status === 401) {
+      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+    } else {
+      console.error(`Error: ${response.status} - ${response.statusText}`);
+    }
+    return false;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
 }
+
 async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
   return await axios
     .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions)

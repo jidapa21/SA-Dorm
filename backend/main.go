@@ -18,7 +18,7 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-
+	"dormitory.com/dormitory/controller/reservation"
 	//"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
@@ -103,6 +103,7 @@ func main() {
 	r.GET("/familyStatuses", familystatuses.GetAll)
 	r.GET("/guardians", guardians.GetAll)
 	r.GET("/license", license.GetAll)
+	r.GET("/reservation", reservation.GetReservation)
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)

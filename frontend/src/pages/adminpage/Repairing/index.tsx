@@ -3,7 +3,7 @@ import { Button, Table, Typography, Card } from 'antd';
 import ReadRepairing from './ReadRepairing/index';
 import { GetListRepairs } from '../../../services/https';
 import { RepairInterface } from "../../../interfaces/repairing";
-
+import moment from 'moment';
 const { Title } = Typography;
 
 interface TableRepairRecord extends RepairInterface {
@@ -19,22 +19,22 @@ const Repairing: React.FC = () => {
     const fetchRepairs = async () => {
       try {
         const data = await GetListRepairs();
+        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
           const transformedData = data.map((item: RepairInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
+          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
           setRepairs(transformedData);
         }
       } catch (error) {
         console.error('Error fetching repairs:', error);
       }
     };
-
+  
     fetchRepairs();
-  }, []);
-
+  }, []); 
   const handleDetailsClick = (repairId: string) => {
     setSelectedKey(repairId);
   };
@@ -48,11 +48,12 @@ const Repairing: React.FC = () => {
       title: 'รายการแจ้งซ่อม',
       children: [
         {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-          ),
+            title: 'รายละเอียดสถานที่',
+            dataIndex: 'location_details',
+            key: 'location_details',
+            render: (text: string) => (
+              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+            ),
         },
         {
           key: 'details',
@@ -71,7 +72,6 @@ const Repairing: React.FC = () => {
       ],
     },
   ];
-
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}

@@ -12,29 +12,29 @@ interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface 
 }
 
 const DelayingPayment: React.FC = () => {
-  const [delayingPayment, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
+  const [repairs, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchDelayingPayment = async () => {
+    const fetchRepairs = async () => {
       try {
         const data = await ListDelayedPaymentForms();
+        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
           const transformedData = data.map((item: DelayedPaymentFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
+          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
           setRepairs(transformedData);
         }
       } catch (error) {
         console.error('Error fetching repairs:', error);
       }
     };
-
-    fetchDelayingPayment();
-  }, []);
-
+  
+    fetchRepairs();
+  }, []); 
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };
@@ -45,14 +45,15 @@ const DelayingPayment: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการแจ้งซ่อม',
+      title: 'รายการฟอร์มผ่อนผัน',
       children: [
         {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-          ),
+            title: 'สภานะ',
+            dataIndex: 'Status',
+            key: 'Status',
+            render: (text: string) => (
+              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+            ),
         },
         {
           key: 'details',
@@ -71,7 +72,6 @@ const DelayingPayment: React.FC = () => {
       ],
     },
   ];
-
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
@@ -84,7 +84,8 @@ const DelayingPayment: React.FC = () => {
         }}
       >
         <Title level={2} style={{ margin: 0, color: '#333' }}>
-        แบบฟอร์มขอผ่อนผันการชำระ
+        รายการฟอร์มผ่อนผัน
+
         </Title>
         <div
           style={{
@@ -116,7 +117,7 @@ const DelayingPayment: React.FC = () => {
           >
             <Table
               columns={columns}
-              dataSource={delayingPayment}
+              dataSource={repairs}
               pagination={false}
               bordered
               showHeader={false}

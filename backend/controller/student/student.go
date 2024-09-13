@@ -32,7 +32,7 @@ func CreateStudent(c *gin.Context) {
 	}
 	if studentCheck.ID != 0 {
 		// If the student with the provided StudentID already exists
-		c.JSON(http.StatusConflict, gin.H{"error": "StudentID is already "})
+		c.JSON(http.StatusConflict, gin.H{"error": "StudentID is already taken"})
 		return
 	}
 
@@ -40,10 +40,10 @@ func CreateStudent(c *gin.Context) {
 	hashedPassword, _ := config.HashPassword(student.Password)
 
 	// สร้าง students
-	students := entity.Students{
+	newStudent := entity.Students{
 		StudentID: student.StudentID,
-		FirstName: student.FirstName, // ตั้งค่าฟิลด์ FirstName
-		LastName:  student.LastName,  // ตั้งค่าฟิลด์ LastName
+		FirstName: student.FirstName,
+		LastName:  student.LastName,
 		Password:  hashedPassword,
 		Birthday:  student.Birthday,
 		Year:      student.Year,
@@ -51,13 +51,14 @@ func CreateStudent(c *gin.Context) {
 		GenderID:  student.GenderID,
 	}
 
-	// บันทึก
-	if err := db.Create(&students).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// บันทึกข้อมูลนักเรียนใหม่ลงฐานข้อมูล
+	if err := db.Create(&newStudent).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create student"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": students})
+	// ส่งการตอบกลับที่สำเร็จ
+	c.JSON(http.StatusCreated, gin.H{"message": "Student created successfully", "student": newStudent})
 }
 
 // function Get โดยในตัวอย่างเป็นการตั้งใจใช้คำสั่ง SELECT … WHERE id =... เพื่อดึงข้อมูล student ออกมาตาม primary key ที่กำหนด ผ่าน func DB.Raw(...)
