@@ -62,16 +62,16 @@ const Index: React.FC = () => {
         { title: 'จำนวน', dataIndex: 'Amount', key: 'Amount' },
         { title: 'หมายเหตุ', key: 'Remark' }, 
       ];
-      
+
       const data: DataType[] = [
         {
           Date: new Date(),
           List: 'ค่าหอพัก',
-          Amount: 2900.00,
+          Amount: 100,
           Remark: '',
           AdminID: '',
           ReservationID: '',
-          ID: 0
+          ID: 1
         },
         {
           Date: new Date(),
@@ -80,7 +80,7 @@ const Index: React.FC = () => {
           Remark: '',
           AdminID: '',
           ReservationID: '',
-          ID: 0
+          ID: 1
         },
         {
           Date: new Date(),
@@ -172,16 +172,15 @@ const getSlip = async (id: number) => {
     // Make sure to use the correct URL or File path
     Path.Path = fileUrl;
   
-    try {
+    //try {
       const res = await CreateSlip(Path);
-  
+      console.log(res)
       if (res) {
         messageApi.open({
           type: "success",
           content: "อัพโหลดรูปภาพสำเร็จ",
         });
         setTimeout(() => {
-          navigate("/payment");
         }, 2000);
       } else {
         messageApi.open({
@@ -189,13 +188,13 @@ const getSlip = async (id: number) => {
           content: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ!",
         });
       }
-    } catch (error) {
+    /*} catch (error) {
       console.error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ:", error);
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาดในการเชื่อมต่อ!",
       });
-    }
+    }*/
   };
 
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
@@ -216,6 +215,8 @@ const getSlip = async (id: number) => {
     }
   }, []);
   */
+
+  /*
   const handleSubmit = async () => {
     if (!fileList) {
       messageApi.open({
@@ -250,14 +251,16 @@ const getSlip = async (id: number) => {
       });
     }
   };
-  
+  */
 
 return (
     <>
       <br />
+      <Space style={{ display: 'flex', justifyContent: 'center' }}>
         <div className='text-container'>
             <div className='text-1'>แจ้งยอดชำระ</div>
         </div>
+        </Space>
         <Steps
       progressDot
       current={1}
@@ -321,7 +324,7 @@ return (
               <Form.Item>
                 <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                   <Form.Item
-                    name="upload"
+                    name="path"
                     label="อัพโหลดไฟล์ที่นี่"
                     valuePropName="fileList"
                     getValueFromEvent={(e) => e.fileList}

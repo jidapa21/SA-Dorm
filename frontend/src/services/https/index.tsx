@@ -285,10 +285,9 @@ async function DeleteAnnouncementById(id: string) {
     .catch((e) => e.response);
 }
 //-------------slip--------------------------------------------------------------------------------------------------------------
-
 async function CreateSlip(data: SlipInterface) {
   return await axios
-  .post(`${apiUrl}/slip`, data, requestOptions)
+  .post(`${apiUrl}/create-slip`, data, requestOptions)
   .then((res) => res)
   .catch((e) => e.response);
 }

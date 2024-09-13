@@ -16,10 +16,10 @@ type Expense struct {
 
 	WaterFeeID uint     `json:"water_id"`
 	WaterFee   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
-
+/*
 	// One-to-one relationship
 	SlipID 	uint         	`json:"reservation_id"`
 	Slip   	*Slip 	`gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
-	
+	*/
 		
 }

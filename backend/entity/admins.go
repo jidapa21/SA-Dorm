@@ -15,5 +15,5 @@ type Admins struct {
 	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:AdminID"`
 	ResigningForms      []ResigningForm      `gorm:"foreignKey:AdminID"`
 	Announcement        []Announcement       `gorm:"foreignKey:AdminID"`
-	Slip        		[]Slip       		`gorm:"foreignKey:AdminID"`
+	//Slip        		[]Slip       		`gorm:"foreignKey:AdminID"`
 }

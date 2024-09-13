@@ -208,10 +208,11 @@ func SetupDatabase() {
 
 		// สร้างข้อมูล RentFee
 		rentFee = entity.RentFee{
-			Amount:        amount,
-			ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
+			ID:				1,
+			Amount:        	amount,
+			ReservationID: 	reservation.ID, // เชื่อมโยงกับ Reservation
 		}
-
+		db.FirstOrCreate(&rentFee, entity.RentFee{ID:1})
 		// ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
 		db.Where("reservation_id = ?", reservation.Dorm.Type ).FirstOrCreate(&rentFee)
 	}
@@ -227,13 +228,13 @@ func SetupDatabase() {
 
 	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
 	expense := entity.Expense{
-		Remark:           " ทำ",
+		Remark:           " - ",
 		Status:           "กำลังดำเนินการ",
 		RentFeeID:        rentFee.ID,        // เชื่อมโยง RentFee
 		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
 		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
 	}
-	db.FirstOrCreate(&expense, entity.Expense{Remark: " ทำ"})
+	db.FirstOrCreate(&expense, entity.Expense{Remark: " - "})
 
 
 	var expense1 entity.Expense
@@ -243,10 +244,11 @@ db.Preload("RentFees").Preload("WaterFees").Preload("ElectricityFees").First(&ex
 
 	// Seed ข้อมูล Slip 
 	slip := entity.Slip{
-		Path:           "รูปสลิป",
+		Path:           "1667801636944.jpg",
 		Date:           time.Now(),
 		AdminID:        rentFee.ID,       
-		ExpenseID:      expense.ID,      
+		ExpenseID:      expense.ID,
+		Totalamount: 	3690.00,      
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})
 }

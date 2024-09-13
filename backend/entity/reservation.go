@@ -19,7 +19,7 @@ type Reservation struct {
 
 	RoomID 	uint
 	Room	Room  `gorm:"foriegnKey:RoomID"`
-
+/*
 	RentFeeID uint      `json:"rent_id"`
 	RentFee   Students `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
 
@@ -28,7 +28,7 @@ type Reservation struct {
 
 	ElectricityFeeID uint      `json:"elec_id"`
 	ElectricityFee   Students `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
-
+*/
 	Repairings  			[]Repairing `gorm:"foreignKey:ReservationID"`
 	DelayedPaymentForms  	[]DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
 	En_ExitingForms  		[]En_ExitingForm `gorm:"foreignKey:ReservationID"`
