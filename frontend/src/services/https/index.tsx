@@ -329,19 +329,10 @@ async function DeleteAnnouncementById(id: string) {
 }
 //-------------slip--------------------------------------------------------------------------------------------------------------
 async function CreateSlip(data: SlipInterface) {
-  const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/repair`, requestOptions).then((res) => {
-    if (res.status == 201) {
-      return res.json();
-    } else {
-      return false;
-    }
-  });
-  return res;
+  return await axios
+  .post(`${apiUrl}/create-slip`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
 }
 
 async function GetSlip(id: Number | undefined) {

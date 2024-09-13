@@ -164,7 +164,7 @@ func SetupDatabase() {
 		ID:               1,
 		Subject:          "อ่างล้างมือตัน",
 		Detail:           "ทำเศษอาหารตก",
-		Image:            "yes",
+		Image:            "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
 		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
 		Contact:          "097-153-1219",
 		Time_Slot:        "09:00-16:00 น.",

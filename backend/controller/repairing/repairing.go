@@ -9,70 +9,71 @@ import (
 )
 
 func CreateRepair(c *gin.Context) {
-    var repairing entity.Repairing
-    var sid entity.Students
-    var reservation entity.Reservation
-    var dorm entity.Dorm
-    var room entity.Room
+	var repairing entity.Repairing
+	var sid entity.Students
+	var reservation entity.Reservation
+	var dorm entity.Dorm
+	var room entity.Room
+	var admin entity.Admins
 
-	
-    studentID := c.MustGet("student_id").(string)
-    if studentID == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
-        return
-    }
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
 
-    db := config.DB()
-    results := db.Where("student_id = ?", studentID).First(&sid)
-    if results.Error != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-        return
-    }
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
 
-    db.Where("student_id = ?", sid.ID).First(&reservation)
-    if reservation.ID == 0 {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
-        return
-    }
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
 
-    if err := c.ShouldBindJSON(&repairing); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	if err := c.ShouldBindJSON(&repairing); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-    db.First(&dorm, reservation.DormID)
-    if dorm.ID == 0 {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
-        return
-    }
+	db.First(&dorm, reservation.DormID)
+	if dorm.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
+		return
+	}
 
-    db.First(&room, reservation.RoomID)
-    if room.ID == 0 {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-        return
-    }
+	db.First(&room, reservation.RoomID)
+	if room.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
+		return
+	}
 
-    rp := entity.Repairing{
-        Subject:          repairing.Subject,
-        Detail:           repairing.Detail,
-        Image:            repairing.Image,
-        Location_Details: repairing.Location_Details,
-        Contact:          repairing.Contact,
-        Time_Slot:        repairing.Time_Slot,
-        Remarks:          repairing.Remarks,
-        Status:           "รอดำเนินการ",
-        ReservationID:    reservation.ID,
-        Reservation:      reservation,
-    }
+	db.First(&admin, "role = ?", "admin")
 
-    if err := db.Create(&rp).Error; err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	rp := entity.Repairing{
+		Subject:          repairing.Subject,
+		Detail:           repairing.Detail,
+		Image:            repairing.Image,
+		Location_Details: repairing.Location_Details,
+		Contact:          repairing.Contact,
+		Time_Slot:        repairing.Time_Slot,
+		Remarks:          repairing.Remarks,
+		Status:           "รอดำเนินการ",
+		ReservationID:    reservation.ID,
+		Reservation:      reservation,
+	}
 
-    c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+	if err := db.Create(&rp).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
-
 
 // GET /Repairing/:id
 func GetRepair(c *gin.Context) {

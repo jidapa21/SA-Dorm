@@ -5,35 +5,34 @@ import {
 import React from 'react';
 
 interface DataType {
-  key: string;
-  no: string;
-  subject: string;
-  type: string;
-  state: string[];
+  ID: number;
+  Subject: string;
+  Type: string;
+  State: string[];
 }
 
 const Index: React.FC = () => {
   const columns = [
     {
       title: 'ลำดับ',
-      dataIndex: 'no',
-      key: 'no',
+      dataIndex: 'ID',
+      key: 'id',
       render: (text: string) => <a>{text}</a>,
     },
     {
       title: 'หัวข้อ',
-      dataIndex: 'subject',
+      dataIndex: 'Subject',
       key: 'subject',
     },
     {
       title: 'ประเภท',
-      dataIndex: 'type',
+      dataIndex: 'Type',
       key: 'type',
     },
     {
       title: 'สถานะ',
+      dataIndex: 'State',
       key: 'state',
-      dataIndex: 'state',
       render: (state: string[]) => (
         <>
           {state.map((state: string) => {
@@ -62,14 +61,12 @@ const Index: React.FC = () => {
 
   const data: DataType[] = [
     {
-      key: '1',
-      no: '1',
+      id: '1',
       subject: 'ฟอร์มขออนุญาติเข้า-ออกหอพัก',
       type: 'ฟอร์มเอกสาร',
       state: ['รอดำเนินการ'],
     },
     {
-      key: '2',
       no: '2',
       subject: 'เครื่องทำน้ำอุ่นไม่ทำงาน',
       type: 'แจ้งซ่อม',

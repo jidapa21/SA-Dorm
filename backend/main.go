@@ -101,8 +101,9 @@ func main() {
 		router.GET("/admin/:id", admin.GetAdminByID)
 
 		//Slip Routes
-		router.POST("/slip", slip.CreateSlip)
-		router.PATCH("/slip/:id", slip.UpdateSlip)
+		//Slip Routes
+		router.POST("/create-slip", slip.CreateSlip)
+		router.PATCH("/update-/slip/:id", slip.UpdateSlip)
 		
 	}
 

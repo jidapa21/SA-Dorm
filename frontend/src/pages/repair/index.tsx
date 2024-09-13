@@ -52,6 +52,7 @@ type CombinedData = ReservationInterface &
 const myId = localStorage.getItem("id");
 
 export default function RepairCreate() {
+  
   interface DataType {
     ID: number;
     Subject: string;
@@ -65,7 +66,7 @@ export default function RepairCreate() {
     ReservationID: number;
     AdminID: number;
   }
-
+/*
   const columns: ColumnsType<RepairInterface> = [
     {
       title: "ลำดับ",
@@ -156,7 +157,7 @@ export default function RepairCreate() {
   ];
 
   const data: DataType[] = [];
-
+*/
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [studentData, setStudentData] = useState<StudentInterface | null>(null);
