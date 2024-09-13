@@ -15,10 +15,10 @@ type Reservation struct {
 	Student   Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
 	DormID 	uint
-	Dorm	Dorm  `gorm:"foriegnKey:DormID"`
+	Dorm	Dorm  `gorm:"foreignKey:DormID"`
 
 	RoomID 	uint
-	Room	Room  `gorm:"foriegnKey:RoomID"`
+	Room	Room  `gorm:"foreignKey:RoomID"`
 
 	Repairings  			[]Repairing `gorm:"foreignKey:ReservationID"`
 	DelayedPaymentForms  	[]DelayedPaymentForm `gorm:"foreignKey:ReservationID"`

@@ -10,7 +10,7 @@ type Room struct {
 
 	// DormID ทำหน้าที่เป็น FK
 	DormID 	uint
-	Dorm	Dorm `gorm:"foriegnKey:DormID"`
+	Dorm	Dorm `gorm:"foreignKey:DormID"`
 
 	Reservations []Reservation `gorm:"foreignKey:RoomID"`
 }
