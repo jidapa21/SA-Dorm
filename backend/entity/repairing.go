@@ -5,7 +5,8 @@ import "gorm.io/gorm"
 type Repairing struct {
 	gorm.Model
 	ID               uint    `gorm:"primaryKey;autoIncrement"`
-	Subject          string  `json:"subject"`
+	Title            string  `json:"title"`
+	Type             string  `json:"type"`
 	Detail           string  `json:"detail"`
 	Image            string  `gorm:"type:longtext" json:"image"`
 	Location_Details string  `json:"location_details"`

@@ -7,7 +7,9 @@ import (
 
 type DelayedPaymentForm struct {
 	gorm.Model
-	ID              uint      `gorm:"primaryKey;autoIncrement"`
+	ID              uint `gorm:"primaryKey;autoIncrement"`
+	Title           string
+	Type            string    `json:"type"`
 	Dorm_Payment    *float64  `json:"dorm_payment"`
 	Electricly_Bill *float64  `json:"electricly_bill"`
 	Water_Bill      *float64  `json:"water_bill"`

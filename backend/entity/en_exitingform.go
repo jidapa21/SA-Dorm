@@ -8,6 +8,8 @@ import (
 type En_ExitingForm struct {
 	gorm.Model
 	ID              uint `gorm:"primaryKey;autoIncrement"`
+	Title           string
+	Type            string `json:"type"`
 	Date_Submission time.Time
 	Request         string
 	Because_Of      string

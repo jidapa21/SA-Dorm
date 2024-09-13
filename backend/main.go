@@ -7,6 +7,8 @@ import (
 	"dormitory.com/dormitory/controller/address"
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
+	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -17,10 +19,9 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/delayedpaymentform"
-	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/resigningform"
 	"dormitory.com/dormitory/controller/slip"
+	"dormitory.com/dormitory/controller/status"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
@@ -80,12 +81,15 @@ func main() {
 		router.GET("/list-delayedpaymentform", delayedpaymentform.ListDelayedPaymentForms)
 		router.GET("/get-delayedpaymentform/:id", delayedpaymentform.GetDelayedPaymentForm)
 		router.PUT("/update-delayedpaymentform/:id", delayedpaymentform.UpdateDelayedPaymentForm)
-		
+
 		// En_ExitingForm Route
 		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
-		
+
 		// ResigningForm Route
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
+
+		// ResigningForm Route
+		router.POST("/get-status", status.GetStatusById)
 
 		// Announcement Routes
 		router.POST("/create-announcement", announcement.CreateAnnouncement)
@@ -104,7 +108,7 @@ func main() {
 		//Slip Routes
 		router.POST("/create-slip", slip.CreateSlip)
 		router.PATCH("/update-/slip/:id", slip.UpdateSlip)
-		
+
 	}
 
 	r.GET("/genders", genders.GetAll)

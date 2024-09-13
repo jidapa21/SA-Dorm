@@ -55,7 +55,7 @@ export default function RepairCreate() {
   
   interface DataType {
     ID: number;
-    Subject: string;
+    Title: string;
     Detail: string;
     Image: string;
     Location_Details: string;
@@ -287,7 +287,7 @@ export default function RepairCreate() {
                 <Col xs={24} sm={24} md={24} lg={24} xl={12}>
                   <Form.Item
                     label="หัวข้อการขอรับบริการ"
-                    name="subject"
+                    name="title"
                     rules={[
                       {
                         required: true,

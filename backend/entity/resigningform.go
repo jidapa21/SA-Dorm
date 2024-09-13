@@ -8,6 +8,8 @@ import (
 type ResigningForm struct {
 	gorm.Model
 	ID            uint `gorm:"primaryKey;autoIncrement"`
+	Title         string
+	Type          string `json:"type"`
 	Date          time.Time
 	Because_Of    string
 	Accommodation string

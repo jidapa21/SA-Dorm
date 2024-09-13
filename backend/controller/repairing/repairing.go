@@ -12,10 +12,6 @@ func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
 	var sid entity.Students
 	var reservation entity.Reservation
-	var dorm entity.Dorm
-	var room entity.Room
-	var admin entity.Admins
-
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
@@ -29,6 +25,7 @@ func CreateRepair(c *gin.Context) {
 		return
 	}
 
+	//ดึงข้อมูล reservation จากฐานข้อมูล โดยค้นหาจากฟิลด์ student_id ที่ตรงกับค่า sid.ID
 	db.Where("student_id = ?", sid.ID).First(&reservation)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
@@ -40,22 +37,9 @@ func CreateRepair(c *gin.Context) {
 		return
 	}
 
-	db.First(&dorm, reservation.DormID)
-	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
-		return
-	}
-
-	db.First(&room, reservation.RoomID)
-	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-		return
-	}
-
-	db.First(&admin, "role = ?", "admin")
-
 	rp := entity.Repairing{
-		Subject:          repairing.Subject,
+		Title:            repairing.Title,
+		Type:             "แจ้งซ่อม",
 		Detail:           repairing.Detail,
 		Image:            repairing.Image,
 		Location_Details: repairing.Location_Details,

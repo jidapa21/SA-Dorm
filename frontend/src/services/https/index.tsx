@@ -258,17 +258,24 @@ async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-//---------------------   CreateEn_ExitingForm ---------------------------------
+//---------------------   En_ExitingForm ---------------------------------
 async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
   return await axios
     .post(`${apiUrl}/create-en_exitingform`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
-//---------------------   CreateEn_ExitingForm ---------------------------------
+//---------------------   ResigningForm ---------------------------------
 async function CreateResigningForm(data: ResigningFormInterface) {
   return await axios
     .post(`${apiUrl}/create-resigningform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+//---------------------   Status ---------------------------------
+async function GetStatusById(id: number) {
+  return await axios
+    .get(`${apiUrl}/get-status/${id}`, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
@@ -416,6 +423,8 @@ export {
   CreateEn_ExitingForm,
   // ----------------- ResigningForm --------------
   CreateResigningForm,
+  // ----------------- Status --------------
+  GetStatusById,
   // ----------------- Announcements --------------
   ListAnnouncements,
   GetAnnouncementById,
