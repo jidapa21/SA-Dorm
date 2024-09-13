@@ -4,14 +4,14 @@ import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Ste
 import Barcode from 'react-barcode'; // นำเข้า Barcode
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "./index.css";
-
+import axios from 'axios';
 
 import { StudentInterface } from "./../../interfaces/Student";
 import { SlipInterface } from "../../interfaces/Slip";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-import {CreateSlip, GetListSlips, GetSlip, UpdateSlip } from "./../../services/https";
+import {CreateSlip, GetListSlips, GetSlip, UpdateSlip, CreateExpense } from "./../../services/https";
 import Slip from "./../adminpage/PaymentConfirmation";
 import { ExpenseInterface } from '../../interfaces/Expense';
 
@@ -37,14 +37,7 @@ const Index: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  interface SlipInterface {
-    ID: number;
-    Path: string;
-    Date: Date;
-    RentID?: number;
-    ElectricityID?: number;
-    WaterID?: number;
-  }
+
 
     interface DataType {
         ID: number;
@@ -157,6 +150,40 @@ const getSlip = async (id: number) => {
     imgWindow?.document.write(path.outerHTML);
   };
 
+  const onFinish = async (values: SlipInterface) => {
+    values.path = fileList[0]?.thumbUrl || "";
+
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "Student ID on finish is not found.",
+      });
+    }
+    
+    let res = await CreateSlip(values);
+    console.log(res);
+    if (res) {
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      setFileList([]); // รีเซ็ตไฟล์อัปโหลด
+      setTimeout(() => {
+        // ตรวจสอบ URL ให้ถูกต้อง
+      }, 2000);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด!",
+      });
+    }
+  };
+  /*
+  
   const onFinish = async (Path: SlipInterface) => {
     if (fileList.length === 0) {
       messageApi.open({
@@ -170,9 +197,11 @@ const getSlip = async (id: number) => {
     const fileUrl = file.url || (file.originFileObj ? URL.createObjectURL(file.originFileObj) : '');
 
     // Make sure to use the correct URL or File path
-    Path.Path = fileUrl;
+    Path.path = fileUrl;
   
     //try {
+      
+      CreateExpense(Path);
       const res = await CreateSlip(Path);
       console.log(res)
       if (res) {
@@ -188,15 +217,16 @@ const getSlip = async (id: number) => {
           content: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ!",
         });
       }
-    /*} catch (error) {
+    } catch (error) {
       console.error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ:", error);
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาดในการเชื่อมต่อ!",
       });
-    }*/
+    }
   };
 
+  */
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   // Prevent automatic upload
   setFileList([...fileList, file]);

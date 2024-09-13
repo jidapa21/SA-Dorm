@@ -8,7 +8,7 @@ import (
 type Slip struct {
 	gorm.Model
 	ID		uint    `gorm:"primaryKey;autoIncrement"`
-	Path    string `gorm:"type:longtext"; json:"path"`
+	Path    string `gorm:"type:longtext" json:"path"`
 	Date	time.Time `json:"date"`
 	//เพิ่มราคารวมมาใหม่
 	Totalamount	float64 `json:"totalamount"`

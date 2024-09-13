@@ -9,47 +9,53 @@ import (
 
 // POST /users
 func CreateSlip(c *gin.Context) {
-	id := c.Param("id")
-		if id == "" {
-    		id = "1" // ตั้งค่าเริ่มต้นเป็น 1 หากไม่มีการระบุ id
-}
-	var slip entity.Slip
+    var slip entity.Slip
+	var sid entity.Students
     var expense entity.Expense
+	var reservation entity.Reservation
 
-	expenseID := c.MustGet("ex_id").(string)
-    if expenseID == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "ex_id cannot be empty"})
-        return
-    }
-	if err := c.ShouldBindJSON(&slip); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
 		return
 	}
+
 	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
 
-	    // ค้นหา expense ด้วย ExpenseID
-    result := db.First(&expense, slip.ExpenseID)
-    if result.Error != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "ex_id not found"})
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+
+    if err := c.ShouldBindJSON(&slip); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
 
-	rp := entity.Slip{
-		Path:           slip.Path,
-		Date:         	slip.Date,
-		ExpenseID:     	expense.ID,
-		Expense:    	&expense, 
-		
-	}
 
-	if err := db.Create(&rp).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    rp := entity.Slip{
+        Path:        slip.Path,
+        Date:        slip.Date,
+        ExpenseID:   expense.ID,
+        Expense:     &expense,
+    }
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+    if err := db.Create(&rp).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusCreated, gin.H{"message": "Created successfully", "data": rp})
 }
+
 
 
 // GET /Slip/:id
@@ -82,22 +88,26 @@ func GetListSlips(c *gin.Context) {
 
 // PATCH /slip
 func UpdateSlip(c *gin.Context) {
-	var slip entity.Slip
-	id := c.Param("id")
+    var slip entity.Slip
+    id := c.Param("id")
 
-	db := config.DB()
-	result := db.First(&slip, id)
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
-		return
-	}
-	if err := c.ShouldBindJSON(&slip); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
-		return
-	}
-	if err := db.Save(&slip).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
+    db := config.DB()
+    result := db.First(&slip, id)
+    if result.Error != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
+        return
+    }
+
+    if err := c.ShouldBindJSON(&slip); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+        return
+    }
+
+    if err := db.Save(&slip).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
 }
+

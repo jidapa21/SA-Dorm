@@ -1,8 +1,8 @@
 export interface ExpenseInterface {
     ID?:            number;
-    Remark?:          string;
-    Status?:         string;
-    RentID?:       number;
-    ElectricityID?:     number;
-    WaterID?:     number;
+    remark?:          string;
+    status?:         string;
+    rent_id?:       number;
+    elec_id?:     number;
+    water_id?:     number;
 }

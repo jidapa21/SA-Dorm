@@ -319,6 +319,13 @@ async function CreateSlip(data: SlipInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
+async function CreateExpense(data: ExpenseInterface) {
+  return await axios
+  .post(`${apiUrl}/create-expense`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
     /*if (id === undefined) {
       console.error('Invalid ID');
       return false;
@@ -470,4 +477,5 @@ export {
   GetListSlips,
   UpdateSlip,
   fetchExpenses,
+  CreateExpense
 };

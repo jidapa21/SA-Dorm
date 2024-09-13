@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -92,8 +93,10 @@ func main() {
 
 		//Slip Routes
 		router.POST("/create-slip", slip.CreateSlip)
-		router.PATCH("/update-/slip/:id", slip.UpdateSlip)
-		
+		router.PATCH("/slip/:id", slip.UpdateSlip)
+
+			//Slip Routes
+			router.POST("/create-expense", expense.CreateExpense)
 	}
 
 	r.GET("/genders", genders.GetAll)

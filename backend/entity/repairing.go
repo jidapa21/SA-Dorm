@@ -7,7 +7,7 @@ type Repairing struct {
     ID                  uint `gorm:"primaryKey;autoIncrement"`
     Subject             string  `json:"subject"`
     Detail              string  `json:"detail"`
-    Image               string  `gorm:"type:longtext"; json:"image"`
+    Image               string  `gorm:"type:longtext" json:"image"`
     Location_Details    string  `json:"location_details"`
     Contact             string  `json:"contact"`
     Time_Slot           string  `json:"time_slot"`
