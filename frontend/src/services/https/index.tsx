@@ -31,31 +31,35 @@ async function SignInStudent(data: SignInStudentInterface) {
 }
 async function SignInAdmin(data: SignInAdminInterface) {
   try {
-    const response = await axios.post(`${apiUrl}/signin-admin`, data, requestOptions);
-    
+    const response = await axios.post(
+      `${apiUrl}/signin-admin`,
+      data,
+      requestOptions
+    );
+
     // ตรวจสอบว่ามีข้อมูล adminID ในการตอบกลับ
     if (response.data && response.data.adminID) {
       // เก็บ adminID ลงใน localStorage
-      localStorage.setItem('adminID', response.data.adminID.toString());
-      
+      localStorage.setItem("adminID", response.data.adminID.toString());
+
       // เปลี่ยนเส้นทางไปยังหน้าแอดมินหรือหน้าอื่นๆ ตามต้องการ
       // navigate('/admin-dashboard');
     }
-    
+
     return response;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       // จัดการข้อผิดพลาดที่เกิดจาก Axios
-      console.error('Axios error:', error.message);
+      console.error("Axios error:", error.message);
       return error.response;
     } else if (error instanceof Error) {
       // จัดการข้อผิดพลาดทั่วไป
-      console.error('General error:', error.message);
+      console.error("General error:", error.message);
       return { data: { message: error.message } };
     } else {
       // จัดการกรณีที่ไม่รู้จักประเภทของข้อผิดพลาด
-      console.error('Unknown error:', error);
-      return { data: { message: 'An unknown error occurred' } };
+      console.error("Unknown error:", error);
+      return { data: { message: "An unknown error occurred" } };
     }
   }
 }
@@ -64,8 +68,8 @@ async function GetAdminByID(id: number) {
     const response = await axios.get(`${apiUrl}/admin/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching admin data', error);
-    throw new Error('Error fetching admin data');
+    console.error("Error fetching admin data", error);
+    throw new Error("Error fetching admin data");
   }
 }
 async function ListStudents() {
@@ -279,6 +283,21 @@ async function GetStatusById(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+/*
+async function GetListStatus() {
+  return await axios
+    .get(`${apiUrl}/list-status`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+*/
+async function GetListStatus() {
+  return await axios
+    .get(`${apiUrl}/list-status`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 //---------------------   Admin ---------------------------------
 async function Adminlist() {
   return await axios
@@ -294,13 +313,17 @@ async function CreateAdmin(data: AadminInterface) {
 }
 async function DeleteAdmin(id: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
+    const response = await axios.delete(
+      `${apiUrl}/admin/${id}`,
+      requestOptions
+    );
     return response;
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    console.error("Error deleting admin:", error);
     throw error;
   }
-} async function ListAnnouncements() {
+}
+async function ListAnnouncements() {
   return await axios
     .get(`${apiUrl}/list-announcement`, requestOptions)
     .then((res) => res)
@@ -337,9 +360,9 @@ async function DeleteAnnouncementById(id: string) {
 //-------------slip--------------------------------------------------------------------------------------------------------------
 async function CreateSlip(data: SlipInterface) {
   return await axios
-  .post(`${apiUrl}/create-slip`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .post(`${apiUrl}/create-slip`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function GetSlip(id: Number | undefined) {
@@ -425,6 +448,7 @@ export {
   CreateResigningForm,
   // ----------------- Status --------------
   GetStatusById,
+  GetListStatus,
   // ----------------- Announcements --------------
   ListAnnouncements,
   GetAnnouncementById,

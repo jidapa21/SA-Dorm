@@ -52,6 +52,7 @@ func CreateEn_ExitingForm(c *gin.Context) {
 	}
 
 	ee := entity.En_ExitingForm{
+		Type:            "ฟอร์มเอกสาร",
 		Date_Submission: en_exitingform.Date_Submission,
 		Request:         en_exitingform.Request,
 		Because_Of:      en_exitingform.Because_Of,

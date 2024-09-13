@@ -55,6 +55,7 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 	// สร้าง DelayedPaymentForm
 	d := entity.DelayedPaymentForm{
 		Title:            "แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา",
+		Type:            "ฟอร์มเอกสาร",
 		Dorm_Payment:    delayedpaymentform.Dorm_Payment,
 		Electricly_Bill: delayedpaymentform.Electricly_Bill,
 		Water_Bill:      delayedpaymentform.Water_Bill,

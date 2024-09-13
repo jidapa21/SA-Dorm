@@ -89,7 +89,9 @@ func main() {
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
 
 		// ResigningForm Route
-		router.POST("/get-status", status.GetStatusById)
+		//router.POST("/get-status", status.GetStatusById)
+		//router.GET("/list-status", status.GetListStatus)
+		router.GET("/list-status", middlewares.Authorizes(), status.GetListStatus)
 
 		// Announcement Routes
 		router.POST("/create-announcement", announcement.CreateAnnouncement)

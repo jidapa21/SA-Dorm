@@ -147,8 +147,7 @@ export default function DelayedPaymentFormCreate() {
     }
  
     let res = await CreateDelayedPaymentForm(values);
-    console.log(res);
-    if (res.status == 200) {
+    if (res) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",

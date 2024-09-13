@@ -143,8 +143,6 @@ export default function EnExitingFormCreate() {
     }
 
     let res = await CreateEn_ExitingForm(values);
-    console.log(res);
-    console.log("Date: "+typeof values.Date_Request);
     if (res) {
       messageApi.open({
         type: "success",
