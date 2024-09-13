@@ -46,11 +46,11 @@ func CreateReservation(c *gin.Context) {
 	}
 
 	/**********************************************************/
-	studentID := c.MustGet("student_id").(string)
+	/*studentID := c.MustGet("student_id").(string)
     if studentID == "" {
         c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
         return
-    }
+    }*/
 	/**********************************************************/
 
 	// Check if the student with the provided StudentID exists

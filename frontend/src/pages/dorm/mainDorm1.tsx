@@ -57,7 +57,7 @@ const MainDorm1: React.FC = () => {
   return (
     <>
       <Row className="row-container" >
-        <Col><h2 style={{ color: '#1f1f1f' }}>จองหอพักชาย</h2></Col>
+        <Col><h2 style={{ color: '#1f1f1f' }}>จองหอพักชาย 1</h2></Col>
         <Col><h2 className="heading-red">Air conditioner</h2></Col>
       </Row>
       <Divider />

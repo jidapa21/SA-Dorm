@@ -3,6 +3,7 @@ import { Table } from 'antd';
 import type { TableProps } from 'antd';
 import { Col, Row,Divider} from "antd";
 import { Button, Flex } from 'antd';
+import { Link } from 'react-router-dom';
 import "./Bsub.css";
 
 
@@ -84,8 +85,12 @@ const Booking: React.FC = () => {
         <Table columns={columns} dataSource={data} pagination={false} />
       <br/>
       <div className="flex-right">
-        <Button className="custom-button dashed-button " type="dashed">ยกเลิก</Button>
-        <Button className="custom-button primary-button" type="primary">ยืนยัน</Button>
+        <Link to="/dorm-booking/mainDorm1">
+          <Button className="custom-button dashed-button " type="dashed">ยกเลิก</Button>
+        </Link>
+        <Link to="/dorm-booking/mainDorm1">
+          <Button className="custom-button primary-button" type="primary">ยืนยัน</Button>
+        </Link>
       </div>
     </>
   );
