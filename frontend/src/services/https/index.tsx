@@ -11,6 +11,7 @@ import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import { GenderInterface } from "../../interfaces/gender";
+import { ExpenseInterface } from "../../interfaces/Expenes";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
@@ -307,7 +308,7 @@ async function CreateRepair(data: RepairInterface) {
     }
   }
   
-  async function UpdateEn_ExitingForm(id: string, data: Partial<RepairInterface>) {
+  async function UpdateEn_ExitingForm(id: string, data: Partial<En_ExitingFormInterface>) {
     return await axios
       .put(`${apiUrl}/En_ExitingForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
       .then((res) => res)
@@ -331,7 +332,7 @@ async function GetResigningForm(id: number | undefined) {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/get-EResigningForm/${id}`, requestOptions);
+    const response = await fetch(`${apiUrl}/get-ResigningForm/${id}`, requestOptions);
     if (response.ok) {
       return await response.json();
     } else {
@@ -358,7 +359,7 @@ async function ListResigningForm() {
   };
 
   try {
-    const response = await fetch(`${apiUrl}/ResigningForm-getlist`, requestOptions);
+    const response = await fetch(`${apiUrl}/Resigningform-getlist`, requestOptions);
     if (response.ok) {
       return await response.json();
     } else if (response.status === 401) {
@@ -373,13 +374,13 @@ async function ListResigningForm() {
   }
 }
 
-async function UpdateResigningForm(id: string, data: Partial<RepairInterface>) {
+async function UpdateResigningForm(id: number, data: Partial<ResigningFormInterface>) {
   return await axios
-    .put(`${apiUrl}/ResigningForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .put(`${apiUrl}/Resigningform-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
     .catch((e) => e.response);}
 //---------------------   DelayedPaymentForm ---------------------------------
-async function DelayedPaymentFormUI(data: RepairInterface) {
+async function DelayedPaymentFormUI(data: DelayedPaymentFormInterface) {
   return await axios
     .post(`${apiUrl}/create-delayedpaymentform`, data, requestOptions)
     .then((res) => res)
@@ -541,9 +542,10 @@ async function GetListSlips() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
     },
   };
-  let res = await fetch(`${apiUrl}/slip`, requestOptions)
+  let res = await fetch(`${apiUrl}/list-slip`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -572,6 +574,11 @@ async function UpdateSlip(data: SlipInterface) {
 
   return res;
 }
+async function Updateexpense(id: number, data: Partial<ExpenseInterface>) {
+  return await axios
+    .put(`${apiUrl}/update-expense/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);}
 
 export {
   SignInStudent,
@@ -621,5 +628,5 @@ export {
   GetResigningForm,
   ListResigningForm,
   UpdateResigningForm,
-
+  Updateexpense
 };

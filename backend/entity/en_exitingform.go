@@ -7,11 +7,11 @@ import (
 
 type En_ExitingForm struct {
     gorm.Model
-	Date_Submission	time.Time
-	Request			string
-    Because_Of		string
-	Date_Request	time.Time
-    Status			string
+	Date_Submission	time.Time `json:"ddate_submission"`
+	Request			string `json:"request"`
+    Because_Of		string `json:"because_of"`
+	Date_Request	time.Time `json:"date_request"`
+    Status			string `json:"status"`
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`

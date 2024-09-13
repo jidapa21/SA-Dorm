@@ -1,37 +1,42 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FileImageOutlined } from '@ant-design/icons';
-import slipImage from '../../../assets/slip.png'; 
+import { GetListSlips, Updateexpense } from '../../../services/https';
 
 interface PaymentData {
   key: string;
   time: string;
   amount: number;
   slip: string;
-  confirmed?: boolean; // เพิ่มฟิลด์นี้เพื่อแสดงว่ารายการได้รับการยืนยันแล้วหรือไม่
+  confirmed?: boolean;
+  expenseId: number; // เพิ่มฟิลด์นี้เพื่อเชื่อมกับ expenses
 }
-
-const data: PaymentData[] = [
-  {
-    key: '1',
-    time: '10:00 AM',
-    amount: 1500,
-    slip: slipImage,
-  },
-  {
-    key: '2',
-    time: '11:30 AM',
-    amount: 2000,
-    slip: slipImage,
-  },
-];
 
 const PaymentConfirmation: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [currentImage, setCurrentImage] = useState<string>('');
-  const [selectedKey, setSelectedKey] = useState<string>('');
-  const [paymentData, setPaymentData] = useState<PaymentData[]>(data); // ใช้ state เพื่อจัดการข้อมูล
+  const [paymentData, setPaymentData] = useState<PaymentData[]>([]); // เปลี่ยนเป็น state ที่ดึงข้อมูลจาก API
+
+  // ดึงข้อมูลสลิปจาก API เมื่อโหลด component
+  useEffect(() => {
+    const fetchSlips = async () => {
+      const slips = await GetListSlips();
+      if (slips) {
+        const formattedData = slips.map((slip: any) => ({
+          key: slip.ID,
+          time: slip.Date, // แสดงเวลา
+          amount: slip.Totalamount, // แสดงจำนวนเงินที่จ่าย
+          slip: slip.Path, // URL สำหรับสลิป
+          expenseId: slip.ExpenseID,
+        }));
+        setPaymentData(formattedData);
+      } else {
+        message.error('ไม่สามารถดึงข้อมูลสลิปได้');
+      }
+    };
+    fetchSlips();
+  }, []);
 
   const handleViewSlip = (url: string) => {
     if (url) {
@@ -47,16 +52,19 @@ const PaymentConfirmation: React.FC = () => {
     setCurrentImage('');
   };
 
-  const handleConfirm = (key: string) => {
-    setSelectedKey(key);
-
-    // อัปเดตสถานะของรายการใน state
-    const updatedData = paymentData.map((item) =>
-      item.key === key ? { ...item, confirmed: true } : item
-    );
-    setPaymentData(updatedData);
-
-    console.log(`ยืนยันการชำระเงินสำหรับรายการ ${key}`);
+  const handleConfirm = async (key: string, expenseId: number) => {
+    // อัปเดตสถานะใน expenses
+    try {
+      await Updateexpense(expenseId, { status: 'confirmed' });
+      // อัปเดตใน state หลังจากอัปเดตสำเร็จ
+      const updatedData = paymentData.map((item) =>
+        item.key === key ? { ...item, confirmed: true } : item
+      );
+      setPaymentData(updatedData);
+      message.success(`ยืนยันการชำระเงินสำหรับรายการ ${key} สำเร็จ`);
+    } catch (error) {
+      message.error('เกิดข้อผิดพลาดในการยืนยัน');
+    }
   };
 
   const columns: ColumnsType<PaymentData> = [
@@ -90,30 +98,30 @@ const PaymentConfirmation: React.FC = () => {
       render: (_, record) => (
         <Button
           type="primary"
-          disabled={record.confirmed} // ปิดการใช้งานปุ่มถ้ารายการได้รับการยืนยันแล้ว
-          onClick={() => handleConfirm(record.key)}
+          disabled={record.confirmed}
+          onClick={() => handleConfirm(record.key, record.expenseId)} // ส่ง expenseId ไปด้วย
         >
           {record.confirmed ? 'ยืนยันแล้ว' : 'ยืนยัน'}
         </Button>
       ),
     },
   ];
+  
 
   return (
     <div style={{ padding: '20px' }}>
-      {/* Header with underline */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
-          marginBottom: '20px', 
+          marginBottom: '20px',
           position: 'relative',
         }}
       >
         <span
           style={{
             fontSize: '25px',
-            fontWeight: 'bold', 
+            fontWeight: 'bold',
             position: 'relative',
             paddingBottom: '10px',
           }}
@@ -126,7 +134,7 @@ const PaymentConfirmation: React.FC = () => {
             bottom: 0,
             left: 0,
             right: 0,
-            borderBottom: '3px solid #000', 
+            borderBottom: '3px solid #000',
           }}
         />
       </div>

@@ -18,10 +18,12 @@ import (
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/controller/resigningform"
 	"dormitory.com/dormitory/controller/student"
+	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -83,8 +85,8 @@ func main() {
 		// ResigningForm Route
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
 		router.GET("/get-ResigningForm/:id", resigningform.GetResigningForm)
-		router.GET("/En_ResigningForm-getlist", resigningform.ListResigningForm)
-		router.PUT("/En_ResigningForm-update/:id", resigningform.UpdateResigningForm)
+		router.GET("/Resigningform-getlist", resigningform.ListResigningForm)
+		router.PUT("/Resigningform-update/:id", resigningform.UpdateResigningForm)
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)
@@ -105,9 +107,10 @@ func main() {
 		router.GET("/admin/:id", admin.GetAdminByID)
 
 		//Slip Routes
-		//router.POST("/slip", controller.CreateSlip)
-		//router.PATCH("/slip", controller.UpdateSlip)
-
+		router.POST("/create-slip", slip.CreateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
+		router.GET("/list-slip", slip.GetListSlips)
+		router.PUT("/update-expense/:id", expense.UpDateExpense)
 	}
 
 	r.GET("/genders", genders.GetAll)

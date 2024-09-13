@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Divider, Row, Col, Spin, Alert } from "antd";
-import { GetResignationForm } from '../../../../services/https'; // Import your API functions
+import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
+import { GetResigningForm, UpdateResigningForm } from '../../../../services/https'; // Import your API functions
 import { ResigningFormInterface } from "../../../../interfaces/ResigningForm";
-import dayjs from 'dayjs'; // Import dayjs for date formatting
 
-const ReadResignationForm: React.FC<{ ID: string }> = ({ ID }) => {
+
+const { Option } = Select;
+
+const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
   const [formValues, setFormValues] = useState<ResigningFormInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [form] = Form.useForm(); // Create form instance
 
   useEffect(() => {
     const fetchReadResignationForm = async () => {
       setLoading(true);
       try {
-        const response = await GetResignationForm(ID);
+        const response = await GetResigningForm(ID);
         if (response) {
           setFormValues(response);
+          form.setFieldsValue(response); // Set values to the form
         } else {
           setError('Failed to fetch resignation form details.');
         }
@@ -27,42 +31,58 @@ const ReadResignationForm: React.FC<{ ID: string }> = ({ ID }) => {
     };
 
     fetchReadResignationForm();
-  }, [ID]);
+  }, [ID, form]);
 
-  // Format current date
-  const formattedDate = dayjs().format('DD/MM/YYYY');
-
-  // Default values for the form
-  const defaultValues: ResigningFormInterface = {
-    Name: '',
-    Date: new Date(),
-    Because_Of: '',
-    Accommodation: '',
-    Status: '',
-    AdminID: '',
-    ReservationID: ''
+  const handleStatusChange = async (value: string) => {
+    try {
+      await UpdateResigningForm( ID, { Status: value });
+      form.setFieldsValue({ Status: value }); // Update form when status changes
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
-  return (
-    <div className="container">
-      <Card title="แบบฟอร์มลาออกหอพัก" bordered={false} style={{ width: '100%' }}>
-        <div className="form-header">
-          <p>ผู้ทำเรื่อง: B191563 มนัสเต สวัสดิกะ</p>
-          <p>วันที่ปัจจุบัน: {formattedDate}</p>
-        </div>
 
-        {loading ? (
-          <Spin tip="Loading...">
-            <div style={{ minHeight: '200px' }}></div>
-          </Spin>
-        ) : error ? (
-          <Alert message="Error" description={error} type="error" />
-        ) : (
+
+  return (
+    <div className="container" style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <Spin />
+        </div>
+      ) : error ? (
+        <Alert message={error} type="error" style={{ marginBottom: '20px' }} />
+      ) : formValues ? (
+        <Card title="แบบฟอร์มลาออกหอพัก" bordered={false} style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           <Form
+            form={form}
             name="resignation-form"
             layout="vertical"
-            initialValues={formValues || defaultValues} // Use default values if formValues is null
           >
+            <Row justify="space-between" align="top">
+              <Col>
+                <div style={{ marginBottom: '16px', color: '#666' }}>
+                  ผู้ทำเรื่อง: B191563 มนัสเต สวัสดิกะ
+                </div>
+              </Col>
+              <Col>
+                <Form.Item
+                  label="สถานะ"
+                  name="status"
+                >
+                  <Select
+                    value={form.getFieldValue("status")}
+                    style={{ width: '150px' }}
+                    onChange={handleStatusChange}
+                  >
+                    <Option value="pending" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
+                    <Option value="inProgress" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
+                    <Option value="completed" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
             <Form.Item
               label="เหตุผลที่ลาออกเนื่องจาก"
               name="because_of"
@@ -76,60 +96,12 @@ const ReadResignationForm: React.FC<{ ID: string }> = ({ ID }) => {
             >
               <Input readOnly />
             </Form.Item>
-
             <Divider />
-
-            <h3>ที่อยู่ที่ท่านพัก</h3>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item label="บ้านเลขที่" name="house_no">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="หมู่ที่" name="village_no">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="ซอย" name="allay">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="ถนน" name="road">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="ตำบล/แขวง" name="sub_district">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="อำเภอ/เขต" name="district">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="จังหวัด" name="province">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="ไปรษณีย์" name="post_code">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item label="เบอร์โทรศัพท์" name="phone_number">
-                  <Input readOnly />
-                </Form.Item>
-              </Col>
-            </Row>
           </Form>
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <div>ไม่มีข้อมูล</div>
+      )}
     </div>
   );
 };

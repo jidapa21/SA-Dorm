@@ -7,10 +7,10 @@ import (
 
 type ResigningForm struct {
     gorm.Model
-	Date			time.Time
-    Because_Of		string
-	Accommodation	string
-    Status			string
+	Date			time.Time `json:"date"`
+    Because_Of		string `json:"because_of"`
+	Accommodation	string `json:"accommodation"`
+    Status			string `json:"status"`
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`

@@ -3,7 +3,6 @@ import { Button, Table, Typography, Card } from 'antd';
 import ReadRepairing from './ReadRepairing/index';
 import { GetListRepairs } from '../../../services/https';
 import { RepairInterface } from "../../../interfaces/repairing";
-import moment from 'moment';
 const { Title } = Typography;
 
 interface TableRepairRecord extends RepairInterface {

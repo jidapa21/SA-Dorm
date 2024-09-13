@@ -12,11 +12,11 @@ interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface 
 }
 
 const DelayingPayment: React.FC = () => {
-  const [repairs, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
+  const [repairs, setDelayingPayment] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRepairs = async () => {
+    const fetchDelayingPayment = async () => {
       try {
         const data = await ListDelayedPaymentForms();
         console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
@@ -26,14 +26,14 @@ const DelayingPayment: React.FC = () => {
             key: item.ID?.toString() || index.toString(),
           }));
           console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
-          setRepairs(transformedData);
+          setDelayingPayment(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching repairs:', error);
+        console.error('Error fetching DelayingPayment:', error);
       }
     };
   
-    fetchRepairs();
+    fetchDelayingPayment();
   }, []); 
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
