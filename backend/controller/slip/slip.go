@@ -44,6 +44,7 @@ func CreateSlip(c *gin.Context) {
     rp := entity.Slip{
         Path:        slip.Path,
         Date:        slip.Date,
+		Totalamount: slip.Totalamount,
         ExpenseID:   expense.ID,
         Expense:     &expense,
     }
