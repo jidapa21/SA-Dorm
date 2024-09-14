@@ -8,7 +8,7 @@ type Dorm struct {
 	Type		string	`json:"type"`
 
 	GenderID	uint	`json:"gender_id"`
-	Gender		Genders `gorm:"foriegnKey:GenderID"`
+	Gender		Genders `gorm:"foreignKey:GenderID"`
 	
 	Rooms []Room 				`gorm:"foreignKey:DormID"`
 	Reservations []Reservation 	`gorm:"foreignKey:DormID"`

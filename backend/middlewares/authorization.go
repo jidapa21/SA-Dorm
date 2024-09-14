@@ -19,7 +19,7 @@ func Authorizes() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No Authorization header provided"})
 			return
 		}
-		extractedToken := strings.Split(clientToken, "Bearer ")
+		extractedToken := strings.Split(clientToken, "Bearer")
 		if len(extractedToken) != 2 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Incorrect Format of Authorization Token"})
 			return

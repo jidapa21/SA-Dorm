@@ -2,7 +2,6 @@ package entity
 
 import (
 	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -14,10 +13,10 @@ type Reservation struct {
 	Student   	Students	`gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
 	DormID 		uint	`json:"dorm_id"`
-	Dorm		Dorm  	`gorm:"foriegnKey:DormID"`
+	Dorm		Dorm  	`gorm:"foreignKey:DormID"`
 
 	RoomID 		uint	`json:"room_id"`
-	Room		Room  	`gorm:"foriegnKey:RoomID"`
+	Room		Room  	`gorm:"foreignKey:RoomID"`
 
 	Repairings  			[]Repairing 			`gorm:"foreignKey:ReservationID"`
 	DelayedPaymentForms  	[]DelayedPaymentForm 	`gorm:"foreignKey:ReservationID"`

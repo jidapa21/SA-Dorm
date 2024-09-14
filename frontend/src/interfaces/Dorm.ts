@@ -1,5 +1,5 @@
 export interface DormInterface {
     ID?:                number;
-    Name?:              string;
+    DormName?:          string;
     Type?:              string;
 }

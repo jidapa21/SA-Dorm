@@ -103,14 +103,17 @@ func SetupDatabase() {
 
 			dormID := uint(roomNumber / 1000)
 
+			floor := uint((roomNumber / 100) % 10)
+
 			// สร้าง Room และกำหนดค่า DormID
 			room := entity.Room{
 				RoomNumber: uint(roomNumber),
 				DormID:     dormID, // DormID จะเป็น 1, 2, 3 หรือ 4 ตาม RoomNumber
 				Available:	3,
 				DormStatus: "ห้องว่าง",
+				Floor:		floor,
 			}
-			// บันทึก Room ลงในฐานข้อมูล
+
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
@@ -137,16 +140,107 @@ func SetupDatabase() {
 		Major:     "วิศวกรรมศาสตร์",
 		GenderID:  2,
 	}
+	User2 := &entity.Students{
+		FirstName: "Nicha",
+		LastName:  "Wandee",
+		StudentID: "B6510002",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      4,
+		Major:     "วิศวกรรมศาสตร์",
+		GenderID:  1,
+	}
+	User3 := &entity.Students{
+		FirstName: "Ni",
+		LastName:  "Wan",
+		StudentID: "B6510003",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      3,
+		Major:     "วิศวกรรมศาสตร์",
+		GenderID:  2,
+	}
+	User4 := &entity.Students{
+		FirstName: "cha",
+		LastName:  "dee",
+		StudentID: "B6510004",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      3,
+		Major:     "วิศวกรรมศาสตร์",
+		GenderID:  2,
+	}
+	User5 := &entity.Students{
+		FirstName: "Tin",
+		LastName:  "Re",
+		StudentID: "B6510005",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      2,
+		Major:     "วิศวกรรมศาสตร์",
+		GenderID:  2,
+	}
+	User6 := &entity.Students{
+		FirstName: "Wicha",
+		LastName:  "Aandee",
+		StudentID: "B6510006",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      3,
+		Major:     "วิศวกรรมศาสตร์",
+		GenderID:  1,
+	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
+	db.FirstOrCreate(User2, &entity.Students{StudentID: "B6510002"})
+	db.FirstOrCreate(User3, &entity.Students{StudentID: "B6510003"})
+	db.FirstOrCreate(User4, &entity.Students{StudentID: "B6510004"})
+	db.FirstOrCreate(User5, &entity.Students{StudentID: "B6510005"})
+	db.FirstOrCreate(User6, &entity.Students{StudentID: "B6510006"})
 
-	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
+
+	ReservationDate := time.Now()
     reservation := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
-        DormID:          4,
-        RoomID:          100,
+        DormID:          1,
+        RoomID:          1,
     }
-    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
+	reservation2 := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          1,
+        RoomID:          2,
+    }
+	reservation3 := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          1,
+        RoomID:          3,
+    }
+	reservation4 := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          1,
+        RoomID:          4,
+    }
+	reservation5 := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          1,
+        RoomID:          5,
+    }
+	reservation6 := &entity.Reservation{
+        ReservationDate: ReservationDate,
+        StudentID:       User.ID,
+        DormID:          1,
+        RoomID:          6,
+    }
+    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 1, RoomID: 1})
+	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
+	db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
+	db.FirstOrCreate(reservation4, &entity.Reservation{StudentID: User4.ID, DormID: 1, RoomID: 4})
+	db.FirstOrCreate(reservation5, &entity.Reservation{StudentID: User5.ID, DormID: 1, RoomID: 5})
+	db.FirstOrCreate(reservation6, &entity.Reservation{StudentID: User6.ID, DormID: 1, RoomID: 6})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")

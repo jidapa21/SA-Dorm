@@ -384,6 +384,19 @@ async function GetRoom(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
+async function GetRoomsByFloorAndDorm(floorId: number, dormId: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/rooms/floor/${floorId}/dorm/${dormId}`, requestOptions);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) { 
+      return { error: error.response ? error.response.data : "An error occurred" };
+    }
+    return { error: "An unknown error occurred" }; 
+  }
+}
+
 async function ListRoom(data: RoomInterface) {
   return await axios
     .post(`${apiUrl}/ListRoom`, data, requestOptions)
@@ -403,12 +416,30 @@ async function UpdateRoom(id: number) {
     .catch((e) => e.response);
 }
 //------------Reservation------------//
-async function CreateReservation(data: ReservationInterface) {
-  return await axios
-    .post(`${apiUrl}/CreateReservation`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+export const CreateReservation = async (data: ReservationInterface) => {
+  try {
+      const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          throw new Error(error.response?.data.message || "Error creating reservation");
+      }
+      throw new Error("Error creating reservation");
+  }
+};
+
+async function GetReservationsByRoomID(roomID: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/reservations/room/${roomID}`, requestOptions);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { error: error.response ? error.response.data : "An error occurred" };
+    }
+    return { error: "An unknown error occurred" };
+  }
 }
+
 async function DeleteReservation(id: number) {
   return await axios
     .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
@@ -420,6 +451,51 @@ async function UpdateReservation(id: number) {
     .put(`${apiUrl}/UpdateReservation/${id}`, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
+}
+
+async function GetStudentsByRoomID(roomID: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/reservations/${roomID}/students`, requestOptions);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { error: error.response ? error.response.data : "An error occurred" };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function GetUserRoom(userID: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/check-user-room/${userID}`, requestOptions);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { error: error.response ? error.response.data : "An error occurred" };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function getStudentGender(studentId: string): Promise<string> {
+  try {
+    // ทำการเรียก API เพื่อนำข้อมูลเพศของนักเรียน
+    const response = await fetch(`/api/students/${studentId}/gender`);
+    
+    // ตรวจสอบว่า API ตอบกลับด้วยสถานะที่ถูกต้อง
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    // แปลงข้อมูลการตอบกลับเป็น JSON
+    const data = await response.json();
+    
+    // ส่งคืนข้อมูลเพศ
+    return data.gender; // ค่าที่ส่งคืนเป็น "male" หรือ "female"
+  } catch (error) {
+    console.error("Error fetching student gender:", error);
+    throw error; // โยนข้อผิดพลาดเพื่อให้สามารถจัดการได้ที่ชั้นสูงกว่า
+  }
 }
 
 export {
@@ -440,6 +516,7 @@ export {
   GetAddressById,
   GetFamilyById,
   GetOtherById,
+  GetStudentsByRoomID,
   // ----------------- Repairing --------------
   CreateRepair,
   GetRepair,
@@ -472,8 +549,11 @@ export {
   ListRoom,
   DeleteRoom,
   UpdateRoom,
+  GetRoomsByFloorAndDorm,
   //------------Reservation------------//
-  CreateReservation,
   DeleteReservation,
-  UpdateReservation
+  UpdateReservation,
+  GetReservationsByRoomID,
+  GetUserRoom,
+  getStudentGender
 };

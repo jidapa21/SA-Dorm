@@ -41,9 +41,11 @@ func main() {
 	// Auth Route
 	r.POST("/signin", student.SignInStudent)
 	r.POST("/signin-admin", admin.SignInAdmin)
+
 	router := r.Group("/")
 	{
 		router.Use(middlewares.Authorizes())
+
 		// Student Route
 		router.POST("/create-student", student.CreateStudent)
 		router.PUT("/update-student/:id", student.UpdateStudent)
@@ -98,7 +100,7 @@ func main() {
 		//Slip Routes
 		/*----------------------------------------------router.POST("/slip", controller.CreateSlip)
 		------------------------------------------------router.PATCH("/slip", controller.UpdateSlip)*/
-		
+
 		// Dorm
 		router.GET("/GetDorm/:id", dorm.GetDorm)
 		router.GET("/ListDorms", dorm.ListDorms)
@@ -108,10 +110,15 @@ func main() {
 		router.GET("/ListRoom", room.ListRoom)
 		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
 		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor) 
+
 		// Reservation
 		router.POST("/CreateReservation", reservation.CreateReservation)
 		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
 		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
+		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
+		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
+		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
 	}
 
 	r.GET("/genders", genders.GetAll)
