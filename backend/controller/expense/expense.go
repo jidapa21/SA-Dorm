@@ -57,10 +57,15 @@ func UpDateExpense(c *gin.Context) {
 	}
 
 	db := config.DB()
+	adminID, exists := c.Get("admin_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found in context"})
+		return
+	}
 
-	// Find the existing Expense record
-	var existingExpense entity.Expense
-	result := db.First(&existingExpense, id)
+	// Find the existing En_ExitingForm record
+	var existingexistingExpense entity.Expense
+	result := db.First(&existingexistingExpense, id)
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
 		return
@@ -73,8 +78,9 @@ func UpDateExpense(c *gin.Context) {
 	}
 
 	// Update only the 'Status' field
-	if err := db.Model(&existingExpense).Updates(map[string]interface{}{
-		"Status": payload.Status,
+	if err := db.Model(&existingexistingExpense).Updates(map[string]interface{}{
+		"Status":  payload.Status,
+		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
 	}).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
 		return
