@@ -1,17 +1,19 @@
 package entity
 
-import (
-    "time"
-    "gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
-type En_ExitingForm struct {
+type Repairing struct {
     gorm.Model
-	Date_Submission	time.Time `json:"ddate_submission"`
-	Request			string `json:"request"`
-    Because_Of		string `json:"because_of"`
-	Date_Request	time.Time `json:"date_request"`
-    Status			string `json:"status"`
+    ID                  uint `gorm:"primaryKey;autoIncrement"`
+    Subject             string  `json:"subject"`
+    Detail              string  `json:"detail"`
+	Image            string  `gorm:"type:longtext" json:"image"`
+	Location_Details string  `json:"location_details"`
+	Contact          string  `json:"contact"`
+	Time_Slot        string  `json:"time_slot"`
+	Remarks          *string `json:"remarks"`
+	Status           string  `json:"status"`
+    Status              string  `json:"status"`
 
 	// One-to-one relationship
 	ReservationID	uint      `json:"reservation_id"`
@@ -20,5 +22,4 @@ type En_ExitingForm struct {
     // AdminID ทำหน้าที่เป็น FK
     AdminID     uint    `json:"admin_id"`
     Admin       *Admins `gorm:"foreignKey:AdminID"`
-
 }

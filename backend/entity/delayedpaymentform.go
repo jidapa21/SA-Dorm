@@ -1,15 +1,17 @@
 package entity
 
 import (
+	"gorm.io/gorm"
     "time"
-    "gorm.io/gorm"
 )
 
 type DelayedPaymentForm struct {
     gorm.Model
-    Dorm_Payment     *float64  `json:"dorm_payment"`
-    Electricly_Bill  *float64  `json:"electricly_bill"`
-    Water_Bill       *float64  `json:"water_bill"`
+	Title           string
+	Type            string    `json:"type"`
+	Dorm_Payment    *float64  `json:"dorm_payment"`
+	Electricly_Bill *float64  `json:"electricly_bill"`
+	Water_Bill      *float64  `json:"water_bill"`
     Because_Of      string    `json:"because_of"`
     Due_Date        time.Time `json:"due_date"`
     Status           string    `json:"status"`
