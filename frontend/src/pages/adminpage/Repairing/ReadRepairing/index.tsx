@@ -86,7 +86,7 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
             <Divider />
             <Form.Item
               label="หัวข้อการขอรับบริการ"
-              name="subject"
+              name="title"
             >
               <Input readOnly />
             </Form.Item>

@@ -177,7 +177,6 @@ func SetupDatabase() {
 	db.FirstOrCreate(&AdminUser2, entity.Admins{Username: "Jetsadaphon"})
 
 	repairing := &entity.Repairing{
-		ID:               1,
 		Title:            "อ่างล้างมือตัน",
 		Detail:           "ทำเศษอาหารตก",
 		Image:            "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
@@ -188,14 +187,13 @@ func SetupDatabase() {
 		ReservationID:    reservation.ID,
 		AdminID:          1,
 	}
-	db.FirstOrCreate(repairing, &entity.Repairing{ID: 1})
+	db.FirstOrCreate(repairing, &entity.Repairing{})
 
 	dormPayment := 2900.00
 	elecBill := 100.00
 	waterBill := 50.00
 	dueDate, _ := time.Parse("2006-01-02", "2564-05-12")
 	delayedpaymentform := &entity.DelayedPaymentForm{
-		ID:              1,
 		Dorm_Payment:    &dormPayment,
 		Electricly_Bill: &elecBill,
 		Water_Bill:      &waterBill,
@@ -205,12 +203,11 @@ func SetupDatabase() {
 		ReservationID:   reservation.ID,
 		AdminID:         1,
 	}
-	db.FirstOrCreate(delayedpaymentform, &entity.DelayedPaymentForm{ID: 1})
+	db.FirstOrCreate(delayedpaymentform, &entity.DelayedPaymentForm{})
 
 	dateSubmission, _ := time.Parse("2024-01-02", "2567-05-12")
 	dateRequest, _ := time.Parse("2006-01-02", "2564-05-12")
 	en_exitingform := &entity.En_ExitingForm{
-		ID:              1,
 		Date_Submission: dateSubmission,
 		Request:         "ขอกลับหอพักหลังเวลาปิดหอพัก",
 		Because_Of:      "ทำงานโปรเจคจบ",
@@ -219,11 +216,10 @@ func SetupDatabase() {
 		ReservationID:   reservation.ID,
 		AdminID:         1,
 	}
-	db.FirstOrCreate(en_exitingform, &entity.En_ExitingForm{ID: 1})
+	db.FirstOrCreate(en_exitingform, &entity.En_ExitingForm{})
 
 	date, _ := time.Parse("2006-01-02", "2564-05-12")
 	resigningform := &entity.ResigningForm{
-		ID:            1,
 		Date:          date,
 		Because_Of:    "ไม่สะดวกอยู่หอพักหลายคน",
 		Accommodation: "หอพักภายนอกมหาวิทยาลัย",
@@ -231,21 +227,20 @@ func SetupDatabase() {
 		ReservationID: reservation.ID,
 		AdminID:       1,
 	}
-	db.FirstOrCreate(resigningform, &entity.ResigningForm{ID: 1})
+	db.FirstOrCreate(resigningform, &entity.ResigningForm{})
 
 	electricityFee := entity.ElectricityFee{
 		ID:            1,
 		Amount:        150,
 		ReservationID: reservation.ID,
 	}
-	db.FirstOrCreate(&electricityFee, entity.Expense{ID: 1})
+	db.FirstOrCreate(&electricityFee, entity.Expense{})
 
 	waterFee := entity.WaterFee{
-		ID:            1,
 		Amount:        100,
 		ReservationID: reservation.ID,
 	}
-	db.FirstOrCreate(&waterFee, entity.WaterFee{ID: 1})
+	db.FirstOrCreate(&waterFee, entity.WaterFee{})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
 	var reservations []entity.Reservation
@@ -266,11 +261,10 @@ func SetupDatabase() {
 
 		// สร้างข้อมูล RentFee
 		rentFee = entity.RentFee{
-			ID:            1,
 			Amount:        amount,
 			ReservationID: reservation.ID, // เชื่อมโยงกับ Reservation
 		}
-		db.FirstOrCreate(&rentFee, entity.RentFee{ID: 1})
+		db.FirstOrCreate(&rentFee, entity.RentFee{})
 		// ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
 		db.Where("reservation_id = ?", reservation.Dorm.Type).FirstOrCreate(&rentFee)
 	}
