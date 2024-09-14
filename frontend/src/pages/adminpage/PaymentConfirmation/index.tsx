@@ -8,35 +8,31 @@ interface PaymentData {
   key: string;
   time: string;
   amount: number;
-  slip: string; // This should be a base64 string or a valid URL
+  slip: string;
   confirmed?: boolean;
-  expenseId: number;
+  expenseId: number; // เพิ่มฟิลด์นี้เพื่อเชื่อมกับ expenses
 }
 
 const PaymentConfirmation: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [currentImage, setCurrentImage] = useState<string>('');
-  const [paymentData, setPaymentData] = useState<PaymentData[]>([]);
+  const [paymentData, setPaymentData] = useState<PaymentData[]>([]); // เปลี่ยนเป็น state ที่ดึงข้อมูลจาก API
 
-  // Fetch slips from API when component mounts
+  // ดึงข้อมูลสลิปจาก API เมื่อโหลด component
   useEffect(() => {
     const fetchSlips = async () => {
-      try {
-        const slips = await GetListSlips();
-        if (slips) {
-          const formattedData = slips.map((slip: any) => ({
-            key: slip.ID,
-            time: slip.date,
-            amount: slip.totalamount,
-            slip: slip.path, // This should be a valid base64 string or URL
-            expenseId: slip.ex_id,
-          }));
-          setPaymentData(formattedData);
-        } else {
-          message.error('ไม่สามารถดึงข้อมูลสลิปได้');
-        }
-      } catch (error) {
-        message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+      const slips = await GetListSlips();
+      if (slips) {
+        const formattedData = slips.map((slip: any) => ({
+          key: slip.ID,
+          time: slip.Date, // แสดงเวลา
+          amount: slip.Totalamount, // แสดงจำนวนเงินที่จ่าย
+          slip: slip.Path, // URL สำหรับสลิป
+          expenseId: slip.ExpenseID,
+        }));
+        setPaymentData(formattedData);
+      } else {
+        message.error('ไม่สามารถดึงข้อมูลสลิปได้');
       }
     };
     fetchSlips();
@@ -57,6 +53,7 @@ const PaymentConfirmation: React.FC = () => {
   };
 
   const handleConfirm = async (key: string, expenseId: number) => {
+    // อัปเดตสถานะใน expenses
     try {
       await Updateexpense(expenseId, { status: 'complet' }); // เปลี่ยนสถานะเป็น 'complet'
       const updatedData = paymentData.map((item) =>
@@ -101,13 +98,14 @@ const PaymentConfirmation: React.FC = () => {
         <Button
           type="primary"
           disabled={record.confirmed}
-          onClick={() => handleConfirm(record.key, record.expenseId)}
+          onClick={() => handleConfirm(record.key, record.expenseId)} // ส่ง expenseId ไปด้วย
         >
           {record.confirmed ? 'ยืนยันแล้ว' : 'ยืนยัน'}
         </Button>
       ),
     },
   ];
+  
 
   return (
     <div style={{ padding: '20px' }}>
