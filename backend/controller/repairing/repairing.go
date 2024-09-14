@@ -11,40 +11,36 @@ import (
 // POST /users
 func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
+	var sid entity.Students
+	var reservation entity.Reservation
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	//ดึงข้อมูล reservation จากฐานข้อมูล โดยค้นหาจากฟิลด์ student_id ที่ตรงกับค่า sid.ID
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
 
 	if err := c.ShouldBindJSON(&repairing); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	db := config.DB()
-
-	// ค้นหา reservation ด้วย id
-	var reservation entity.Reservation
-	db.First(&reservation, repairing.ReservationID)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
-		return
-	}
-
-	// ค้นหา dorm ด้วย id
-	var dorm entity.Dorm
-	db.First(&dorm, repairing.Reservation.DormID)
-	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "dorm_ID not found"})
-		return
-	}
-
-	// ค้นหา room ด้วย id
-	var room entity.Room
-	db.First(&room, repairing.Reservation.RoomID)
-	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "room_ID not found"})
-		return
-	}
-
 	rp := entity.Repairing{
-		Subject:          repairing.Subject,
+		Title:            repairing.Title,
+		Type:             "แจ้งซ่อม",
 		Detail:           repairing.Detail,
 		Image:            repairing.Image,
 		Location_Details: repairing.Location_Details,
@@ -52,9 +48,8 @@ func CreateRepair(c *gin.Context) {
 		Time_Slot:        repairing.Time_Slot,
 		Remarks:          repairing.Remarks,
 		Status:           "รอดำเนินการ",
-		ReservationID:    repairing.ReservationID,
-		Reservation:      reservation, // โยงความสัมพันธ์กับ Entity Reservation
-
+		ReservationID:    reservation.ID,
+		Reservation:      reservation,
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
@@ -64,6 +59,7 @@ func CreateRepair(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
+
 
 // GET /Repairing/:id
 func GetRepair(c *gin.Context) {

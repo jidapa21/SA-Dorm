@@ -2,22 +2,19 @@ package entity
 
 import (
 	"time"
+
 	"gorm.io/gorm"
 )
 
 type En_ExitingForm struct {
 	gorm.Model
-    Subject             string  `json:"subject"`
-    Detail              string  `json:"detail"`
-	Image            string  `gorm:"type:longtext" json:"image"`
-	Location_Details string  `json:"location_details"`
-	Contact          string  `json:"contact"`
-	Time_Slot        string  `json:"time_slot"`
-	Remarks          *string `json:"remarks"`
-	Due_Date        time.Time `json:"due_date"`
-	Status           string  `json:"status"`
-
-
+	Title           string `json:"tital"`
+	Type            string `json:"type"`
+	Date_Submission time.Time `json:"date_submission"`
+	Request         string `json:"request"`
+	Because_Of      string `json:"because_of"`
+	Date_Request    time.Time `json:"date_request"`
+	Status          string `json:"Status"`
 	// One-to-one relationship
 	ReservationID uint        `json:"reservation_id"`
 	Reservation   Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`

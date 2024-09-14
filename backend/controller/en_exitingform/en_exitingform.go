@@ -52,6 +52,7 @@ func CreateEn_ExitingForm(c *gin.Context) {
 	}
 
 	ee := entity.En_ExitingForm{
+		Type:            "ฟอร์มเอกสาร",
 		Date_Submission: en_exitingform.Date_Submission,
 		Request:         en_exitingform.Request,
 		Because_Of:      en_exitingform.Because_Of,
@@ -67,6 +68,7 @@ func CreateEn_ExitingForm(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": ee})
 }
+
 
 // GET /En_ExitingForm/:id
 func GetEn_ExitingForm(c *gin.Context) {

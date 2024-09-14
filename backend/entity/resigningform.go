@@ -7,6 +7,8 @@ import (
 
 type ResigningForm struct {
     gorm.Model
+    Title         string `json:"tital"`
+	Type          string `json:"type"`
 	Date			time.Time `json:"date"`
     Because_Of		string `json:"because_of"`
 	Accommodation	string `json:"accommodation"`
