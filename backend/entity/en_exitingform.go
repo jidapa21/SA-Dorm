@@ -4,7 +4,6 @@ package entity
 import (
 <<<<<<< HEAD
 	"time"
-
 	"gorm.io/gorm"
 )
 =======
@@ -23,6 +22,7 @@ type En_ExitingForm struct {
 
 type En_ExitingForm struct {
 	gorm.Model
+<<<<<<< HEAD
 	Title           string `json:"tital"`
 	Type            string `json:"type"`
 	Date_Submission time.Time `json:"date_submission"`
@@ -32,6 +32,22 @@ type En_ExitingForm struct {
 	Status          string `json:"Status"`
 =======
 import "gorm.io/gorm"
+=======
+    Subject             string  `json:"subject"`
+    Detail              string  `json:"detail"`
+	Image            string  `gorm:"type:longtext" json:"image"`
+	Location_Details string  `json:"location_details"`
+	Contact          string  `json:"contact"`
+	Time_Slot        string  `json:"time_slot"`
+	Remarks          *string `json:"remarks"`
+	Due_Date        time.Time `json:"due_date"`
+	Status           string  `json:"status"`
+
+
+	// One-to-one relationship
+	ReservationID uint        `json:"reservation_id"`
+	Reservation   Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
+>>>>>>> parent of c387d97 (ad)
 
 type Repairing struct {
     gorm.Model

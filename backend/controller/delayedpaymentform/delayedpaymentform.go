@@ -9,61 +9,32 @@ import (
 )
 
 // POST /users
-func CreateDelayedPaymentForm(c *gin.Context) {
+func DelayedPaymentFormUI(c *gin.Context) {
 	var delayedpaymentform entity.DelayedPaymentForm
-	var sid entity.Students
-	var reservation entity.Reservation
-	var dorm entity.Dorm
-	var room entity.Room
 
-	studentID := c.MustGet("student_id").(string)
-	if studentID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
-		return
-	}
-	
-	db := config.DB()
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
-
-	db.Where("student_id = ?", sid.ID).First(&reservation)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
-		return
-	}
-
+	// bind เข้าตัวแปร user
 	if err := c.ShouldBindJSON(&delayedpaymentform); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	db.First(&dorm, reservation.DormID)
-	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
+	db := config.DB()
+
+	// ค้นหา reservation ด้วย id
+	var reservation entity.Reservation
+	if err := db.First(&reservation, delayedpaymentform.ReservationID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return
 	}
 
-	db.First(&room, reservation.RoomID)
-	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-		return
-	}
-
-	// สร้าง DelayedPaymentForm
+	// สร้าง repairing
 	d := entity.DelayedPaymentForm{
-		Title:            "แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา",
-		Type:            "ฟอร์มเอกสาร",
-		Dorm_Payment:    delayedpaymentform.Dorm_Payment,
 		Electricly_Bill: delayedpaymentform.Electricly_Bill,
 		Water_Bill:      delayedpaymentform.Water_Bill,
 		Because_Of:      delayedpaymentform.Because_Of,
 		Due_Date:        delayedpaymentform.Due_Date,
 		Status:          "รอดำเนินการ",
-		ReservationID:   reservation.ID,
-		Reservation:     reservation,
+		ReservationID:   delayedpaymentform.ReservationID,
 	}
 
 	// บันทึก

@@ -52,8 +52,6 @@ func CreateResigningForm(c *gin.Context) {
 	}
 
 	rs := entity.ResigningForm{
-		Title:         "แบบฟอร์มลาออกหอพัก",
-		Type:          "ฟอร์มเอกสาร",
 		Date:          resigningform.Date,
 		Because_Of:    resigningform.Because_Of,
 		Accommodation: resigningform.Accommodation,
