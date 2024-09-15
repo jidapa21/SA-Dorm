@@ -9,19 +9,18 @@ import (
 type Reservation struct {
 	gorm.Model
 
-	ReservationDate time.Time
+	ReservationDate time.Time `json:"reservation_date"`
+	StudentID      string    `json:"student_id"`
+	Student         Students  `gorm:"foreignKey:StudentID;references:StudentID" json:"student"`
 
-	StudentID uint     `json:"student_id"`
-	Student   Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	DormID          uint      `json:"dorm_id"`
+	Dorm            Dorm      `gorm:"foreignKey:DormID" json:"dorm"`
 
-	DormID uint
-	Dorm   Dorm `gorm:"foreignKey:DormID"`
+	RoomID uint `json:"room_id"`
+	Room   Room `gorm:"foreignKey:RoomID" json:"room"`
 
-	RoomID uint
-	Room   Room `gorm:"foreignKey:RoomID"`
-
-	Repairings          []Repairing          `gorm:"foreignKey:ReservationID"`
-	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
-	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:ReservationID"`
-	ResigningForms      []ResigningForm      `gorm:"foreignKey:ReservationID"`
+	Repairings          []Repairing          `gorm:"foreignKey:ReservationID" json:"repairings"`
+	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:ReservationID" json:"delayed_payment_forms"`
+	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:ReservationID" json:"en_exiting_forms"`
+	ResigningForms      []ResigningForm      `gorm:"foreignKey:ReservationID" json:"resigning_forms"`
 }
