@@ -1,6 +1,7 @@
 package entity
 
 import (
+<<<<<<< HEAD
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +16,19 @@ type DelayedPaymentForm struct {
 	Water_Bill      *float64  `json:"water_bill"`
 	Because_Of      string    `json:"because_of"`
 	Due_Date        time.Time `json:"due_date"`
+=======
+    "time"
+    "gorm.io/gorm"
+)
+
+type DelayedPaymentForm struct {
+    gorm.Model
+    Dorm_Payment     *float64  `json:"dorm_payment"`
+    Electricly_Bill  *float64  `json:"electricly_bill"`
+    Water_Bill       *float64  `json:"water_bill"`
+    Because_Of      string    `json:"because_of"`
+    Due_Date        time.Time `json:"due_date"`
+>>>>>>> parent of 1c9936c (ad)
     Status           string    `json:"status"`
 
 	// One-to-one relationship
