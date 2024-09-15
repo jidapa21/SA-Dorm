@@ -10,10 +10,11 @@ import (
 
 func GetSudentID(c *gin.Context) {
 	db := config.DB()
-	var studentID = entity.Students;
-	db.First(&studentID , studentID.StudentID)
+	var studentID entity.Students
+	db.First(&studentID, studentID.StudentID)
 
 }
+
 // POST /users
 func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
@@ -50,16 +51,16 @@ func CreateRepair(c *gin.Context) {
 	}
 
 	rp := entity.Repairing{
-		Subject:           	repairing.Subject,
-		Detail:            	repairing.Detail,
-		Image:             	repairing.Image,
-		Location_Details:  	repairing.Location_Details,
-		Contact:           	repairing.Contact,
-		Time_Slot:         	repairing.Time_Slot,
-		Remarks:           	repairing.Remarks,
-		Status:            	"รอดำเนินการ",
-		ReservationID:     	repairing.ReservationID,
-		Reservation:    	reservation, // โยงความสัมพันธ์กับ Entity Reservation
+		Subject:          repairing.Subject,
+		Detail:           repairing.Detail,
+		Image:            repairing.Image,
+		Location_Details: repairing.Location_Details,
+		Contact:          repairing.Contact,
+		Time_Slot:        repairing.Time_Slot,
+		Remarks:          repairing.Remarks,
+		Status:           "รอดำเนินการ",
+		ReservationID:    repairing.ReservationID,
+		Reservation:      reservation, // โยงความสัมพันธ์กับ Entity Reservation
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
@@ -69,7 +70,6 @@ func CreateRepair(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
-
 
 // GET /Repairing/:id
 func GetRepair(c *gin.Context) {
@@ -97,35 +97,33 @@ func GetListRepairs(c *gin.Context) {
 	c.JSON(http.StatusOK, repairings)
 }
 
-
 func UpdateRepair(c *gin.Context) {
-    id := c.Param("id")
-    var payload struct {
-        Status string `json:"status"`  // รับเฉพาะ status จาก JSON payload
-    }
+	id := c.Param("id")
+	var payload struct {
+		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+	}
 
-    db := config.DB()
+	db := config.DB()
 
-    // Find the existing repair record
-    var existingRepair entity.Repairing
-    result := db.First(&existingRepair, id)
-    if result.Error != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
-        return
-    }
+	// Find the existing repair record
+	var existingRepair entity.Repairing
+	result := db.First(&existingRepair, id)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
+		return
+	}
 
-    // Bind the JSON payload to the `payload` object
-    if err := c.ShouldBindJSON(&payload); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
-        return
-    }
+	// Bind the JSON payload to the `payload` object
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		return
+	}
 
-    // Update only the 'Status' field
-    if err := db.Model(&existingRepair).Update("Status", payload.Status).Error; err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
-        return
-    }
+	// Update only the 'Status' field
+	if err := db.Model(&existingRepair).Update("Status", payload.Status).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
 }
-

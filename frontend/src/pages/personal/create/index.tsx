@@ -1,7 +1,6 @@
 import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicker, InputNumber, Select } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import { PersonalDetailInterface } from "../../../interfaces/PersonalDetails";
-//import { PersonalInterface } from "../../../interfaces/Personal";
 import { CreatePersonalDetail } from "../../../services/https";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -17,47 +16,47 @@ function PersonalCreate() {
 					phone: values.phone,
 					nationality: values.nationality,
 					race: values.race,
-					Religion: values.Religion,
-					BloodGroup: values.BloodGroup,
-					UD: values.UD,
+					religion: values.religion,
+					blood_group: values.blood_group,
+					ud: values.ud,
 			},
 			address: {
-				HouseNo: values.HouseNo,
-				VillageNo: values.VillageNo,
-				Village: values.Village,
-				Alley: values.Alley,
-				Road: values.Road,
-				SubDistrict: values.SubDistrict,
-				District: values.District,
-				Province: values.Province,
-				PostCode: values.PostCode,
+				house_no: values.house_no,
+				village_no: values.village_no,
+				village: values.village,
+				alley: values.alley,
+				road: values.road,
+				sub_district: values.sub_district,
+				district: values.district,
+				province: values.province,
+				zip_code: values.zip_code,
 			},
 			family: {
-				FathersName: values.FathersName,
-				MathersName: values.MathersName,
-				OccupationFather: values.OccupationFather,
-				OccupationMather: values.OccupationMather,
-				PhoneFather: values.PhoneFather,
-				PhoneMather: values.PhoneMather,
+				fathers_name: values.fathers_name,
+				mathers_name: values.mathers_name,
+				occupation_father: values.occupation_father,
+				occupation_mather: values.occupation_mather,
+				phone_father: values.phone_father,
+				phone_mather: values.phone_mather,
 				family_status_id: values.family_status_id,
-				guardian_id: values.guardian_id,
-				OrGuardiansName: values.OrGuardiansName,
-				Relationship: values.Relationship,
-				OccupationGuardian: values.OccupationGuardian,
-				PhoneGuardian: values.PhoneGuardian,
+				guardians_id: values.guardians_id,
+				or_guardians_name: values.or_guardians_name,
+				relationship: values.relationship,
+				occupation_guardian: values.occupation_guardian,
+				phone_guardian: values.phone_guardian,
 			},
 			other:{
-				LatestGraduationFrom: values.LatestGraduationFrom,
-				GraduatedYear: values.GraduatedYear,
-				Gpax: values.Gpax,
-				PersonalVehicles: values.PersonalVehicles,
-				Color: values.Color,
-				PlateNo: values.PlateNo,
-				TaxDate: values.TaxDate,
-				ProvinceVehicle: values.ProvinceVehicle,
-				LicenseID: values.LicenseID,
-				Type: values.Type,
-				ExpiredCard: values.ExpiredCard,
+				latest_graduation_from: values.latest_graduation_from,
+				graduation_year: values.graduation_year,
+				GPAX: values.GPAX,
+				personal_vehicles: values.personal_vehicles,
+				color: values.color,
+				plate_no: values.plate_no,
+				vehicle_tax_due_date: values.vehicle_tax_due_date,
+				province_vehicle: values.province_vehicle,
+				licenses_id: values.licenses_id,
+				type: values.type,
+				expiry: values.expiry,
 			}
 	};
 			const res = await CreatePersonalDetail(personalDetailData);
@@ -148,7 +147,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ศาสนา"
-									name="Religion"
+									name="religion"
 									rules={[{ required: true, message: "กรุณากรอกศาสนา" }]}
 								>
 									<Input />
@@ -157,7 +156,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="กลุ่มเลือด"
-									name="BloodGroup"
+									name="blood_group"
 									rules={[{ required: true, message: "กรุณากรอกกลุ่มเลือด" }]}
 								>
 									<Input />
@@ -166,7 +165,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 										label="โรคประจำตัว(ถ้ามี)"
-										name="UD"
+										name="ud"
 								>
 									<Input />
 								</Form.Item>
@@ -177,7 +176,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="บ้านเลขที่"
-									name="HouseNo"
+									name="house_no"
 									rules={[{ required: true, message: "กรุณากรอกบ้านเลขที่" }]}
 								>
 									<Input />
@@ -186,7 +185,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="หมู่ที่"
-									name="VillageNo"
+									name="village_no"
 									rules={[{ required: true, message: "กรุณากรอกบ้านหมู่ที่" }]}
 								>
 									<Input />
@@ -195,7 +194,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ชื่อหมู่บ้าน"
-									name="Village"
+									name="village"
 									rules={[{ required: true, message: "กรุณากรอกชื่อหมู่บ้าน" }]}
 								>
 									<Input />
@@ -204,7 +203,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ซอย"
-									name="Alley"
+									name="alley"
 									rules={[{ required: true, message: "กรุณากรอกซอย" }]}
 								>
 									<Input />
@@ -213,7 +212,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ถนน"
-									name="Road"
+									name="road"
 									rules={[{ required: true, message: "กรุณากรอกถนน !" }]}
 								>
 									<Input />
@@ -222,7 +221,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ตำบล/แขวง"
-									name="SubDistrict"
+									name="sub_district"
 									rules={[{ required: true, message: "กรุณากรอกตำบล/แขวง" }]}
 								>
 									<Input />
@@ -231,7 +230,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="อำเภอ/เขต"
-									name="District"
+									name="district"
 									rules={[{ required: true, message: "กรุณากรอกอำเภอ/เขต" }]}
 									>
 									<Input />
@@ -240,7 +239,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="จังหวัด"
-									name="Province"
+									name="province"
 									rules={[{ required: true, 
 														message: "กรุณากรอกชื่อจังหวัดที่ถูกต้อง",}]}
 								>
@@ -250,9 +249,8 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="รหัสไปรษณีย์"
-									name="PostCode"
-									rules={[{ required: true, message: "กรุณากรอกรหัสไปรษณีย์" },
-										{pattern: /^[0-9]{5}$/, message: "กรุณากรอกรหัสไปรษณีย์ (5 หลัก)" }]}
+									name="zip_code"
+									rules={[{ required: true, message: "กรุณากรอกรหัสไปรษณีย์" }]}
 									>
 									<Input />
 								</Form.Item>
@@ -263,7 +261,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ชื่อ - สกุลบิดา"
-									name="FathersName"
+									name="fathers_name"
 									rules={[{ required: true, message: "กรุณากรอกชื่อ-สกุลบิดา" }]}
 								>
 									<Input />
@@ -272,7 +270,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ชื่อ - สกุลมารดา"
-									name="MathersName"
+									name="mathers_name"
 									rules={[{ required: true, message: "กรุณากรอกชื่อ-สกุลมารดา" }]}
 								>
 									<Input />
@@ -281,7 +279,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="อาชีพบิดา"
-									name="OccupationFather"
+									name="occupation_father"
 									rules={[{ required: true, message: "กรุณากรอกอาชีพบิดา" }]}
 								>
 									<Input />
@@ -290,7 +288,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="อาชีพมารดา"
-										name="OccupationMather"
+										name="occupation_mather"
 										rules={[{ required: true, message: "กรุณากรอกอาชีพมารดา" }]}
 									>
 										<Input />
@@ -299,7 +297,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="หมายเลขโทรศัพท์มือถือบิดา"
-										name="PhoneFather"
+										name="phone_father"
 										rules={[{ required: true, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
 														{ pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" }]}
 									>
@@ -309,7 +307,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="หมายเลขโทรศัพท์มือถือมารดา"
-										name="PhoneMather"
+										name="phone_mather"
 										rules={[{ required: true, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
 														{ pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" }]}
 									>
@@ -341,7 +339,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="ผู้ปกครอง"
-										name="guardian_id"
+										name="guardians_id"
 										rules={[{ required: true, message: "กรุณาเลือกผู้ปกครอง",}]}
 									>
 									<Select
@@ -359,7 +357,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="หรือผู้ปกครอง ชื่อ/สกุล"
-										name="OrGuardiansName"
+										name="or_guardians_name"
 									>
 										<Input />
 									</Form.Item>
@@ -367,7 +365,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="เกี่ยวข้องเป็น"
-										name="Relationship"
+										name="relationship"
 									>
 										<Input />
 									</Form.Item>
@@ -375,7 +373,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="อาชีพ"
-										name="OccupationGuardian"
+										name="occupation_guardian"
 									>
 										<Input />
 									</Form.Item>
@@ -383,7 +381,7 @@ function PersonalCreate() {
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 									<Form.Item
 										label="หมายเลขโทรศัพท์มือถือ"
-										name="PhoneGuardian"
+										name="phone_guardian"
 										rules={[{ message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
 														{ pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" }]}
 									>
@@ -396,7 +394,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="สำเร็จการศึกษาขั้นสุดท้ายจาก"
-									name="LatestGraduationFrom"
+									name="latest_graduation_from"
 									rules={[{ required: true, message: "กรุณากรอกชื่อโรงเรียน" }]}
 								>
 									<Input placeholder="กรอกชื่อโรงเรียน" />
@@ -406,7 +404,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="เมื่อปี พ.ศ."
-									name="GraduatedYear"
+									name="graduation_year"
 									rules={[{ required: true, message: "กรุณากรอก พ.ศ.",}]}
 								>
 								<InputNumber
@@ -419,7 +417,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="GPAX"
-									name="Gpax"
+									name="GPAX"
 									rules={[{ required: true, message: "กรุณากรอก gpax",}]}
 								>
 								<InputNumber
@@ -427,13 +425,14 @@ function PersonalCreate() {
 									max={4.00}
 									step={0.01} // เพิ่มทีละ 0.1
 									style={{ width: "100%" }}
+									precision={2} // ระบุให้แสดงเป็นทศนิยม 2 ตำแหน่ง
 								/>
 								</Form.Item>
 							</Col>
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="พาหนะส่วนตัวที่ใช้"
-									name="PersonalVehicles"
+									name="personal_vehicles"
 								>
 									<Input />
 								</Form.Item>
@@ -441,7 +440,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="สี"
-									name="Color"
+									name="color"
 								>
 									<Input />
 								</Form.Item>
@@ -449,7 +448,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="หมายเลขทะเบียน"
-									name="PlateNo"
+									name="plate_no"
 								>
 									<Input />
 								</Form.Item>
@@ -457,7 +456,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="วันครบกำหนดเสียภาษี"
-									name="TaxDate"
+									name="vehicle_tax_due_date"
 								>
 									<DatePicker style={{ width: "100%" }} />
 								</Form.Item>
@@ -465,9 +464,8 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="จังหวัด"
-									name="ProvinceVehicle"
+									name="province_vehicle"
 									rules={[{
-											//pattern: /^[ก-ฮA-Za-z\s]{1,50}$/, 
 											message: "กรุณากรอกชื่อจังหวัดที่ถูกต้อง",
 									},]}
 								>
@@ -477,7 +475,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ใบขับขี่"
-									name="LicenseID"
+									name="licenses_id"
 									rules={[{ required: false, message: "กรุณาเลือกใบขับขี่",}]}
 								>
 								<Select
@@ -494,7 +492,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="ประเภท (ถ้ามี)"
-									name="Type"
+									name="type"
 								>
 									<Input />
 								</Form.Item>
@@ -502,7 +500,7 @@ function PersonalCreate() {
 							<Col xs={24} sm={24} md={24} lg={24} xl={12}>
 								<Form.Item
 									label="วันบัตรหมดอายุ"
-									name="ExpiredCard"
+									name="expiry"
 								>
 									<DatePicker style={{ width: "100%" }} />
 								</Form.Item>

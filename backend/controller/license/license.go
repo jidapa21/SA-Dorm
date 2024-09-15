@@ -1,4 +1,4 @@
-package license
+package licenses
 
 import (
 	"net/http"
@@ -10,7 +10,7 @@ import (
 
 func GetAll(c *gin.Context) {
 	db := config.DB()
-	var license []entity.License
-	db.Find(&license)
-	c.JSON(http.StatusOK, &license)
+	var licenses []entity.Licenses
+	db.Find(&licenses)
+	c.JSON(http.StatusOK, &licenses)
 }

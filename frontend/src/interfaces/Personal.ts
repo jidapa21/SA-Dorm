@@ -5,8 +5,8 @@ export interface PersonalInterface{
   phone?: string;
   nationality?: string;
   race?: string;
-  Religion?: string;
-  BloodGroup?: string;
-  UD?: string;
+  religion?: string;
+  blood_group?: string;
+  ud?: string;
   StudentID?: string; // เชื่อมโยงกับ Student
 }

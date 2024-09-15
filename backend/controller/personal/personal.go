@@ -52,26 +52,10 @@ func GetPersonal(c *gin.Context) {
 
 	db := config.DB()
 	results := db.First(&personal, ID)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-	if personal.ID == 0 {
-		c.JSON(http.StatusNoContent, gin.H{})
-		return
-	}
-	c.JSON(http.StatusOK, personal)
-}
 
-// GET /list-personal
-func ListPersonal(c *gin.Context) {
-
-	var personal []entity.Personal
-
-	db := config.DB()
-	results := db.Find(&personal)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+	// ถ้าไม่มีข้อมูล จะไม่แสดง error แต่จะแสดงวัตถุว่างเปล่า
+	if results.Error != nil || personal.ID == 0 {
+		c.JSON(http.StatusOK, personal)
 		return
 	}
 	c.JSON(http.StatusOK, personal)

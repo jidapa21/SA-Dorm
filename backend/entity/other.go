@@ -8,23 +8,22 @@ import (
 
 type Other struct {
 	gorm.Model
-	LatestGraduationFrom string
-	GraduatedYear        uint
-	Gpax                 float64
-	PersonalVehicles     *string
-	Color                *string
-	PlateNo              *string
-	TaxDate              *time.Time
-	ProvinceVehicle      *string
-	Type                 *string
-	ExpiredCard          *time.Time
+	LatestGraduationFrom string     `json:"latest_graduation_from"`
+	GraduationYear       *uint      `json:"graduation_year"`
+	Gpax                 *float64   `json:"GPAX"`
+	PersonalVehicles     *string    `json:"personal_vehicles"`
+	Color                *string    `json:"color"`
+	PlateNo              *string    `json:"plate_no"`
+	VehicleTaxDueDate    *time.Time `json:"vehicle_tax_due_date"`
+	ProvinceVehicle      *string    `json:"province_vehicle"`
+	Type                 *string    `json:"type"`
+	Expiry               *time.Time `json:"expiry"`
 
-	LicenseID *uint           
-	License   *FamilyStatuses `gorm:"foreignKey: LicenseID" json:"license"`
+	LicensesID *uint     `json:"licenses_id"`
+	License    *Licenses `gorm:"foreignKey: licenses_id" json:"license"`
 
 	// One-to-one relationship with Student
-	//StudentID string
-	//StudentID string
+
 	StudentID uint      `json:"student_id"`
 	Student   *Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 }

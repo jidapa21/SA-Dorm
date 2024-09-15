@@ -2,6 +2,9 @@ import { StudentInterface } from "../../interfaces/Student";
 import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
+import { AddressInterface } from "../../interfaces/Address";
+import { OtherInteface } from "../../interfaces/Other";
+import { FamilyInterface } from "../../interfaces/Family";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
 import { SlipInterface } from "../../interfaces/Slip";
 import { RepairInterface } from "../../interfaces/repairing";
@@ -36,6 +39,7 @@ async function SignInAdmin(data: SignInAdminInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+//Student
 async function ListStudents() {
   return await axios
     .get(`${apiUrl}/list-student`, requestOptions)
@@ -66,10 +70,38 @@ async function CreateStudent(data: StudentInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+//PersonalDetails-----------------------------
 
-async function ListPersonal() {
+async function CreatePersonalDetail(data: PersonalDetailInterface) {
   return await axios
-    .get(`${apiUrl}/list-personal`, requestOptions)
+  .post(`${apiUrl}/create-personal-detail`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function GetPersonalById(id: string) {
+  return await axios
+  .get(`${apiUrl}/get-personal/${id}`, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+async function GetAddressById(id: string) {
+  return await axios
+  .get(`${apiUrl}/get-address/${id}`, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function GetFamilyById(id: string) {
+  return await axios
+  .get(`${apiUrl}/get-family/${id}`, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function GetOtherById(id: string) {
+  return await axios
+    .get(`${apiUrl}/get-other/${id}`, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
@@ -80,61 +112,24 @@ async function UpdatePersonalById(id: string, data: PersonalInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-
-async function GetPersonalById(id: string) {
+async function UpdateAddressById(id: string, data: AddressInterface) {
   return await axios
-    .get(`${apiUrl}/get-personal/${id}`, requestOptions)
+    .put(`${apiUrl}/update-address/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
-
-async function CreatePersonalDetail(data: PersonalDetailInterface) {
+async function UpdateFamilyById(id: string, data: FamilyInterface) {
   return await axios
-    .post(`${apiUrl}/create-personal-detail`, data, requestOptions)
+    .put(`${apiUrl}/update-family/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
-
-async function ListAddress() {
+async function UpdateOtherById(id: string, data: OtherInteface) {
   return await axios
-    .get(`${apiUrl}/list-address`, requestOptions)
+    .put(`${apiUrl}/update-other/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
-
-async function ListFamily() {
-  return await axios
-    .get(`${apiUrl}/list-family`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-async function ListOther() {
-  return await axios
-    .get(`${apiUrl}/list-other`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-async function GetAddressById(id: string) {
-  return await axios
-    .get(`${apiUrl}/get-address/${id}`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-
-async function GetFamilyById(id: string) {
-  return await axios
-    .get(`${apiUrl}/get-family/${id}`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-
-async function GetOtherById(id: string) {
-  return await axios
-    .get(`${apiUrl}/get-other/${id}`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-
 //---------------------   Repairing ---------------------------------
 
 async function CreateRepair(data: RepairInterface) {
@@ -376,15 +371,14 @@ export {
   DeleteStudentsById,
   CreateStudent,
   CreatePersonalDetail,
-  ListPersonal,
-  UpdatePersonalById,
   GetPersonalById,
-  ListAddress,
-  ListFamily,
-  ListOther,
   GetAddressById,
   GetFamilyById,
   GetOtherById,
+  UpdatePersonalById,
+  UpdateAddressById,
+  UpdateFamilyById,
+  UpdateOtherById,
   // ----------------- Repairing --------------
   CreateRepair,
   GetRepair,

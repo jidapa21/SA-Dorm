@@ -12,12 +12,13 @@ import (
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
 	"dormitory.com/dormitory/controller/guardians"
-	"dormitory.com/dormitory/controller/license"
+	licenses "dormitory.com/dormitory/controller/license"
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
+
 	//"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
@@ -51,28 +52,28 @@ func main() {
 		//router.POST("/create-personal", personal.CreatePersonal)
 		router.GET("/get-personal/:id", personal.GetPersonal)
 		router.PUT("/update-personal/:id", personal.UpdatePersonal)
-		router.GET("/list-personal", personal.ListPersonal)
 		// Address Route
-		router.GET("/list-address", address.ListAddress)
 		router.GET("/get-address/:id", address.GetAddress)
+		router.PUT("/update-address/:id", address.UpdateAddress)
+
 		// Family Route
-		router.GET("/list-family", family.ListFamily)
 		router.GET("/get-family/:id", family.GetFamily)
+		router.PUT("/update-family/:id", family.UpdateFamily)
+
 		// Other Route
-		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
+		router.PUT("/update-other/:id", other.UpdateOther)
 
 		// RentFee Route
 		router.POST("/create-rent-fee", rentfee.CreateRentFee)
 		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
-		
+
 		// Repairing Route
 		router.POST("/repair", repairing.CreateRepair)
 		router.GET("/repair/:id", repairing.GetRepair)
 		router.GET("/repair-getlist", repairing.GetListRepairs)
-		router.PUT("/repair-update/:id", repairing.UpdateRepair) 
-
+		router.PUT("/repair-update/:id", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.DelayedPaymentFormUI)
@@ -94,13 +95,13 @@ func main() {
 		//Slip Routes
 		//router.POST("/slip", controller.CreateSlip)
 		//router.PATCH("/slip", controller.UpdateSlip)
-		
+
 	}
 
 	r.GET("/genders", genders.GetAll)
 	r.GET("/familyStatuses", familystatuses.GetAll)
 	r.GET("/guardians", guardians.GetAll)
-	r.GET("/license", license.GetAll)
+	r.GET("/license", licenses.GetAll)
 
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "API RUNNING... PORT: %s", PORT)

@@ -18,5 +18,4 @@ type Students struct {
 
 	GenderID uint     `json:"gender_id"`
 	Gender   *Genders `gorm:"foreignKey: gender_id" json:"gender"`
-
 }
