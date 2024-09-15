@@ -56,6 +56,7 @@ const PaymentConfirmation: React.FC = () => {
     // อัปเดตสถานะใน expenses
     try {
       await Updateexpense(expenseId, { status: 'confirmed' });
+      // อัปเดตใน state หลังจากอัปเดตสำเร็จ
       const updatedData = paymentData.map((item) =>
         item.key === key ? { ...item, confirmed: true } : item
       );
