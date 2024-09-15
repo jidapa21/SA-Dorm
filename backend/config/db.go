@@ -284,58 +284,60 @@ func seedStudents() {
 }
 
 func seedPersonals() {
-	personals := []entity.Personal{
-		{StudentID: 1, Nickname: "", CitizenID: "", Phone: "", Nationality: "", Race: "", Religion: "", BloodGroup: ""},
-		{StudentID: 2, Nickname: "", CitizenID: "", Phone: "", Nationality: "", Race: "", Religion: "", BloodGroup: ""},
-		{StudentID: 3, Nickname: "", CitizenID: "", Phone: "", Nationality: "", Race: "", Religion: "", BloodGroup: ""},
-		{StudentID: 4, Nickname: "", CitizenID: "", Phone: "", Nationality: "", Race: "", Religion: "", BloodGroup: ""},
-		{StudentID: 5, Nickname: "", CitizenID: "", Phone: "", Nationality: "", Race: "", Religion: "", BloodGroup: ""},
-	}
-	// บันทึก personal และเชื่อมโยงกับ Students
-	for _, personal := range personals {
+	for i := 1; i <= 5; i++ {
+		personal := entity.Personal{
+			StudentID:   uint(i),
+			Nickname:    "",
+			CitizenID:   "",
+			Phone:       "",
+			Nationality: "",
+			Race:        "",
+			Religion:    "",
+			BloodGroup:  "",
+		}
 		db.FirstOrCreate(&personal, entity.Personal{StudentID: personal.StudentID})
 	}
 }
 
 func seedAddresses() {
-	// สร้างข้อมูล addresses
-	addresses := []entity.Address{
-		{StudentID: 1, HouseNo: "", VillageNo: "", Village: "", Alley: "", Road: "", SubDistrict: "", District: "", Province: "", ZipCode: ""},
-		{StudentID: 2, HouseNo: "", VillageNo: "", Village: "", Alley: "", Road: "", SubDistrict: "", District: "", Province: "", ZipCode: ""},
-		{StudentID: 3, HouseNo: "", VillageNo: "", Village: "", Alley: "", Road: "", SubDistrict: "", District: "", Province: "", ZipCode: ""},
-		{StudentID: 4, HouseNo: "", VillageNo: "", Village: "", Alley: "", Road: "", SubDistrict: "", District: "", Province: "", ZipCode: ""},
-		{StudentID: 5, HouseNo: "", VillageNo: "", Village: "", Alley: "", Road: "", SubDistrict: "", District: "", Province: "", ZipCode: ""},
-	}
-	// บันทึก Address และเชื่อมโยงกับ Students
-	for _, address := range addresses {
+	for i := 1; i <= 5; i++ {
+		address := entity.Address{
+			StudentID:   uint(i),
+			HouseNo:     "",
+			VillageNo:   "",
+			Village:     "",
+			Alley:       "",
+			Road:        "",
+			SubDistrict: "",
+			District:    "",
+			Province:    "",
+			ZipCode:     "",
+		}
 		db.FirstOrCreate(&address, entity.Address{StudentID: address.StudentID})
 	}
 }
 
 func seedFamilies() {
-	families := []entity.Family{
-		{StudentID: 1, FathersName: "", MathersName: "", OccupationFather: "", OccupationMather: "", PhoneFather: "", PhoneMather: ""},
-		{StudentID: 2, FathersName: "", MathersName: "", OccupationFather: "", OccupationMather: "", PhoneFather: "", PhoneMather: ""},
-		{StudentID: 3, FathersName: "", MathersName: "", OccupationFather: "", OccupationMather: "", PhoneFather: "", PhoneMather: ""},
-		{StudentID: 4, FathersName: "", MathersName: "", OccupationFather: "", OccupationMather: "", PhoneFather: "", PhoneMather: ""},
-		{StudentID: 5, FathersName: "", MathersName: "", OccupationFather: "", OccupationMather: "", PhoneFather: "", PhoneMather: ""},
-	}
-	// บันทึก family และเชื่อมโยงกับ Students
-	for _, family := range families {
+	for i := 1; i <= 5; i++ {
+		family := entity.Family{
+			StudentID:        uint(i),
+			FathersName:      "",
+			MathersName:      "",
+			OccupationFather: "",
+			OccupationMather: "",
+			PhoneFather:      "",
+			PhoneMather:      "",
+		}
 		db.FirstOrCreate(&family, entity.Family{StudentID: family.StudentID})
 	}
 }
 
 func seedOthers() {
-	others := []entity.Other{
-		{StudentID: 1, LatestGraduationFrom: ""},
-		{StudentID: 2, LatestGraduationFrom: ""},
-		{StudentID: 3, LatestGraduationFrom: ""},
-		{StudentID: 4, LatestGraduationFrom: ""},
-		{StudentID: 5, LatestGraduationFrom: ""},
-	}
-	// บันทึก other และเชื่อมโยงกับ Students
-	for _, other := range others {
+	for i := 1; i <= 5; i++ {
+		other := entity.Other{
+			StudentID:            uint(i),
+			LatestGraduationFrom: "",
+		}
 		db.FirstOrCreate(&other, entity.Other{StudentID: other.StudentID})
 	}
 }
