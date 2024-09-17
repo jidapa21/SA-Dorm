@@ -140,11 +140,11 @@ func SetupDatabase() {
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 		ReservationDate: ReservationDate,
-		StudentID:       User.ID,
+		StudentsID:      User.ID,
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentsID: User.ID, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")

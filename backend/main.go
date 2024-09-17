@@ -72,8 +72,8 @@ func main() {
 
 		// Repair Route
 		router.POST("/create-repair", repairing.CreateRepair)
-		router.GET("/get-repair/:id", repairing.GetRepair)
-		router.GET("/grt-list-repair", repairing.GetListRepairs)
+		//router.GET("/get-repair/:id", repairing.GetRepair)
+		router.GET("/get-list-repair", repairing.GetListRepairs)
 		router.PUT("/update-repair", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route

@@ -29,7 +29,8 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 		return
 	}
 
-	db.Where("student_id = ?", sid.ID).First(&reservation)
+	// ดึงข้อมูล reservation โดยใช้ StudentsID
+	db.Where("students_id = ?", sid.ID).First(&reservation)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return

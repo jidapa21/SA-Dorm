@@ -12,6 +12,7 @@ import { ResigningFormInterface } from "./../../interfaces/ResigningForm";
 const { Title } = Typography;
 
 export default function StatusCreate() {
+  
   interface TableStatusRecord
     extends RepairInterface,
       DelayedPaymentFormInterface,
@@ -188,7 +189,7 @@ export default function StatusCreate() {
       <Table
         columns={columns}
         dataSource={repairs}
-        pagination={{ pageSize: 10 }} // Set the number of rows per page
+        pagination={{ pageSize: 6 }} // Set the number of rows per page
       />
     </>
   );

@@ -202,22 +202,19 @@ async function GetRepair(id: string | undefined) {
 }
 
 async function GetListRepairs() {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  let res = await fetch(`${apiUrl}/get-list-repair`, requestOptions).then(
-    (res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
+  try {
+    const response = await fetch(`${apiUrl}/get-list-repair`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { data: errorData };
     }
-  );
-  return res;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
 }
 
 async function UpdateRepair(data: RepairInterface) {
@@ -297,8 +294,8 @@ async function GetListStatus() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
-    }
+      Authorization: `Bearer ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
   };
 
   try {
@@ -311,11 +308,10 @@ async function GetListStatus() {
       return { status: response.status, data: errorData };
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return { status: 500, data: { error: "Fetch error" } };
   }
 }
-
 
 //---------------------   Admin ---------------------------------
 async function Adminlist() {

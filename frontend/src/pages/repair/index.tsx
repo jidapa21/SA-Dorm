@@ -37,6 +37,7 @@ import { ReservationInterface } from "./../../interfaces/Reservation";
 import {
   GetStudentsById,
   CreateRepair,
+  GetListRepairs,
   GetRepair,
 } from "./../../services/https";
 import "./../repair/index.css";
@@ -52,7 +53,18 @@ type CombinedData = ReservationInterface &
 const myId = localStorage.getItem("id");
 
 export default function RepairCreate() {
-  
+  interface StudentInfoRecord
+    extends StudentInterface,
+      DormInterface,
+      RoomInterface {
+    key: string;
+    DormID: number;
+    StudentID: string;
+    FirstName: string;
+    LastName: string;
+    RoomNumber: number;
+  }
+  /*
   interface DataType {
     ID: number;
     Title: string;
@@ -67,139 +79,16 @@ export default function RepairCreate() {
     ReservationID: number;
     AdminID: number;
   }
-/*
-  const columns: ColumnsType<RepairInterface> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "id",
-    },
-    {
-      title: "หัวข้อการขอรับบริการ",
-      dataIndex: "Subject",
-      key: "subject",
-    },
-    {
-      title: "รายละเอียดการขอรับบริการ",
-      dataIndex: "Detail",
-      key: "detail",
-    },
-    {
-      title: "ภาพประกอบ",
-      dataIndex: "Image",
-      key: "image",
-      width: "15%",
-      render: (text, record, index) => (
-        <img
-          src={record.Image}
-          className="w3-left w3-circle w3-margin-right"
-          width="100%"
-        />
-      ),
-    },
-    {
-      title: "รายละเอียดสถานที่รับบริการ",
-      dataIndex: "Location_Details",
-      key: "location_details",
-    },
-    {
-      title: "ช่องทางติดต่อ",
-      dataIndex: "Contact",
-      key: "contact",
-    },
-    {
-      title: "ช่วงเวลาที่รับบริการ",
-      dataIndex: "Time_Slot",
-      key: "time_slot",
-    },
-    {
-      title: "หมายเหตุ",
-      dataIndex: "Remarks",
-      key: "remarks",
-    },
-    {
-      title: "สถานะ",
-      dataIndex: "Status",
-      key: "status",
-    },
-    {
-      title: "รหัสแอดมิน",
-      dataIndex: "AdminID",
-      key: "adminid",
-    },
-    {
-      title: "รหัสการจอง",
-      dataIndex: "ReservationID",
-      key: "reservationid",
-    },
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {myId === record?.ID ? (
-            messageApi.open({
-              type: "error",
-              content: "Student ID on finish is not found.",
-            })
-          ) : (
-            // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PlusOutlined />}
-              onClick={() => CreateRepair(record)}
-            >
-              ยืนยัน
-            </Button>
-          )}
-        </>
-      ),
-    },
-  ];
-
-  const data: DataType[] = [];
 */
-  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [studentData, setStudentData] = useState<StudentInterface | null>(null);
-  const [repairing, setRepairing] = useState<RepairInterface | null>(null);
-
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
-  // Model
-  const [open, setOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [modalText, setModalText] = useState<String>();
-  const [deleteId, setDeleteId] = useState<Number>();
-  /*
-    const getRepairing = async (id: string) => {
-      let res = await GetRepair(id);
-      if (res.status == 200) {
-        form.setFieldsValue({
-          Subject: res.data.Subject,
-          Detail: res.data.Detail,
-          Image: res.data.Image,
-          Location_Details: res.data.Location_Details,
-          Contact: res.data.Contact,
-          Time_Slot: res.data.Time_Slot,
-          Remarks: res.data.Remarks,
-          Status: res.data.Status,
-        });
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "ไม่พบข้อมูลผู้ใช้",
-        });
-        setTimeout(() => {
-          navigate("/repair");
-        }, 2000);
-      }
-    };
-  */
+  const [student, setStudent] = useState<StudentInfoRecord[]>([]);
+
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -224,7 +113,6 @@ export default function RepairCreate() {
 
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      //getRepairing(studentId);  // Fetch repair data using studentId
       values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       messageApi.open({
@@ -255,14 +143,26 @@ export default function RepairCreate() {
 
   useEffect(() => {
     const studentId = localStorage.getItem("id");
+    const fetchRepairs = async () => {
+      const response = await GetListRepairs();
+      const data = await response.json(); // ตรวจสอบข้อมูลที่ได้รับ
+      console.log(data);
+      if (response) {
+        setStudent(response.data);
+        console.log("response ของ setStudent",data);
+      } else {
+        message.error("ไม่สามารถดึงข้อมูลการแจ้งซ่อมได้");
+      }
+    };
     if (studentId) {
-      //getRepairing(studentId);  // Fetch repair data using studentId
     } else {
       messageApi.open({
         type: "error",
         content: "Student ID not found.",
       });
     }
+
+    fetchRepairs();
   }, []);
 
   return (
@@ -273,18 +173,35 @@ export default function RepairCreate() {
             <h2>แจ้งซ่อม</h2>
             <Divider />
             <Form name="repairDetails" layout="vertical" autoComplete="off">
-            <Row justify="space-between" align="middle">
-            <Col>
-              <Space direction="vertical">
-                <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
-                <Text>อาคาร 4 ห้อง 414A</Text>
-              </Space>
-            </Col>
-            <Col>
-              <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
-            </Col>
-          </Row>
-        </Form>
+              <Row justify="space-between" align="middle">
+                <Col>
+                  <Space direction="vertical">
+                    <Text>
+                      {student.length > 0
+                        ? student[0].StudentID
+                        : "ไม่พบข้อมูล"}
+                    </Text>
+                    <Text>
+                      {student.length > 0
+                        ? student[0].FirstName
+                        : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
+                    </Text>
+                    <Text>
+                      หอพัก:{" "}
+                      {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
+                      ห้อง:{" "}
+                      {student.length > 0
+                        ? student[0].RoomNumber
+                        : "ไม่พบข้อมูล"}
+                    </Text>
+                  </Space>
+                </Col>
+                <Col>
+                  <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+                </Col>
+              </Row>
+            </Form>
 
             <br />
 
