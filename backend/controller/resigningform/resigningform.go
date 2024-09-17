@@ -52,14 +52,14 @@ func CreateResigningForm(c *gin.Context) {
 	}
 
 	rs := entity.ResigningForm{
-		Title:         "แบบฟอร์มลาออกหอพัก",
-		Type:          "ฟอร์มเอกสาร",
-		Date:          resigningform.Date,
-		Because_Of:    resigningform.Because_Of,
-		Accommodation: resigningform.Accommodation,
-		Status:        "รอดำเนินการ",
-		ReservationID: reservation.ID,
-		Reservation:   reservation,
+		Title:           "ฟอร์มลาออกหอพัก",
+		Type:            "ฟอร์มเอกสาร",
+		Date_Submission: resigningform.Date_Submission,
+		Because_Of:      resigningform.Because_Of,
+		Accommodation:   resigningform.Accommodation,
+		Status:          "รอดำเนินการ",
+		ReservationID:   reservation.ID,
+		Reservation:     reservation,
 	}
 
 	if err := db.Create(&rs).Error; err != nil {

@@ -40,6 +40,7 @@ func CreateRepair(c *gin.Context) {
 	rp := entity.Repairing{
 		Title:            repairing.Title,
 		Type:             "แจ้งซ่อม",
+		Date_Submission:  repairing.Date_Submission,
 		Detail:           repairing.Detail,
 		Image:            repairing.Image,
 		Location_Details: repairing.Location_Details,

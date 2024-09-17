@@ -7,7 +7,7 @@ type Dorm struct {
 	Type 		string
 
 	GenderID uint
-	Gender   Genders `gorm:"foriegnKey:GenderID"`
+	Gender   Genders `gorm:"foreignKey:GenderID"`
 	
 	Rooms []Room `gorm:"foreignKey:DormID"`
 	Reservations []Reservation `gorm:"foreignKey:DormID"`

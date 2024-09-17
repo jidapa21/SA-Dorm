@@ -35,6 +35,9 @@ export default function DelayedPaymentFormCreate() {
   const [messageApi] = message.useMessage();
   const [form] = Form.useForm();
 
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString();
+
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -47,6 +50,7 @@ export default function DelayedPaymentFormCreate() {
   };
   interface DataType {
     ID: number;
+    Date_Submission: Date;
     Dorm_Payment: number;
     Electricly_Bill: number;
     Water_Bill: number;
@@ -131,7 +135,6 @@ export default function DelayedPaymentFormCreate() {
 
   const data: DataType[] = [];
 
-  
   const handleReset = () => {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
@@ -139,13 +142,14 @@ export default function DelayedPaymentFormCreate() {
   const onFinish = async (values: DelayedPaymentFormInterface) => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
+      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       messageApi.open({
         type: "error",
         content: "Student ID on finish is not found.",
       });
     }
- 
+
     let res = await CreateDelayedPaymentForm(values);
     if (res) {
       messageApi.open({
@@ -178,10 +182,17 @@ export default function DelayedPaymentFormCreate() {
         <h2>แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา</h2>
         <Divider />
         <Form name="title" form={form} layout="vertical">
-          <Space direction="vertical">
-            <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
-            <Text>อาคาร 4 ห้อง 414A</Text>
-          </Space>
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Space direction="vertical">
+                <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
+                <Text>อาคาร 4 ห้อง 414A</Text>
+              </Space>
+            </Col>
+            <Col>
+              <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+            </Col>
+          </Row>
         </Form>
 
         <br />

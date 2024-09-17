@@ -56,6 +56,7 @@ export default function RepairCreate() {
   interface DataType {
     ID: number;
     Title: string;
+    Date_Submission: Date;
     Detail: string;
     Image: string;
     Location_Details: string;
@@ -163,6 +164,9 @@ export default function RepairCreate() {
   const [studentData, setStudentData] = useState<StudentInterface | null>(null);
   const [repairing, setRepairing] = useState<RepairInterface | null>(null);
 
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString();
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
@@ -221,6 +225,7 @@ export default function RepairCreate() {
     const studentId = localStorage.getItem("id");
     if (studentId) {
       //getRepairing(studentId);  // Fetch repair data using studentId
+      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       messageApi.open({
         type: "error",
@@ -268,11 +273,18 @@ export default function RepairCreate() {
             <h2>แจ้งซ่อม</h2>
             <Divider />
             <Form name="repairDetails" layout="vertical" autoComplete="off">
+            <Row justify="space-between" align="middle">
+            <Col>
               <Space direction="vertical">
                 <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
                 <Text>อาคาร 4 ห้อง 414A</Text>
               </Space>
-            </Form>
+            </Col>
+            <Col>
+              <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+            </Col>
+          </Row>
+        </Form>
 
             <br />
 

@@ -160,9 +160,12 @@ func SetupDatabase() {
 		Username: "jetnipat",
 	})
 
+	date_repairing, _ := time.Parse("2006-03-02", "2024-05-06")
 	repairing := &entity.Repairing{
 		ID:               1,
 		Title:            "อ่างล้างมือตัน",
+		Type:             "แจ้งซ่อม",
+		Date_Submission:  date_repairing,
 		Detail:           "ทำเศษอาหารตก",
 		Image:            "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
 		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
@@ -177,9 +180,13 @@ func SetupDatabase() {
 	dormPayment := 2900.00
 	elecBill := 100.00
 	waterBill := 50.00
-	dueDate, _ := time.Parse("2006-01-02", "2564-05-12")
+	dueDate, _ := time.Parse("2006-01-02", "2024-06-01")
+	date_delayedpaymentform, _ := time.Parse("2006-02-02", "2024-05-08")
 	delayedpaymentform := &entity.DelayedPaymentForm{
 		ID:              1,
+		Title:           "ฟอร์มขอผ่อนผันการชำระค่าหอพัก",
+		Type:            "ฟอร์มเอกสาร",
+		Date_Submission: date_delayedpaymentform,
 		Dorm_Payment:    &dormPayment,
 		Electricly_Bill: &elecBill,
 		Water_Bill:      &waterBill,
@@ -191,10 +198,12 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(delayedpaymentform, &entity.DelayedPaymentForm{ID: 1})
 
-	dateSubmission, _ := time.Parse("2024-01-02", "2567-05-12")
-	dateRequest, _ := time.Parse("2006-01-02", "2564-05-12")
+	dateSubmission, _ := time.Parse("2006-01-02", "2024-05-10")
+	dateRequest, _ := time.Parse("2006-01-02", "2024-05-24")
 	en_exitingform := &entity.En_ExitingForm{
 		ID:              1,
+		Title:           "ฟอร์มขออนุญาติเข้า-ออกหอพัก",
+		Type:            "ฟอร์มเอกสาร",
 		Date_Submission: dateSubmission,
 		Request:         "ขอกลับหอพักหลังเวลาปิดหอพัก",
 		Because_Of:      "ทำงานโปรเจคจบ",
@@ -205,15 +214,17 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(en_exitingform, &entity.En_ExitingForm{ID: 1})
 
-	date, _ := time.Parse("2006-01-02", "2564-05-12")
+	date_resigningform, _ := time.Parse("2006-01-02", "2024-05-12")
 	resigningform := &entity.ResigningForm{
-		ID:            1,
-		Date:          date,
-		Because_Of:    "ไม่สะดวกอยู่หอพักหลายคน",
-		Accommodation: "หอพักภายนอกมหาวิทยาลัย",
-		Status:        "รอดำเนินการ",
-		ReservationID: reservation.ID,
-		AdminID:       1,
+		ID:              1,
+		Title:           "ฟอร์มลาออกหอพัก",
+		Type:            "ฟอร์มเอกสาร",
+		Date_Submission: date_resigningform,
+		Because_Of:      "ไม่สะดวกอยู่หอพักหลายคน",
+		Accommodation:   "หอพักภายนอกมหาวิทยาลัย",
+		Status:          "รอดำเนินการ",
+		ReservationID:   reservation.ID,
+		AdminID:         1,
 	}
 	db.FirstOrCreate(resigningform, &entity.ResigningForm{ID: 1})
 

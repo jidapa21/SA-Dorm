@@ -291,12 +291,31 @@ async function GetListStatus() {
     .catch((e) => e.response);
 }
 */
+
 async function GetListStatus() {
-  return await axios
-    .get(`${apiUrl}/list-status`, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    }
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/list-status`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { status: response.status, data: errorData };
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
 }
+
 
 //---------------------   Admin ---------------------------------
 async function Adminlist() {

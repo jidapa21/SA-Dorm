@@ -1,129 +1,195 @@
 import React, { useEffect, useState } from "react";
-import { Tag, Table, Typography } from "antd";
+import { Tag, Table, Typography, message } from "antd";
+import { useNavigate } from "react-router-dom";
+import { SortOrder } from "antd/es/table/interface"; // Import SortOrder
+
 import { GetListStatus } from "./../../services/https";
+import { RepairInterface } from "./../../interfaces/repairing";
+import { DelayedPaymentFormInterface } from "./../../interfaces/delayedpaymentform";
+import { En_ExitingFormInterface } from "./../../interfaces/En_ExitingForm";
+import { ResigningFormInterface } from "./../../interfaces/ResigningForm";
 
 const { Title } = Typography;
 
-interface DataType {
-  No: number;
-  Subject: string;
-  Type: string;
-  State: string[];
-}
+export default function StatusCreate() {
+  interface TableStatusRecord
+    extends RepairInterface,
+      DelayedPaymentFormInterface,
+      En_ExitingFormInterface,
+      ResigningFormInterface {
+    key: string;
+    title: string;
+    Date: Date;
+    type: string;
+    status: string;
+  }
 
-const columns = [
-  {
-    title: "ลำดับ",
-    dataIndex: "No",
-    key: "No",
-    render: (text: number) => <a>{text}</a>,
-  },
-  {
-    title: "หัวข้อ",
-    dataIndex: "Subject",
-    key: "Subject",
-  },
-  {
-    title: "ประเภท",
-    dataIndex: "Type",
-    key: "Type",
-  },
-  {
-    title: "สถานะ",
-    key: "State",
-    dataIndex: "State",
-    render: (State: string[]) => (
-      <>
-        {State.map((State: string) => {
-          let color: string;
-          switch (State) {
-            case "รอดำเนินการ":
-              color = "#bfbfbf";
-              break;
-            case "กำลังดำเนินการ":
-              color = "#1677ff";
-              break;
-            case "อนุมัติ":
-            case "เสร็จสิ้น":
-              color = "#52c41a";
-              break;
-            default:
-              color = "default";
-          }
-          return (
-            <Tag color={color} key={State}>
-              {State.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-];
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [repairs, setRepairs] = useState<TableStatusRecord[]>([]);
+  const [delayedpaymentforms, setDelayedPaymentForms] = useState<
+    TableStatusRecord[]
+  >([]);
+  const [en_exitingforms, setEn_ExitingForms] = useState<TableStatusRecord[]>(
+    []
+  );
+  const [resigningforms, setResigningForms] = useState<TableStatusRecord[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-const Index: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]);
+  const formatDate = (dateString?: Date): string => {
+    if (!dateString) return ""; // Handle undefined or null dates
+    const date = new Date(dateString);
+    return date.toISOString().split("T")[0]; // Format to 'YYYY-MM-DD'
+  };
+
+  const columns = [
+    {
+      title: "วันที่ยื่นคำร้อง",
+      dataIndex: "Date",
+      key: "Date",
+      sorter: (a: TableStatusRecord, b: TableStatusRecord) => {
+        const dateA = new Date(a.Date).getTime();
+        const dateB = new Date(b.Date).getTime();
+        return dateA - dateB;
+      },
+      sortDirections: ["ascend", "descend"] as SortOrder[],
+      render: (text: string) => {
+        const date = new Date(text);
+        return date.toLocaleDateString("th-TH", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+      },
+    },
+    {
+      title: "หัวข้อ",
+      dataIndex: "Title", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      key: "Title",
+    },
+    {
+      title: "ประเภท",
+      dataIndex: "Type", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      key: "Type",
+    },
+    {
+      title: "สถานะ",
+      key: "Status",
+      dataIndex: "Status", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      render: (Status: string[]) => (
+        <>
+          {Status.map((status: string) => {
+            let color: string;
+            switch (status) {
+              case "รอดำเนินการ":
+                color = "#bfbfbf";
+                break;
+              case "กำลังดำเนินการ":
+                color = "#1677ff";
+                break;
+              case "อนุมัติ":
+              case "เสร็จสิ้น":
+                color = "#52c41a";
+                break;
+              default:
+                color = "default";
+            }
+            return (
+              <Tag color={color} key={status}>
+                {status}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await GetListStatus();
-        console.log("Data from API:", response); // ตรวจสอบข้อมูลที่ได้จาก API
+        const data = await GetListStatus();
+        console.log("Received data:", data);
 
-        if (response && response.data) {
-          // แปลงข้อมูลเป็นอาเรย์จาก response.data
-          const apiData = response.data;
-
-          const transformedData: DataType[] = [
-            {
-              No: 1,
-              Subject: apiData.delayed_payment?.title || "ไม่พบข้อมูล",
-              Type: apiData.delayed_payment?.type || "ไม่พบข้อมูล",
-              State: [apiData.delayed_payment?.status || "ไม่พบข้อมูล"],
-            },
-            {
-              No: 2,
-              Subject: apiData.en_exiting?.title || "ไม่พบข้อมูล",
-              Type: apiData.en_exiting?.type || "ไม่พบข้อมูล",
-              State: [apiData.en_exiting?.status || "ไม่พบข้อมูล"],
-            },
-            {
-              No: 3,
-              Subject: apiData.repairing?.title || "ไม่พบข้อมูล",
-              Type: apiData.repairing?.type || "ไม่พบข้อมูล",
-              State: [apiData.repairing?.status || "ไม่พบข้อมูล"],
-            },
-            {
-              No: 4,
-              Subject: apiData.resigning?.title || "ไม่พบข้อมูล",
-              Type: apiData.resigning?.type || "ไม่พบข้อมูล",
-              State: [apiData.resigning?.status || "ไม่พบข้อมูล"],
-            },
+        if (
+          data.delayed_payment_forms &&
+          data.en_exiting_forms &&
+          data.repairing_forms &&
+          data.resigning_forms
+        ) {
+          const combinedData = [
+            ...data.repairing_forms.map(
+              (item: RepairInterface, index: number) => ({
+                key: `repair-${index}`,
+                Date: formatDate(item.Date_Submission),
+                Title: item.Title || "N/A",
+                Type: item.Type || "N/A",
+                Status: [item.Status || "Unknown"],
+              })
+            ),
+            ...data.delayed_payment_forms.map(
+              (item: DelayedPaymentFormInterface, index: number) => ({
+                key: `delayed-${index}`,
+                Date: formatDate(item.Date_Submission),
+                Title: item.Title || "N/A",
+                Type: item.Type || "N/A",
+                Status: [item.Status || "Unknown"],
+              })
+            ),
+            ...data.en_exiting_forms.map(
+              (item: En_ExitingFormInterface, index: number) => ({
+                key: `en-exiting-${index}`,
+                Date: formatDate(item.Date_Submission),
+                Title: item.Title || "N/A",
+                Type: item.Type || "N/A",
+                Status: [item.Status || "Unknown"],
+              })
+            ),
+            ...data.resigning_forms.map(
+              (item: ResigningFormInterface, index: number) => ({
+                key: `resigning-${index}`,
+                Date: formatDate(item.Date_Submission),
+                Title: item.Title || "N/A",
+                Type: item.Type || "N/A",
+                Status: [item.Status || "Unknown"],
+              })
+            ),
           ];
 
-          console.log("Transformed Data:", transformedData); // ตรวจสอบข้อมูลหลังการแปลง
-          setData(transformedData); // อัพเดท state ด้วย transformedData
+          // Sort by date, from newest to oldest
+          const sortedData = combinedData.sort((a, b) => {
+            const dateA = new Date(a.Date).getTime();
+            const dateB = new Date(b.Date).getTime();
+            return dateB - dateA;
+          });
+
+          setRepairs(sortedData);
+        } else {
+          setErrorMessage("Received data is missing expected fields");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setErrorMessage("Failed to fetch data");
       }
     };
 
     fetchData();
   }, []);
 
-  
   return (
     <>
+      {contextHolder}
       <br />
       <div className="text-container">
         <div className="text-1">ติดตามสถานะของปัญหา</div>
       </div>
       <br />
       <br />
-      <Table columns={columns} dataSource={data} />
+      <Table
+        columns={columns}
+        dataSource={repairs}
+        pagination={{ pageSize: 10 }} // Set the number of rows per page
+      />
     </>
   );
-};
-
-export default Index;
+}

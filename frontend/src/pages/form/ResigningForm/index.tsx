@@ -45,7 +45,7 @@ export default function Index() {
 
   interface DataType {
     ID: number;
-    Date: Date;
+    Date_Submission: Date;
     Because_Of: string;
     Accommodation: string;
     Status: string;
@@ -136,7 +136,7 @@ export default function Index() {
     values.Accommodation = value.toString(); // กำหนดค่า Request จาก Radio Group
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      values.Date = new Date(); // เพิ่มวันที่ปัจจุบัน
+      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       messageApi.open({
         type: "error",

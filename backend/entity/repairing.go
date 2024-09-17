@@ -1,19 +1,23 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Repairing struct {
 	gorm.Model
-	ID               uint    `gorm:"primaryKey;autoIncrement"`
-	Title            string  `json:"title"`
-	Type             string  `json:"type"`
-	Detail           string  `json:"detail"`
-	Image            string  `gorm:"type:longtext" json:"image"`
-	Location_Details string  `json:"location_details"`
-	Contact          string  `json:"contact"`
-	Time_Slot        string  `json:"time_slot"`
-	Remarks          *string `json:"remarks"`
-	Status           string  `json:"status"`
+	ID               uint `gorm:"primaryKey;autoIncrement"`
+	Title            string
+	Type             string
+	Date_Submission  time.Time
+	Detail           string
+	Image            string `gorm:"type:longtext" json:"image"`
+	Location_Details string
+	Contact          string
+	Time_Slot        string
+	Remarks          *string
+	Status           string
 
 	// One-to-one relationship
 	ReservationID uint        `json:"reservation_id"`

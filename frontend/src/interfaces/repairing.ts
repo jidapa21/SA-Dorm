@@ -1,6 +1,8 @@
 export interface RepairInterface {
     ID?:                number;
-    Subject?:           string;
+    Title?:             string;
+    Type?:              string;
+    Date_Submission?:	Date;
     Detail?:            string;
     Image?:             string;
     Location_Details?:  string;

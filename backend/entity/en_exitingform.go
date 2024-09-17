@@ -9,7 +9,7 @@ type En_ExitingForm struct {
 	gorm.Model
 	ID              uint `gorm:"primaryKey;autoIncrement"`
 	Title           string
-	Type            string `json:"type"`
+	Type            string
 	Date_Submission time.Time
 	Request         string
 	Because_Of      string

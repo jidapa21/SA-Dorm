@@ -91,6 +91,7 @@ func main() {
 		// ResigningForm Route
 		//router.POST("/get-status", status.GetStatusById)
 		//router.GET("/list-status", status.GetListStatus)
+		//router.GET("/get-status/:id", middlewares.Authorizes(), status.GetStatusById)
 		router.GET("/list-status", middlewares.Authorizes(), status.GetListStatus)
 
 		// Announcement Routes
