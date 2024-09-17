@@ -60,7 +60,7 @@ func CreateRentFee(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
 
-// GET /get-rent-fee/:id
+// GET /get-rentfee/:id
 func GetRentFee(c *gin.Context) {
 	ID := c.Param("id")
 	var rentFee entity.RentFee
@@ -74,7 +74,7 @@ func GetRentFee(c *gin.Context) {
 	c.JSON(http.StatusOK, rentFee)
 }
 
-// GET /list-rent-fees
+// GET /list-rentfees
 func ListRentFees(c *gin.Context) {
 	var rentFees []entity.RentFee
 

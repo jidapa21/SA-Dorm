@@ -190,12 +190,12 @@ func SetupDatabase() {
 	db.FirstOrCreate(&waterFee, entity.WaterFee{ID:1})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
-	var reservations []entity.Reservation
-	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
+	var reservations1 []entity.Reservation
+	db.Preload("Dorm").Find(&reservations1) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
 
 	var rentFee entity.RentFee
 
-	for _, reservation := range reservations {
+	for _, reservation := range reservations1 {
 		var amount float64
 
 		// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
@@ -227,19 +227,22 @@ func SetupDatabase() {
 	}
 
 	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
+	totalAmount := float64(rentFee.Amount) + float64(waterFee.Amount) + float64(electricityFee.Amount)
 	expense := entity.Expense{
 		Remark:           " - ",
 		Status:           "กำลังดำเนินการ",
-		RentFeeID:        rentFee.ID,        // เชื่อมโยง RentFee
-		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
-		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
+		RentFeeID:        uint(rentFee.Amount),        // เชื่อมโยง RentFee
+		WaterFeeID:       uint(waterFee.Amount),       // เชื่อมโยง WaterFee
+		ElectricityFeeID: uint(electricityFee.Amount), // เชื่อมโยง ElectricityFee
+		TotalAmount: totalAmount,
+		StudentID:			reservation.StudentID,
 	}
 	db.FirstOrCreate(&expense, entity.Expense{Remark: " - "})
 
 
 	var expense1 entity.Expense
 // ใช้ Preload เพื่อโหลดข้อมูลที่เชื่อมโยงกับ RentFee, WaterFee และ ElectricityFee
-db.Preload("RentFees").Preload("WaterFees").Preload("ElectricityFees").First(&expense1, expense1.ID)
+	db.Preload("RentFees").Preload("WaterFees").Preload("ElectricityFees").First(&expense1, expense1.ID)
 	
 
 	// Seed ข้อมูล Slip 
@@ -247,8 +250,7 @@ db.Preload("RentFees").Preload("WaterFees").Preload("ElectricityFees").First(&ex
 		Path:           "1667801636944.jpg",
 		Date:           time.Now(),
 		AdminID:        rentFee.ID,       
-		ExpenseID:      expense.ID,
-		Totalamount: 	3690.00,      
+		ExpenseID:      expense.ID,      
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})
 }

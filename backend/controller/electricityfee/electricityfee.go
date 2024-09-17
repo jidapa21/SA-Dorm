@@ -87,7 +87,7 @@ func ListElectricityFees(c *gin.Context) {
 	c.JSON(http.StatusOK, electricityFees)
 }
 
-// PATCH /update-electricity-fee/:id
+// PATCH /update-electricityfee/:id
 func UpdateElectricityFee(c *gin.Context) {
 	var electricityFee entity.ElectricityFee
 	ID := c.Param("id")

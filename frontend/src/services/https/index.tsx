@@ -12,6 +12,9 @@ import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import axios from "axios";
 import { ExpenseInterface } from '../../interfaces/Expense'; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
+import { RentInterface } from "../../interfaces/Rentfee";
+import { ElectricityInterface } from "../../interfaces/Electricityfee";
+import { WaterInterface } from "../../interfaces/Waterfee";
 
 
 const apiUrl = "http://localhost:8000";
@@ -291,26 +294,6 @@ async function CreateSlip(data: SlipInterface) {
   .then((res) => res)
   .catch((e) => e.response);
 }
-  /*const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-
-  try {
-    const response = await fetch(`${apiUrl}/slip`, requestOptions);
-    if (response.ok) {
-      return await response.json();
-    } else {
-      const errorText = await response.text();
-      console.error('API Error:', errorText);
-      return false;
-    }
-  } catch (error) {
-    console.error('Fetch Error:', error);
-    return false;
-  }*/
-
 
 
   async function GetSlip(id: number | undefined) {
@@ -320,32 +303,8 @@ async function CreateSlip(data: SlipInterface) {
     .catch((e) => e.response);
 }
 
-async function CreateExpense(data: ExpenseInterface) {
-  return await axios
-  .post(`${apiUrl}/create-expense`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
-}
-    /*if (id === undefined) {
-      console.error('Invalid ID');
-      return false;
-    }
-  
-    try {
-      const response = await fetch(`${apiUrl}/slip/${id}`, { method: "GET" });
-      
-      if (response.ok) {
-        return await response.json();
-      } else {
-        console.error('Error fetching slip:', response.status, response.statusText);
-        return false;
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-      return false;
-    }
-  }
-  */
+
+ 
 
 async function GetListSlips() {
   const requestOptions = {
@@ -364,23 +323,7 @@ async function GetListSlips() {
     });
   return res;
 }
-  /*try {
-    const response = await fetch(`${apiUrl}/slip`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    
-    if (response.ok) {
-      return await response.json();
-    } else {
-      console.error('Error fetching slips list:', response.status, response.statusText);
-      return false;
-    }
-  } catch (error) {
-    console.error('Network error:', error);
-    return false;
-  }
-}*/
+
 
 
 async function UpdateSlip(data: SlipInterface) {
@@ -400,25 +343,32 @@ async function UpdateSlip(data: SlipInterface) {
   return res;
 }
   
-  /*try {
-    const response = await fetch(`${apiUrl}/slip`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    
-    if (response.ok) {
-      return await response.json();
+//-------------------------Expense----------------------------------------
+
+async function CreateExpense(data: ExpenseInterface) {
+  return await axios
+  .post(`${apiUrl}/create-expense`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function ListExpense() {
+const requestOptions = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+let res = await fetch(`${apiUrl}/list-expense`, requestOptions)
+  .then((res) => {
+    if (res.status == 200) {
+      return res.json();
     } else {
-      console.error('Error updating slip:', response.status, response.statusText);
       return false;
     }
-  } catch (error) {
-    console.error('Network error:', error);
-    return false;
-  }
-}*/
-
+  });
+return res;
+}
 
 async function fetchExpenses(): Promise<ExpenseInterface[]> {
   try {
@@ -434,6 +384,158 @@ async function fetchExpenses(): Promise<ExpenseInterface[]> {
   }
 }
 
+//-----------------------------Rentfee-------------------------------------
+
+async function ListRentFees() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/list-rentfees`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+  }
+        
+  
+  async function  CreateRentFee(data: RentInterface) {
+    return await axios
+    .post(`/create-rentfee`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+  }
+  
+  async function GetRentFee() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let res = await fetch(`/get-rentfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+
+  
+  //----------------------------------------------Electricity-------------------------------------
+async function ListElectricityFees() {
+const requestOptions = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+let res = await fetch(`/list-electricityfees`, requestOptions)
+  .then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+return res;
+}
+
+
+async function  CreateElectricityFee(data: ElectricityInterface) {
+  return await axios
+  .post(`/create-electricityfee`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+  
+  async function GetElectricityFee() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let res = await fetch(`/get-electricityfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+
+  async function UpdateElectricityFee(data: SlipInterface) {
+    const requestOptions = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    };
+    let res = await fetch(`update-electricityfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+//----------------------------------------water fee-------------------------------------------
+        
+async function ListWaterFees() {
+const requestOptions = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+let res = await fetch(`/list-waterfees`, requestOptions)
+  .then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+return res;
+}
+
+async function  CreateWaterFee(data: WaterInterface) {
+  return await axios
+  .post(`/create-waterfee`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function GetWaterFee() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/get-waterfee/:id`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
 
 export {
   SignInStudent,
@@ -471,11 +573,27 @@ export {
   Adminlist,
   CreateAdmin,
   DeleteAdmin,
-  //---------------Slip-------------
+  //------------------------Slip-------------
   CreateSlip,
   GetSlip,
   GetListSlips,
   UpdateSlip,
+  //-------------------------expense----------------
   fetchExpenses,
-  CreateExpense
+  CreateExpense,
+  ListExpense,
+  //-----------------------Elecfee---------------
+  ListElectricityFees,
+  CreateElectricityFee,
+  GetElectricityFee,
+  UpdateElectricityFee,
+  //------------------------Waterfee-------------
+  ListWaterFees,
+  CreateWaterFee,
+  GetWaterFee,
+  //---------------------------Rentfee---------------
+  ListRentFees,
+  CreateRentFee,
+  GetRentFee,
+
 };

@@ -18,6 +18,8 @@ import (
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/waterfee"
+	"dormitory.com/dormitory/controller/electricityfee"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
@@ -63,10 +65,6 @@ func main() {
 		router.GET("/list-other", other.ListOther)
 		router.GET("/get-other/:id", other.GetOther)
 
-		// RentFee Route
-		router.POST("/create-rent-fee", rentfee.CreateRentFee)
-		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
-		router.GET("/list-rent-fees", rentfee.ListRentFees)
 		
 		// Repairing Route
 		router.POST("/creat-repair", repairing.CreateRepair)
@@ -95,8 +93,28 @@ func main() {
 		router.POST("/create-slip", slip.CreateSlip)
 		router.PATCH("/slip/:id", slip.UpdateSlip)
 
-			//Slip Routes
-			router.POST("/create-expense", expense.CreateExpense)
+		//Slip expense
+		router.POST("/create-expense", expense.CreateExpense)
+		router.GET("/get-expense/:id", expense.GetExpense)
+		router.GET("/list-expense", expense.ListExpense)
+
+		// RentFee Route
+		router.POST("/create-rentfee", rentfee.CreateRentFee)
+		router.GET("/get-rentfee/:id", rentfee.GetRentFee)
+		router.GET("/list-rentfees", rentfee.ListRentFees)
+		
+
+		//waterFee Route
+		router.POST("/create-waterfee", waterfee.CreateWaterFee)
+		router.GET("/get-waterfee/:id", waterfee.GetWaterFee)
+		router.GET("/list-waterfees", waterfee.ListWaterFees)
+	
+
+		//elecFee Route
+		router.POST("/create-electricityfee", electricityfee.CreateElectricityFee)
+		router.GET("/get-electricityfee/:id", electricityfee.GetElectricityFee)
+		router.GET("/list-electricityfees", electricityfee.ListElectricityFees)
+		router.PATCH("update-electricityfee/:id", electricityfee.UpdateElectricityFee)
 	}
 
 	r.GET("/genders", genders.GetAll)

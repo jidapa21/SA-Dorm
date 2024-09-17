@@ -10,8 +10,6 @@ type Slip struct {
 	ID		uint    `gorm:"primaryKey;autoIncrement"`
 	Path    string `gorm:"type:longtext" json:"path"`
 	Date	time.Time `json:"date"`
-	//เพิ่มราคารวมมาใหม่
-	Totalamount	float64 `json:"totalamount"`
 	
     // AdminID ทำหน้าที่เป็น FK
     AdminID     uint    `json:"admin_id"`

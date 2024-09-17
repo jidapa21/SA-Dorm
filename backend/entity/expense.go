@@ -7,6 +7,7 @@ type Expense struct {
 	ID		uint    `gorm:"primaryKey;autoIncrement"`
 	Remark string `json:"remark"`
 	Status string `json:"status"`
+	TotalAmount	float64 `json:"totalamount"`
 
 	RentFeeID uint     `json:"rent_id"`
 	RentFee   *RentFee `gorm:"foreignKey: RentFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
@@ -16,10 +17,8 @@ type Expense struct {
 
 	WaterFeeID uint     `json:"water_id"`
 	WaterFee   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
-/*
-	// One-to-one relationship
-	SlipID 	uint         	`json:"reservation_id"`
-	Slip   	*Slip 	`gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
-	*/
+
+	StudentID uint            `json:"student_id"`
+	Student   *FamilyStatuses `gorm:"foreignKey: StudentID" json:"student"`
 		
 }

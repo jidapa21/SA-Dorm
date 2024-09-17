@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// POST /create-water-fee
+// POST /create-waterfee
 func CreateWaterFee(c *gin.Context) {
 	var waterfee entity.WaterFee
 	var sid entity.Students
@@ -60,7 +60,7 @@ func CreateWaterFee(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
 
-// GET /get-water-fee/:id
+// GET /get-waterfee/:id
 func GetWaterFee(c *gin.Context) {
 	ID := c.Param("id")
 	var waterFee entity.WaterFee
