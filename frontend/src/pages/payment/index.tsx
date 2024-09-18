@@ -16,12 +16,15 @@ import Slip from "./../adminpage/PaymentConfirmation";
 import { ExpenseInterface } from '../../interfaces/Expense';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface;
+type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface & ExpenseInterface;
 
 const { TextArea } = Input;
 
 
-interface ExpenseData {
+interface ExpenseData 
+  extends StudentInterface,
+  DormInterface,
+  RoomInterface{
   ID: number;
   Date: Date;
   status: string;
@@ -30,11 +33,11 @@ interface ExpenseData {
   rent_id:  number;
   elec_id:  number;
   water_id: number;
-  studentID: string;
+  student_id: string;
 }
 
 const Index: React.FC = () => {
-      const myId = localStorage.getItem("id");
+      
       const studentDbID = localStorage.getItem("id");
 
       const [text] = useState('');
@@ -50,49 +53,68 @@ const Index: React.FC = () => {
 
       const [fileList, setFileList] = useState<UploadFile[]>([]);
       const [form] = Form.useForm();
+      const [errorMessage, setErrorMessage] = useState<string | null>(null);
+      const [student, setStudent] = useState<ExpenseData[]>([]);
       //const response = await CreateSlip({Path});
 
     useEffect(() => {
+      const myId = localStorage.getItem("id");
+      console.log("Student ID from localStorage:", myId);
+
       const fetchExpenses = async () => {
         try {
           const expense = await ListExpense();
-          if (expense) {
-            const formattedData = expense.map((expense: any) => ({
-              ID: expense.ID,
-              Date: new Date(expense.CreatedAt), // แปลงเป็น Date
-              status: expense.status,
-              totalamount: expense.totalamount,
-              remark: expense.remark,
-              rent_id: expense.rent_id,
-              elec_id: expense.elec_id,
-              water_id: expense.water_id,
-              student_id: expense.student_id,
+          console.log("Received data:", expense);
+
+          if (expense && expense.length > 0) {
+            const CombinedData = expense.map((item: any, index: number) => ({
+              key: `item-${index}`,
+              Date: new Date(item.CreatedAt), // แปลงเป็น Date
+              totalamount: item.totalamount,
+              rent_id: item.rentfee || 0, // ใช้ rentfee แทน rent_id
+              elec_id: item.electricityfee || 0, // ใช้ electricityfee แทน elec_id
+              water_id: item.waterfee || 0, // ใช้ waterfee แทน water_id
+              remark: item.remark || "",
+              student_id: item.student_id,
             }));
 
-            // กรองข้อมูลตาม studentID
-          const filteredData = formattedData.filter((expense: ExpenseData) => expense.studentID === myId);
+        // กรองข้อมูลตาม studentID
+        const filteredData = CombinedData.filter(
+          (expense: ExpenseData) => expense.student_id === myId
+        );
+
+        console.log("Filtered data for student ID:", filteredData);
 
 
-        // คำนวณยอดรวมทั้งหมด
-        const total = formattedData.reduce((sum: number, expense: ExpenseData) => {
-          return sum + expense.rent_id + expense.elec_id + expense.water_id;
+        if (filteredData.length === 0) {
+          message.warning("ไม่พบข้อมูลสำหรับนักเรียนคนนี้");
+        } else {
+          setExpenseData(filteredData);
+        }
+
+            // คำนวณยอดรวมทั้งหมด
+          const total = CombinedData.reduce((sum: number, expense: ExpenseData) => {
+            return sum + expense.rent_id + expense.elec_id + expense.water_id;
         },0 );
 
         setTotalAmount(total); // ตั้งค่ายอดรวมทั้งหมด
-        setExpenseData(filteredData); // ตั้งค่าข้อมูลที่กรองแล้ว
+
+        
         }else {
-        message.error('ไม่สามารถดึงข้อมูลค่าใช้จ่ายได้!');
+          message.error('ไม่สามารถดึงข้อมูลค่าใช้จ่ายได้!');
         }
       } catch (error) {
+        console.error("Error fetching data:", error);
         message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
       }
   };
 
   fetchExpenses();
-    }, [studentDbID]);
+}, [studentDbID]);
 
     const columns: TableProps<ExpenseData>['columns'] = [
-      { title: 'วันที่',
+      { 
+        title: 'วันที่',
         dataIndex: 'Date',
         key: 'Date',
         render: (date: Date) => date.toLocaleDateString(), // แสดงวันที่ในรูปแบบที่อ่านง่าย
@@ -113,7 +135,7 @@ const Index: React.FC = () => {
         title: 'ค่าน้ำ',
         dataIndex: 'water_id',
         key: 'water_id',
-        render: (elec_id: number) => `${elec_id.toFixed(2)} บาท`, // แสดงจำนวนเงินที่จ่ายเป็นบาท
+        render: (water_id: number) => `${water_id.toFixed(2)} บาท`, // แสดงจำนวนเงินที่จ่ายเป็นบาท
       },
       {
         title: 'หมายเหตุ',
@@ -121,7 +143,8 @@ const Index: React.FC = () => {
         key: 'remark',
       },
     ];
-    
+    console.log("Expense data state:", ExpenseData);
+
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -173,6 +196,7 @@ const Index: React.FC = () => {
         content: "เกิดข้อผิดพลาด!",
       });
     }
+    
   };
 
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
@@ -180,6 +204,7 @@ const Index: React.FC = () => {
   setFileList([...fileList, file]);
   return false;
 };
+
 
 return (
     <>
@@ -209,13 +234,7 @@ return (
     />
     <Divider />
         <div className='text-container'></div>  
-        <Table
-        dataSource={ExpenseData}
-        columns={columns}
-        pagination={false}
-        bordered
-        style={{ marginBottom: '20px' }}
-      />
+          <Table columns={columns} dataSource={ExpenseData} />
           <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
             ยอดรวมทั้งหมด: {totalamount.toFixed(2)} บาท
           </div>

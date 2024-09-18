@@ -353,21 +353,27 @@ async function CreateExpense(data: ExpenseInterface) {
 }
 
 async function ListExpense() {
-const requestOptions = {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
-let res = await fetch(`${apiUrl}/list-expense`, requestOptions)
-  .then((res) => {
-    if (res.status == 200) {
-      return res.json();
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/list-expense`, requestOptions);
+    if (response.ok) {
+      return await response.json();
     } else {
-      return false;
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { status: response.status, data: errorData };
     }
-  });
-return res;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
 }
 
 async function fetchExpenses(): Promise<ExpenseInterface[]> {
