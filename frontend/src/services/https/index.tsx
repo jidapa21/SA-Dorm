@@ -6,7 +6,7 @@ import { AddressInterface } from "../../interfaces/Address";
 import { OtherInteface } from "../../interfaces/Other";
 import { FamilyInterface } from "../../interfaces/Family";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-import { SlipInterface } from "../../interfaces/Slip";
+import { SlipInterface } from "../../interfaces/slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
@@ -264,6 +264,29 @@ async function DeleteAdmin(id: number) {
     .catch((e) => e.response);
 }
 
+async function GetLatestAnnouncements() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${Bearer} ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+    }
+  };
+  try {
+    const response = await fetch(`${apiUrl}/latest-announcement`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error(`Error: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
+
+
 async function GetAnnouncementById(id: string) {
   return await axios
     .get(`${apiUrl}/get-announcement/${id}`, requestOptions)
@@ -291,6 +314,8 @@ async function DeleteAnnouncementById(id: string) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
+
 //-------------slip------------------
 
 async function CreateSlip(data: SlipInterface) {
@@ -390,6 +415,7 @@ export {
   ListDelayedPaymentForms,
   UpdateDelayedPaymentForm,
   ListAnnouncements,
+  GetLatestAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,
   UpdateAnnouncementById,
