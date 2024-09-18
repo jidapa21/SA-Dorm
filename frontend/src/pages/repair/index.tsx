@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Select,
+  notification,
   Typography,
   GetProp,
   UploadFile,
@@ -29,30 +30,23 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
-import { StudentInterface } from "./../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
+import { StudentInterface } from "./../../interfaces/Student";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
-import { ReservationInterface } from "./../../interfaces/Reservation";
 import {
-  GetStudentsById,
   CreateRepair,
-  GetListRepairs,
-  GetRepair,
+  GetListFormStudent,
 } from "./../../services/https";
 import "./../repair/index.css";
 import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface &
-  StudentInterface &
-  RepairInterface &
-  DormInterface &
-  RoomInterface;
 
 const myId = localStorage.getItem("id");
 
 export default function RepairCreate() {
+  
   interface StudentInfoRecord
     extends StudentInterface,
       DormInterface,
@@ -87,6 +81,7 @@ export default function RepairCreate() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
@@ -108,61 +103,78 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
+  const handleReset = () => {
+    form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
+    setFileList([]);
+  };
+  
+  const openNotification = (type: 'success' | 'info' | 'warning' | 'error', message: string, description?: string) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: 'bottomRight',
+    });
+  };
+
   const onFinish = async (values: RepairInterface) => {
     values.Image = fileList[0]?.thumbUrl || "";
-
+  
     const studentId = localStorage.getItem("id");
     if (studentId) {
       values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Student ID on finish is not found.",
-      });
+      openNotification('error', 'ไม่พบ Student ID', 'ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID');
+      return;
     }
+    
     // สร้างรายการแจ้งซ่อม
     let res = await CreateRepair(values);
     console.log(res);
     if (res) {
-      messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
-      });
+      openNotification('success', 'บันทึกข้อมูลสำเร็จ', 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว');
       form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
       setFileList([]); // รีเซ็ตไฟล์อัปโหลด
-      setTimeout(() => {
-        // ตรวจสอบ URL ให้ถูกต้อง
-      }, 2000);
     } else {
-      messageApi.open({
-        type: "error",
-        content: "เกิดข้อผิดพลาด!",
-      });
+      openNotification('error', 'เกิดข้อผิดพลาด!', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     }
   };
-
+  
   useEffect(() => {
     const studentId = localStorage.getItem("id");
-    const fetchRepairs = async () => {
-      const response = await GetListRepairs();
-      const data = await response.json(); // ตรวจสอบข้อมูลที่ได้รับ
-      console.log(data);
-      if (response) {
-        setStudent(response.data);
-        console.log("response ของ setStudent",data);
-      } else {
-        message.error("ไม่สามารถดึงข้อมูลการแจ้งซ่อมได้");
+    const fetchData = async () => {
+      try {
+        const data = await GetListFormStudent();
+        console.log("Received data:", data);
+
+        // ตรวจสอบว่า student, dorm และ room มีข้อมูลหรือไม่
+        if (data && data.length > 0) {
+          const combinedData = data.map((item: any, index: number) => ({
+            key: `item-${index}`,
+            StudentID: item.reservation?.student?.student_id || "ไม่พบข้อมูล",
+            FirstName: item.reservation?.student?.first_name || "ไม่พบข้อมูล",
+            LastName: item.reservation?.student?.last_name || "ไม่พบข้อมูล",
+            DormID: item.reservation?.Dorm?.ID || "ไม่พบข้อมูล",
+            RoomNumber: item.reservation?.Room?.RoomNumber || "ไม่พบข้อมูล",
+          }));
+
+          setStudent(combinedData); // ตั้งค่าข้อมูลให้กับ state
+        } else {
+          setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
       }
     };
+
     if (studentId) {
+      fetchData();
     } else {
       messageApi.open({
         type: "error",
         content: "Student ID not found.",
       });
     }
-
-    fetchRepairs();
   }, []);
 
   return (
@@ -172,25 +184,23 @@ export default function RepairCreate() {
           <Card>
             <h2>แจ้งซ่อม</h2>
             <Divider />
-            <Form name="repairDetails" layout="vertical" autoComplete="off">
+            <Form name="StudentDetails" layout="vertical" autoComplete="off">
               <Row justify="space-between" align="middle">
                 <Col>
                   <Space direction="vertical">
                     <Text>
                       {student.length > 0
                         ? student[0].StudentID
-                        : "ไม่พบข้อมูล"}
-                    </Text>
-                    <Text>
+                        : "ไม่พบข้อมูล"}{" "}
                       {student.length > 0
                         ? student[0].FirstName
                         : "ไม่พบข้อมูล"}{" "}
                       {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
                     </Text>
                     <Text>
-                      หอพัก:{" "}
+                      หอ{" "}
                       {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
-                      ห้อง:{" "}
+                      ห้อง{" "}
                       {student.length > 0
                         ? student[0].RoomNumber
                         : "ไม่พบข้อมูล"}
@@ -206,7 +216,7 @@ export default function RepairCreate() {
             <br />
 
             <Form
-              name="basic2"
+              name="RepairDetails"
               form={form}
               layout="vertical"
               onFinish={onFinish}
@@ -317,9 +327,13 @@ export default function RepairCreate() {
                 <Col style={{ marginTop: "40px" }}>
                   <Form.Item>
                     <Space>
-                      <Button htmlType="button" style={{ marginRight: "10px" }}>
-                        ยกเลิก
-                      </Button>
+                    <Button
+                    htmlType="button"
+                    onClick={handleReset}
+                    style={{ marginRight: "10px" }}
+                  >
+                    ยกเลิก
+                  </Button>
                       <Button
                         type="primary"
                         htmlType="submit"

@@ -173,6 +173,22 @@ async function GetOtherById(id: string) {
 
 //---------------------   Repairing ---------------------------------
 
+async function GetListFormStudent() {
+  try {
+    const response = await fetch(`${apiUrl}/get-list-formstudent`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { data: errorData };
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
+}
+
 async function CreateRepair(data: RepairInterface) {
   return await axios
     .post(`${apiUrl}/create-repair`, data, requestOptions)
@@ -201,39 +217,13 @@ async function GetRepair(id: string | undefined) {
     .catch((e) => e.response);
 }
 
-async function GetListRepairs() {
-  try {
-    const response = await fetch(`${apiUrl}/get-list-repair`, requestOptions);
-    if (response.ok) {
-      return await response.json();
-    } else {
-      // แสดงข้อความข้อผิดพลาดจาก API หากมี
-      const errorData = await response.json();
-      return { data: errorData };
-    }
-  } catch (error) {
-    console.error("Fetch error:", error);
-    return { status: 500, data: { error: "Fetch error" } };
-  }
+async function UpdateRepair(id: string, data: Partial<RepairInterface>) {
+  return await axios
+    .put(`${apiUrl}/repair-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
-async function UpdateRepair(data: RepairInterface) {
-  const requestOptions = {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/update-repair`, requestOptions).then(
-    (res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    }
-  );
-  return res;
-}
 //---------------------   DelayedPaymentForm ---------------------------------
 async function CreateDelayedPaymentForm(data: DelayedPaymentFormInterface) {
   return await axios
@@ -253,9 +243,9 @@ async function ListDelayedPaymentForms() {
     .then((res) => res)
     .catch((e) => e.response);
 }
-async function UpdateDelayedPaymentForm(id: string, data: RepairInterface) {
+async function UpdateDelayedPaymentForm(id: string, data: Partial<RepairInterface>) {
   return await axios
-    .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions)
+    .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
     .catch((e) => e.response);
 }
@@ -266,6 +256,12 @@ async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function UpdateEn_ExitingForm(id: string, data: Partial<En_ExitingFormInterface>) {
+  return await axios
+    .put(`${apiUrl}/En_ExitingForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);
+} 
 //---------------------   ResigningForm ---------------------------------
 async function CreateResigningForm(data: ResigningFormInterface) {
   return await axios
@@ -273,6 +269,12 @@ async function CreateResigningForm(data: ResigningFormInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function UpdateResigningForm(id: number, data: Partial<ResigningFormInterface>) {
+  return await axios
+    .put(`${apiUrl}/Resigningform-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);
+  }
 //---------------------   Status ---------------------------------
 async function GetStatusById(id: number) {
   return await axios
@@ -448,9 +450,10 @@ export {
   GetFamilyById,
   GetOtherById,
   // ----------------- Repairing --------------
+  GetListFormStudent,
+
   CreateRepair,
   GetRepair,
-  GetListRepairs,
   UpdateRepair,
   // ----------------- DelayedPaymentForm --------------
   CreateDelayedPaymentForm,
@@ -459,8 +462,10 @@ export {
   UpdateDelayedPaymentForm,
   // ----------------- En_ExitingForm --------------
   CreateEn_ExitingForm,
+  UpdateEn_ExitingForm,
   // ----------------- ResigningForm --------------
   CreateResigningForm,
+  UpdateResigningForm,
   // ----------------- Status --------------
   GetStatusById,
   GetListStatus,

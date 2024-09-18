@@ -9,6 +9,7 @@ import {
   Card,
   Divider,
   Typography,
+  notification,
   message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
@@ -19,19 +20,36 @@ const { Text } = Typography;
 import "../../repair/index.css";
 
 import { ResigningFormInterface } from "./../../../interfaces/ResigningForm";
+import { StudentInterface } from "./../../../interfaces/Student";
+import { DormInterface } from "./../../../interfaces/Dorm";
+import { RoomInterface } from "./../../../interfaces/Room";
 import {
-  GetStudentsById,
   CreateResigningForm,
-  GetRepair,
+  GetListFormStudent,
 } from "./../../../services/https";
 
 const myId = localStorage.getItem("id");
 
 export default function Index() {
+
+  interface StudentInfoRecord
+  extends StudentInterface,
+    DormInterface,
+    RoomInterface {
+  key: string;
+  DormID: number;
+  StudentID: string;
+  FirstName: string;
+  LastName: string;
+  RoomNumber: number;
+}
+
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
   const [componentDisabled, setComponentDisabled] = useState(true);
 
+
+  /*
   const formItemLayout = {
     labelCol: {
       xs: { span: 36 },
@@ -115,13 +133,15 @@ export default function Index() {
   ];
 
   const data: DataType[] = [];
-
+*/
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [form] = Form.useForm();
 
   const [value, setValue] = useState(1);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
   const onChange = (e: any) => {
     console.log("radio checked", e.target.value);
@@ -132,38 +152,64 @@ export default function Index() {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
 
+  const openNotification = (type: 'success' | 'info' | 'warning' | 'error', message: string, description?: string) => {
+    notification[type]({
+      message: message,
+      description: description,
+      placement: 'bottomRight',
+    });
+  };
+
   const onFinish = async (values: ResigningFormInterface) => {
-    values.Accommodation = value.toString(); // กำหนดค่า Request จาก Radio Group
+  
     const studentId = localStorage.getItem("id");
     if (studentId) {
       values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      messageApi.open({
-        type: "error",
-        content: "Student ID on finish is not found.",
-      });
+      openNotification('error', 'ไม่พบ Student ID', 'ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID');
+      return;
     }
-
+    
     let res = await CreateResigningForm(values);
     console.log(res);
     if (res) {
-      messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
-      });
+      openNotification('success', 'บันทึกข้อมูลสำเร็จ', 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว');
       form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
     } else {
-      messageApi.open({
-        type: "error",
-        content: "เกิดข้อผิดพลาด!",
-      });
+      openNotification('error', 'เกิดข้อผิดพลาด!', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     }
   };
 
   useEffect(() => {
     const studentId = localStorage.getItem("id");
+    const fetchData = async () => {
+      try {
+        const data = await GetListFormStudent();
+        console.log("Received data:", data);
+
+        // ตรวจสอบว่า student, dorm และ room มีข้อมูลหรือไม่
+        if (data && data.length > 0) {
+          const combinedData = data.map((item: any, index: number) => ({
+            key: `item-${index}`,
+            StudentID: item.reservation?.student?.student_id || "ไม่พบข้อมูล",
+            FirstName: item.reservation?.student?.first_name || "ไม่พบข้อมูล",
+            LastName: item.reservation?.student?.last_name || "ไม่พบข้อมูล",
+            DormID: item.reservation?.Dorm?.ID || "ไม่พบข้อมูล",
+            RoomNumber: item.reservation?.Room?.RoomNumber || "ไม่พบข้อมูล",
+          }));
+
+          setStudent(combinedData); // ตั้งค่าข้อมูลให้กับ state
+        } else {
+          setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
+      }
+    };
+
     if (studentId) {
-      //getRepairing(studentId);  // Fetch repair data using studentId
+      fetchData();
     } else {
       messageApi.open({
         type: "error",
@@ -177,16 +223,20 @@ export default function Index() {
       <Card>
         <h2>แบบฟอร์มลาออกหอพัก</h2>
         <Divider />
-        <Form
-          name="title"
-          form={form}
-          layout="vertical"
-        >
+        <Form name="StudentDetails" form={form} layout="vertical">
           <Row justify="space-between" align="middle">
             <Col>
               <Space direction="vertical">
-                <Text>ผู้รับบริการ B191563 กานต์รวี นภารัตน์</Text>
-                <Text>อาคาร 4 ห้อง 414A</Text>
+                <Text>
+                  {student.length > 0 ? student[0].StudentID : "ไม่พบข้อมูล"}{" "}
+                  {student.length > 0 ? student[0].FirstName : "ไม่พบข้อมูล"}{" "}
+                  {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
+                </Text>
+                <Text>
+                  หอ {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
+                  ห้อง{" "}
+                  {student.length > 0 ? student[0].RoomNumber : "ไม่พบข้อมูล"}
+                </Text>
               </Space>
             </Col>
             <Col>
@@ -219,7 +269,9 @@ export default function Index() {
                 <Radio.Group onChange={onChange} value={value}>
                   <Space direction="vertical">
                     <Radio value="บ้านพัก">บ้านพัก</Radio>
-                    <Radio value="หอพักภายนอกมหาวิทยาลัย">หอพักภายนอกมหาวิทยาลัย</Radio>
+                    <Radio value="หอพักภายนอกมหาวิทยาลัย">
+                      หอพักภายนอกมหาวิทยาลัย
+                    </Radio>
                   </Space>
                 </Radio.Group>
               </Form.Item>

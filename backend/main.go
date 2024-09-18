@@ -71,10 +71,11 @@ func main() {
 		router.GET("/list-rent-fees", rentfee.ListRentFees)
 
 		// Repair Route
+		router.GET("/get-list-formstudent", repairing.GetListFormStudent)
+		
 		router.POST("/create-repair", repairing.CreateRepair)
 		//router.GET("/get-repair/:id", repairing.GetRepair)
-		router.GET("/get-list-repair", repairing.GetListRepairs)
-		router.PUT("/update-repair", repairing.UpdateRepair)
+		router.PUT("/repair-update/:id", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route
 		router.POST("/create-delayedpaymentform", delayedpaymentform.CreateDelayedPaymentForm)
@@ -84,9 +85,11 @@ func main() {
 
 		// En_ExitingForm Route
 		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
+		router.PUT("/En_ExitingForm-update/:id", en_exitingform.UpdateEn_ExitingForm)
 
 		// ResigningForm Route
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
+		router.PUT("/Resigningform-update/:id", resigningform.UpdateResigningForm)
 
 		// ResigningForm Route
 		//router.POST("/get-status", status.GetStatusById)

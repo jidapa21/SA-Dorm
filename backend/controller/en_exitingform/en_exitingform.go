@@ -118,23 +118,42 @@ func GetListRepairs(c *gin.Context) {
 	c.JSON(http.StatusOK, repairings)
 }
 
-// PATCH /repairings/:id
-func UpdateRepair(c *gin.Context) {
-	var repairing entity.Repairing
+// PATCH /En_ExitingForm
+func UpdateEn_ExitingForm(c *gin.Context) {
 	id := c.Param("id")
+	var payload struct {
+		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+	}
 
 	db := config.DB()
-	if err := db.First(&repairing, id).Error; err != nil {
+	adminID, exists := c.Get("admin_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found in context"})
+		return
+	}
+
+	// Find the existing En_ExitingForm record
+	var existingexistingEn_ExitingForm entity.En_ExitingForm
+	result := db.First(&existingexistingEn_ExitingForm, id)
+	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(&repairing); err != nil {
+
+	// Bind the JSON payload to the `payload` object
+	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}
-	if err := db.Save(&repairing).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error updating data"})
+
+	// Update only the 'Status' field
+	if err := db.Model(&existingexistingEn_ExitingForm).Updates(map[string]interface{}{
+		"Status":  payload.Status,
+		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
+	}).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
+
+	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
 }

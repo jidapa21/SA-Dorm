@@ -12,7 +12,6 @@ import { ResigningFormInterface } from "./../../interfaces/ResigningForm";
 const { Title } = Typography;
 
 export default function StatusCreate() {
-  
   interface TableStatusRecord
     extends RepairInterface,
       DelayedPaymentFormInterface,
@@ -40,7 +39,7 @@ export default function StatusCreate() {
   const formatDate = (dateString?: Date): string => {
     if (!dateString) return ""; // Handle undefined or null dates
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0]; // Format to 'YYYY-MM-DD'
+    return date.toISOString(); // Format to 'YYYY-MM-DD'
   };
 
   const columns = [
@@ -51,8 +50,9 @@ export default function StatusCreate() {
       sorter: (a: TableStatusRecord, b: TableStatusRecord) => {
         const dateA = new Date(a.Date).getTime();
         const dateB = new Date(b.Date).getTime();
-        return dateA - dateB;
+        return dateB - dateA; // Sort by new to old
       },
+      defaultSortOrder: "ascend" as SortOrder,
       sortDirections: ["ascend", "descend"] as SortOrder[],
       render: (text: string) => {
         const date = new Date(text);
@@ -60,7 +60,7 @@ export default function StatusCreate() {
           year: "numeric",
           month: "numeric",
           day: "numeric",
-        });
+        }); 
       },
     },
     {
@@ -157,11 +157,11 @@ export default function StatusCreate() {
             ),
           ];
 
-          // Sort by date, from newest to oldest
+          // Sort by date in descending order (new to old)
           const sortedData = combinedData.sort((a, b) => {
             const dateA = new Date(a.Date).getTime();
             const dateB = new Date(b.Date).getTime();
-            return dateB - dateA;
+            return dateB - dateA; // Sort by new to old
           });
 
           setRepairs(sortedData);
