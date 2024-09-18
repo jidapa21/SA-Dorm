@@ -6,6 +6,6 @@ type Genders struct {
 	gorm.Model
 	Gender string `json:"gender"`
 
-	Student []Students `gorm:"foreignKey:gender_id"`
-	Dorms []Dorm `gorm:"foreignKey:GenderID"`
+	Student []Students `gorm:"foreignKey:GenderID"`
+	Dorms   []Dorm     `gorm:"foreignKey:GenderID"`
 }

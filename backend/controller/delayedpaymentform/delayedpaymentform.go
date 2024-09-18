@@ -13,43 +13,28 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 	var delayedpaymentform entity.DelayedPaymentForm
 	var sid entity.Students
 	var reservation entity.Reservation
-	var dorm entity.Dorm
-	var room entity.Room
 
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ไม่มีรหัสนักศึกษา"})
 		return
 	}
 
 	db := config.DB()
 	results := db.Where("student_id = ?", studentID).First(&sid)
 	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "หารหัสนักศึกษาไม่เจอ"})
 		return
 	}
 
-	// ดึงข้อมูล reservation โดยใช้ StudentsID
-	db.Where("students_id = ?", sid.ID).First(&reservation)
+	db.Where("id = ?", sid.ID).First(&reservation)
 	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}
 
 	if err := c.ShouldBindJSON(&delayedpaymentform); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	db.First(&dorm, reservation.DormID)
-	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
-		return
-	}
-
-	db.First(&room, reservation.RoomID)
-	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
 		return
 	}
 
@@ -104,7 +89,7 @@ func ListDelayedPaymentForms(c *gin.Context) {
 	c.JSON(http.StatusOK, delayedpaymentform)
 }
 
-// PATCH /repairings
+// PATCH /DelayedPaymentForm
 func UpdateDelayedPaymentForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {

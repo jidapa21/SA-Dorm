@@ -3,12 +3,14 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"dormitory.com/dormitory/entity"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
 
 var db *gorm.DB
 
@@ -32,7 +34,7 @@ func SetupDatabase() {
 		&entity.Genders{},
 		&entity.FamilyStatuses{},
 		&entity.Guardians{},
-		&entity.License{},
+		&entity.Licenses{},
 		&entity.Address{},
 		&entity.Family{},
 		&entity.Other{},
@@ -53,29 +55,21 @@ func SetupDatabase() {
 		&entity.Expense{},
 		&entity.Slip{},
 	)
+
+	// Seed ข้อมูลประเภท
+	seedStudents()
+	seedFamilyStatuses()
+	seedGuardians()
+	seedLicenses()
+	seedPersonals()
+	seedAddresses()
+	seedFamilies()
+	seedOthers()
+
 	GenderMale := entity.Genders{Gender: "Male"}
 	GenderFemale := entity.Genders{Gender: "Female"}
 	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
 	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
-
-	FamilyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
-	FamilyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}
-	FamilyStatusOther := entity.FamilyStatuses{FamilyStatus: "อื่นๆ (พ่อหรือแม่เสียชีวิต)"}
-	db.FirstOrCreate(&FamilyStatusTogether, &entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"})
-	db.FirstOrCreate(&FamilyStatusSeparated, &entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"})
-	db.FirstOrCreate(&FamilyStatusOther, &entity.FamilyStatuses{FamilyStatus: "อื่นๆ (พ่อหรือแม่เสียชีวิต)"})
-
-	GuardianMather := entity.Guardians{Guardian: "มารดา"}
-	GuardianFather := entity.Guardians{Guardian: "บิดา"}
-	GuardianOther := entity.Guardians{Guardian: "อื่นๆ (ระบุ)"}
-	db.FirstOrCreate(&GuardianMather, &entity.Guardians{Guardian: "มารดา"})
-	db.FirstOrCreate(&GuardianFather, &entity.Guardians{Guardian: "บิดา"})
-	db.FirstOrCreate(&GuardianOther, &entity.Guardians{Guardian: "อื่นๆ (ระบุ)"})
-
-	hasLicense := entity.License{License: "มี"}
-	noLicense := entity.License{License: "ไม่มี"}
-	db.FirstOrCreate(&hasLicense, &entity.License{License: "มี"})
-	db.FirstOrCreate(&noLicense, &entity.License{License: "ไม่มี"})
 
 	DormMale1 := entity.Dorm{Type: "หอพักชาย 1", GenderID: GenderMale.ID}
 	DormMale2 := entity.Dorm{Type: "หอพักชาย 2", GenderID: GenderMale.ID}
@@ -123,7 +117,7 @@ func SetupDatabase() {
 	*/
 
 	// Seed ข้อมูล student
-	studentHashedPassword, _ := HashPassword("1234567890123")
+	studentHashedPassword, _ := HashPassword("B6510001")
 	Birthday, _ := time.Parse("2006-01-02", "1988-11-12")
 	User := &entity.Students{
 		FirstName: "Nicha",
@@ -146,19 +140,43 @@ func SetupDatabase() {
 	}
 	db.FirstOrCreate(reservation, &entity.Reservation{StudentsID: User.ID, DormID: 4, RoomID: 100})
 
+	ReservationDate2, _ := time.Parse("02-01-2006", "21-05-1997")
+	reservation2 := &entity.Reservation{
+		ReservationDate: ReservationDate2,
+		StudentsID:      2,
+		DormID:          4,
+		RoomID:          100,
+	}
+	db.FirstOrCreate(reservation2, &entity.Reservation{StudentsID: 2, DormID: 4, RoomID: 100})
+
 	// Seed ข้อมูล admin
-	adminhashedPassword, _ := HashPassword("Ad01")
-	AdminUser := &entity.Admins{
+	adminHashedPassword1, err := HashPassword("Ad01")
+	if err != nil {
+		log.Fatalf("Error hashing password: %v", err)
+	}
+	AdminUser1 := &entity.Admins{
 		Username:  "jetnipat",
-		FirstName: "Jetnipat ",
-		LastName:  "kunjai",
+		FirstName: "Jetnipat",
+		LastName:  "Kunjai",
 		Phone:     "061xxxxxxx",
-		Password:  adminhashedPassword,
+		Password:  adminHashedPassword1,
 	}
 
-	db.FirstOrCreate(AdminUser, &entity.Admins{
-		Username: "jetnipat",
-	})
+	db.FirstOrCreate(&AdminUser1, entity.Admins{Username: "jetnipat"})
+
+	adminHashedPassword2, err := HashPassword("147")
+	if err != nil {
+		log.Fatalf("Error hashing password: %v", err)
+	}
+	AdminUser2 := &entity.Admins{
+		Username:  "Jetsadaphon",
+		FirstName: "Jetsadaphon",
+		LastName:  "Pinjai",
+		Phone:     "061xxxxxxx",
+		Password:  adminHashedPassword2,
+	}
+
+	db.FirstOrCreate(&AdminUser2, entity.Admins{Username: "Jetsadaphon"})
 
 	date_repairing, _ := time.Parse("2006-03-02", "2024-05-06")
 	repairing := &entity.Repairing{
@@ -302,4 +320,119 @@ func SetupDatabase() {
 		Totalamount: 3690.00,
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path: "รูปสลิป"})
+}
+
+func seedFamilyStatuses() {
+	familyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
+	familyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}
+	familyStatusOther := entity.FamilyStatuses{FamilyStatus: "อื่นๆ (พ่อหรือแม่เสียชีวิต)"}
+	db.FirstOrCreate(&familyStatusTogether, entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"})
+	db.FirstOrCreate(&familyStatusSeparated, entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"})
+	db.FirstOrCreate(&familyStatusOther, entity.FamilyStatuses{FamilyStatus: "อื่นๆ (พ่อหรือแม่เสียชีวิต)"})
+}
+
+func seedGuardians() {
+	guardianMother := entity.Guardians{Guardian: "มารดา"}
+	guardianFather := entity.Guardians{Guardian: "บิดา"}
+	guardianOther := entity.Guardians{Guardian: "อื่นๆ (ระบุ)"}
+	db.FirstOrCreate(&guardianMother, entity.Guardians{Guardian: "มารดา"})
+	db.FirstOrCreate(&guardianFather, entity.Guardians{Guardian: "บิดา"})
+	db.FirstOrCreate(&guardianOther, entity.Guardians{Guardian: "อื่นๆ (ระบุ)"})
+}
+
+func seedLicenses() {
+	hasLicense := entity.Licenses{License: "มี"}
+	noLicense := entity.Licenses{License: "ไม่มี"}
+	db.FirstOrCreate(&hasLicense, entity.Licenses{License: "มี"})
+	db.FirstOrCreate(&noLicense, entity.Licenses{License: "ไม่มี"})
+}
+
+// ฟังก์ชันสำหรับการแปลงวันที่จากสตริง
+func parseDate(dateStr string) time.Time {
+	date, _ := time.Parse("2006-01-02", dateStr)
+	return date
+}
+
+func seedStudents() {
+	//studentHashedPassword, _ := HashPassword("1234567890123")
+	//birthday, _ := time.Parse("2006-01-02", "2003-11-12")
+	// สร้างข้อมูลนักศึกษา
+	students := []entity.Students{
+		{FirstName: "Nicha", LastName: "Wandee", StudentID: "B6510001", Password: HashPasswordOrPanic("B6510001"), Birthday: parseDate("2003-11-12"), Year: 3, Major: "วิศวกรรมศาสตร์", GenderID: 2},
+		{FirstName: "Somchai", LastName: "Sukprasert", StudentID: "B6510002", Password: HashPasswordOrPanic("B6510002"), Birthday: parseDate("2004-06-25"), Year: 2, Major: "วิทยาศาสตร์", GenderID: 1},
+		{FirstName: "Anan", LastName: "Yutthapong", StudentID: "B6510003", Password: HashPasswordOrPanic("B6510003"), Birthday: parseDate("2005-01-15"), Year: 1, Major: "แพทยศาสตร์", GenderID: 1},
+		{FirstName: "Siriwan", LastName: "Petchsri", StudentID: "B6510004", Password: HashPasswordOrPanic("B6510004"), Birthday: parseDate("2001-07-18"), Year: 4, Major: "สาธารณสุขศาสตร์", GenderID: 2},
+		{FirstName: "Patchara", LastName: "Tantawan", StudentID: "B6510005", Password: HashPasswordOrPanic("B6510005"), Birthday: parseDate("2005-09-20"), Year: 1, Major: "ทันตแพทยศาสตร์", GenderID: 1},
+	}
+	// บันทึก Students ก่อน
+	for _, student := range students {
+		db.FirstOrCreate(&student, entity.Students{StudentID: student.StudentID})
+	}
+}
+
+func seedPersonals() {
+	for i := 1; i <= 5; i++ {
+		personal := entity.Personal{
+			StudentID:   uint(i),
+			Nickname:    "",
+			CitizenID:   "",
+			Phone:       "",
+			Nationality: "",
+			Race:        "",
+			Religion:    "",
+			BloodGroup:  "",
+		}
+		db.FirstOrCreate(&personal, entity.Personal{StudentID: personal.StudentID})
+	}
+}
+
+func seedAddresses() {
+	for i := 1; i <= 5; i++ {
+		address := entity.Address{
+			StudentID:   uint(i),
+			HouseNo:     "",
+			VillageNo:   "",
+			Village:     "",
+			Alley:       "",
+			Road:        "",
+			SubDistrict: "",
+			District:    "",
+			Province:    "",
+			ZipCode:     "",
+		}
+		db.FirstOrCreate(&address, entity.Address{StudentID: address.StudentID})
+	}
+}
+
+func seedFamilies() {
+	for i := 1; i <= 5; i++ {
+		family := entity.Family{
+			StudentID:        uint(i),
+			FathersName:      "",
+			MathersName:      "",
+			OccupationFather: "",
+			OccupationMather: "",
+			PhoneFather:      "",
+			PhoneMather:      "",
+		}
+		db.FirstOrCreate(&family, entity.Family{StudentID: family.StudentID})
+	}
+}
+
+func seedOthers() {
+	for i := 1; i <= 5; i++ {
+		other := entity.Other{
+			StudentsID:           uint(i),
+			LatestGraduationFrom: "",
+		}
+		db.FirstOrCreate(&other, entity.Other{StudentsID: other.StudentsID})
+	}
+}
+
+func HashPasswordOrPanic(password string) string {
+	hashedPassword, err := HashPassword(password)
+	if err != nil {
+		panic("Failed to hash password")
+	}
+	return hashedPassword
 }

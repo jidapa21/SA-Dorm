@@ -1,143 +1,133 @@
-import React, { useState } from 'react';
-import { Button, Table, Select } from 'antd';
-import ReadEnteringandexitingdorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index'; 
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Typography, Card } from 'antd';
+import ReadEnteringAndExitingDorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index';
+import { ListEn_ExitingForm } from '../../../services/https';
+import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm"
 
-const { Option } = Select;
+const { Title } = Typography;
 
-interface RecordType {
+interface TableEn_ExitingFormInterfaceRecord extends En_ExitingFormInterface {
   key: string;
   date: string;
 }
 
-const Enteringandexitingdorm: React.FC = () => {
+const DelayingPayment: React.FC = () => {
+  const [repairs, setRepairs] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchEn_ExitingForm = async () => {
+      try {
+        const data = await ListEn_ExitingForm();
+        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
+        if (data) {
+          const transformedData = data.map((item: En_ExitingFormInterface, index: number) => ({
+            ...item,
+            key: item.ID?.toString() || index.toString(),
+          }));
+          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
+          setRepairs(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching En_ExitingForm:', error);
+      }
+    };
+  
+    fetchEn_ExitingForm();
+  }, []); 
+  const handleDetailsClick = (ID: string) => {
+    setSelectedKey(ID);
+  };
+
+  const handleBackClick = () => {
+    setSelectedKey(null);
+  };
 
   const columns = [
     {
-      title: '', // หัวข้อหลัก
+      title: 'รายการฟอร์มผ่อนผัน',
       children: [
         {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center' }}>{text}</div> 
-          ),
+            title: 'สภานะ',
+            dataIndex: 'status',
+            key: 'status',
+            render: (text: string) => (
+              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+            ),
         },
         {
           key: 'details',
-          render: (_: any, record: RecordType) => (
+          render: (_: any, record: TableEn_ExitingFormInterfaceRecord) => (
             <div style={{ textAlign: 'center' }}>
               <Button
-                type="link"
+                type="primary"
                 onClick={() => handleDetailsClick(record.key)}
+                style={{ marginTop: '8px' }}
               >
                 ดูรายละเอียด
               </Button>
             </div>
           ),
         },
-        {
-          key: 'update',
-          render: (_: any, record: RecordType) => (
-            <div style={{ textAlign: 'center' }}>
-              <Select
-                defaultValue="อัพเดทสถานะ"
-                style={{ width: 120 }}
-                onChange={(value) => handleUpdateStatus(record.key, value)}
-              >
-                <Option value="pending">Pending</Option>
-                <Option value="inProgress">In Progress</Option>
-                <Option value="completed">Completed</Option>
-              </Select>
-            </div>
-          ),
-        },
       ],
     },
   ];
-
-  const data: RecordType[] = [
-    {
-      key: '1',
-      date: '2024-08-01',
-    },
-    {
-      key: '2',
-      date: '2024-08-02',
-    },
-    {
-      key: '3',
-      date: '2024-08-03',
-    },
-  ];
-
-  const handleDetailsClick = (key: string) => {
-    setSelectedKey(key); 
-  };
-
-  const handleUpdateStatus = (key: string, status: string) => {
-    console.log(`อัพเดทสถานะ ${status} สำหรับ:`, key);
-  };
-
-  const handleBackClick = () => {
-    setSelectedKey(null); // กลับไปที่ตาราง
-  };
-
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
       <div
         style={{
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
           marginBottom: '20px',
-          position: 'relative',
         }}
       >
-        <span
-          style={{
-            fontSize: '25px',
-            position: 'relative',
-            paddingBottom: '10px',
-          }}
-        >
-          รายการฟอร์มขออนุญาตเข้า-ออกหอพัก
-        </span>
+        <Title level={2} style={{ margin: 0, color: '#333' }}>
+        แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืน
+
+        </Title>
         <div
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderBottom: '3px solid #000',
+            width: '100%',
+            maxWidth: '600px',
+            height: '3px',
+            backgroundColor: '#1890ff',
+            marginTop: '5px',
+            borderRadius: '2px',
           }}
         />
       </div>
       {selectedKey ? (
         <div>
           <Button
-            type="primary"
+            type="default"
             onClick={handleBackClick}
-            style={{ marginBottom: '16px' }}
+            style={{ marginBottom: '16px', borderColor: '#d9d9d9', color: '#1890ff' }}
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadEnteringandexitingdorm key={selectedKey} /> 
+          <ReadEnteringAndExitingDorm ID ={Number(selectedKey)} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-            bordered
-            showHeader={false} 
-            style={{ maxWidth: '1100px', width: '100%' }}
-          />
+          <Card
+            bordered={true}
+            style={{ width: '100%', maxWidth: '1100px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
+          >
+            <Table
+              columns={columns}
+              dataSource={repairs}
+              pagination={false}
+              bordered
+              showHeader={false}
+              style={{ backgroundColor: '#FFFFFF' }}
+            />
+          </Card>
         </div>
       )}
     </div>
   );
 };
 
-export default Enteringandexitingdorm;
+export default DelayingPayment;

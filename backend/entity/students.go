@@ -15,7 +15,7 @@ type Students struct {
 	Birthday  time.Time `json:"birthday"`
 	Year      uint      `json:"year"`
 	Major     string    `json:"major"`
-	GenderID  uint      `json:"gender_id"`
-	Gender    *Genders  `gorm:"foreignKey:gender_id" json:"gender"`
-  }
-  
+
+	GenderID uint     `json:"gender_id"`
+	Gender   *Genders `gorm:"foreignKey: gender_id" json:"gender"`
+}

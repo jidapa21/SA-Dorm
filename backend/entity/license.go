@@ -2,7 +2,7 @@ package entity
 
 import "gorm.io/gorm"
 
-type License struct {
+type Licenses struct {
 	gorm.Model
-	License string
+	License string `json:"license"`
 }

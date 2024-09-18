@@ -66,7 +66,7 @@ func CreatePersonalDetails(c *gin.Context) {
 	}
 
 	// ตั้งค่า student_id ให้กับ OtherInformation
-	requestBody.Other.StudentID = student.ID
+	requestBody.Other.StudentsID = student.ID
 	// บันทึกข้อมูล OtherInformation
 	if err := db.Create(&requestBody.Other).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

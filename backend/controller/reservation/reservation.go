@@ -77,7 +77,17 @@ func CreateReservation(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Created successfully", "data": rs})
 }
+func GetReservation(c *gin.Context) {
+    var reservations []entity.Reservation
 
+    db := config.DB()
+    if err := db.Preload("Student").Preload("Dorm").Preload("Room").Find(&reservations).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, reservations)
+}
 // function Get โดยในตัวอย่างเป็นการตั้งใจใช้คำสั่ง SELECT … WHERE id =... เพื่อดึงข้อมูล student ออกมาตาม primary key ที่กำหนด ผ่าน func DB.Raw(...)
 // GET /get-student/:id
 func GetStudent(c *gin.Context) {

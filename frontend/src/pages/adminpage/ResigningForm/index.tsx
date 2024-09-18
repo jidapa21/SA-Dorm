@@ -1,40 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Typography, Card } from 'antd';
 import ReadResignationForm from './ReadResignationForm/index';
-import { GetListResignationForm } from '../../../services/https';
+import { ListResigningForm } from '../../../services/https';
 import { ResigningFormInterface } from "../../../interfaces/ResigningForm";
 
 const { Title } = Typography;
 
-interface TableResigningFormRecord extends ResigningFormInterface {
+interface TableResigningFormInterfaceRecord extends ResigningFormInterface {
   key: string;
   date: string;
 }
 
 const ResigningForm: React.FC = () => {
-  const [resigningForm, setResigning] = useState<ResigningFormInterface[]>([]);
+  const [repairs, setResigningForm] = useState<TableResigningFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRepairs = async () => {
+    const fetchResigningForm = async () => {
       try {
-        const data = await GetListResignationForm();
+        const data = await ListResigningForm();
+        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
           const transformedData = data.map((item: ResigningFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
-          setResigning(transformedData);
+          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
+          setResigningForm(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching repairs:', error);
+        console.error('Error fetching ResigningForm:', error);
       }
     };
-
-    fetchRepairs();
-  }, []);
-
+  
+    fetchResigningForm();
+  }, []); 
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };
@@ -45,18 +45,19 @@ const ResigningForm: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการแจ้งซ่อม',
+      title: 'รายการฟอร์มผ่อนผัน',
       children: [
         {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-          ),
+            title: 'สภานะ',
+            dataIndex: 'status',
+            key: 'Status',
+            render: (text: string) => (
+              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+            ),
         },
         {
           key: 'details',
-          render: (_: any, record: TableResigningFormRecord) => (
+          render: (_: any, record: TableResigningFormInterfaceRecord) => (
             <div style={{ textAlign: 'center' }}>
               <Button
                 type="primary"
@@ -71,7 +72,6 @@ const ResigningForm: React.FC = () => {
       ],
     },
   ];
-
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
@@ -84,7 +84,8 @@ const ResigningForm: React.FC = () => {
         }}
       >
         <Title level={2} style={{ margin: 0, color: '#333' }}>
-          รายการแจ้งซ่อม
+        รายการฟอร์มลาออกหอพัก
+
         </Title>
         <div
           style={{
@@ -106,7 +107,7 @@ const ResigningForm: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadResignationForm ID={selectedKey} />
+          <ReadResignationForm ID ={Number(selectedKey)} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -116,7 +117,7 @@ const ResigningForm: React.FC = () => {
           >
             <Table
               columns={columns}
-              dataSource={resigningForm}
+              dataSource={repairs}
               pagination={false}
               bordered
               showHeader={false}

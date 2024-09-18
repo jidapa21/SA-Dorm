@@ -4,5 +4,5 @@ import "gorm.io/gorm"
 
 type Guardians struct {
 	gorm.Model
-	Guardian string 
+	Guardian string `json:"guardian"`
 }

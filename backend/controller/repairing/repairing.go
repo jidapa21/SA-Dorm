@@ -60,39 +60,6 @@ func CreateRepair(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
 
-// GET /Repairings
-func GetListFormStudent(c *gin.Context) {
-	var repairings []entity.Repairing
-	var reservation entity.Reservation
-	var sid entity.Students
-
-	studentID := c.MustGet("student_id").(string)
-	if studentID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
-		return
-	}
-
-	db := config.DB()
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
-
-	db.Where("id = ?", sid.ID).First(&reservation)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
-		return
-	}
-
-	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("id = ?", sid.ID).Find(&repairings).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, repairings)
-}
-
 // PATCH /Repair
 func UpdateRepair(c *gin.Context) {
 	id := c.Param("id")
@@ -133,4 +100,37 @@ func UpdateRepair(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+}
+
+// GET /Repairings
+func GetListFormStudent(c *gin.Context) {
+	var repairings []entity.Repairing
+	var reservation entity.Reservation
+	var sid entity.Students
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	db.Where("id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("id = ?", sid.ID).Find(&repairings).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, repairings)
 }

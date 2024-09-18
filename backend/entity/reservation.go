@@ -11,8 +11,8 @@ type Reservation struct {
 	ID              uint `gorm:"primaryKey;autoIncrement"`
 	ReservationDate time.Time
 
-	StudentsID uint     `json:"student_id"`
-	Student    Students `gorm:"foreignKey: StudentsID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	StudentsID uint      `json:"student_id"`
+	Student   Students `gorm:"foreignKey: StudentsID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
 	DormID uint
 	Dorm   Dorm `gorm:"foreignKey:DormID"`
