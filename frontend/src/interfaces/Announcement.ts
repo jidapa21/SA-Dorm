@@ -1,7 +1,7 @@
 export interface AnnouncementInterface {
     ID?: number;              
-    Title?: string;          
-    Date?: Date;             
-    Content?: string;        
+    title?: string;          
+    Date?: string;             
+    content?: string;        
     AdminID?: string;        
 }

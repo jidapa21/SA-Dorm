@@ -24,5 +24,5 @@ type Family struct {
 	// One-to-one relationship with Student
 	//StudentID string
 	StudentID uint      `json:"student_id"`
-	Student   *Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	Student   *Students `gorm:"foreignKey: StudentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 }

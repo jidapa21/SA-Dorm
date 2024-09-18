@@ -84,6 +84,7 @@ func UpdateAnnouncement(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Announcement updated successfully"})
 }
+
 func GetAnnouncements(c *gin.Context) {
 	var announcements []entity.Announcement
 	db := config.DB()

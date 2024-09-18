@@ -6,14 +6,15 @@ import { AddressInterface } from "../../interfaces/Address";
 import { OtherInteface } from "../../interfaces/Other";
 import { FamilyInterface } from "../../interfaces/Family";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-import { SlipInterface } from "../../interfaces/Slip";
+import { SlipInterface } from "../../interfaces/slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
 import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
-import axios from "axios";
+import axios, { AxiosError } from 'axios';
+
 
 const apiUrl = "http://localhost:8000";
 
@@ -271,6 +272,14 @@ async function GetAnnouncementById(id: string) {
     .catch((e) => e.response);
 }
 
+async function GetLatestAnnouncement() {
+  return await axios
+    .get(`${apiUrl}/get-latest-announcement`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+
 async function CreateAnnouncement(data: AnnouncementInterface) {
   return await axios
     .post(`${apiUrl}/create-announcement`, data, requestOptions)
@@ -394,6 +403,7 @@ export {
   CreateAnnouncement,
   UpdateAnnouncementById,
   DeleteAnnouncementById,
+  GetLatestAnnouncement,
   Adminlist,
   CreateAdmin,
   DeleteAdmin,

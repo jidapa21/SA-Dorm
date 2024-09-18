@@ -86,7 +86,7 @@ func main() {
 		router.GET("/announcement/:id", announcement.GetAnnouncementByID)
 		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
 		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
-		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
+		router.GET("/get-latest-announcement", announcement.GetLatestAnnouncement)
 		// Admin Routes
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
