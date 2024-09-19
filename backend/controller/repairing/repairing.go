@@ -1,6 +1,7 @@
 package repairing
 
 import (
+	"fmt"
 	"net/http"
 
 	"dormitory.com/dormitory/config"
@@ -12,23 +13,23 @@ func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
 	var sid entity.Students
 	var reservation entity.Reservation
+
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ไม่มีรหัสนักศึกษา"})
 		return
 	}
 
 	db := config.DB()
 	results := db.Where("student_id = ?", studentID).First(&sid)
 	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "หารหัสนักศึกษาไม่เจอ"})
 		return
 	}
 
-	// ดึงข้อมูล reservation โดยใช้ StudentsID
-	db.Where("students_id = ?", sid.ID).First(&reservation)
+	db.Where("id = ?", sid.ID).First(&reservation)
 	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}
 
@@ -60,7 +61,32 @@ func CreateRepair(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
 
-// PATCH /Repair
+// GET /Repairing/:id
+func GetRepair(c *gin.Context) {
+	ID := c.Param("id")
+	var repairing entity.Repairing
+
+	db := config.DB()
+	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Repairing not found or related data error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, repairing)
+}
+
+func GetListRepairs(c *gin.Context) {
+	var repairings []entity.Repairing
+
+	db := config.DB()
+	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No repairings found or related data error"})
+		return
+	}
+
+	c.JSON(http.StatusOK, repairings)
+}
+
 func UpdateRepair(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {
@@ -104,7 +130,6 @@ func UpdateRepair(c *gin.Context) {
 
 // GET /Repairings
 func GetListFormStudent(c *gin.Context) {
-	var repairings []entity.Repairing
 	var reservation entity.Reservation
 	var sid entity.Students
 
@@ -114,6 +139,8 @@ func GetListFormStudent(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("studentID :" + studentID)
+
 	db := config.DB()
 	results := db.Where("student_id = ?", studentID).First(&sid)
 	if results.Error != nil {
@@ -121,16 +148,39 @@ func GetListFormStudent(c *gin.Context) {
 		return
 	}
 
-	db.Where("id = ?", sid.ID).First(&reservation)
+	fmt.Println("sid :", sid.ID)
+
+	// เช็ค reservation ว่ามีข้อมูลหรือไม่
+	db.Where("student_id = ?", sid.ID).First(&reservation)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return
 	}
 
-	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("id = ?", sid.ID).Find(&repairings).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	fmt.Println("reservation :", reservation.ID)
+
+	// ค้นหา Reservation และ Preload ความสัมพันธ์
+	if err := db.Where("student_id = ?", sid.ID).
+		Preload("Dorm").
+		Preload("Room").
+		First(&reservation).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm Room not found " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, repairings)
+	// ใช้ ID ของ Student จาก Reservation เพื่อค้นหา Student
+	if err := db.Where("id = ?", sid.ID).Preload("Students").Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found " + err.Error()})
+		return
+	}
+
+	fmt.Println("reservation.StudentID :", reservation.StudentID)
+
+	fmt.Println("DormID :", reservation.DormID)
+	fmt.Println("RoomID :", reservation.RoomID)
+
+	c.JSON(http.StatusOK, gin.H{
+		"reservation": reservation,
+		"student":     sid,
+	})
 }

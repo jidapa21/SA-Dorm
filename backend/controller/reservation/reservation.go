@@ -47,7 +47,7 @@ func CreateReservation(c *gin.Context) {
 	}
 
 	// Check if the student with the provided StudentID exists
-	if result := db.Where("student_id = ?", reservation.StudentsID).First(&studentCheck); result.Error != nil {
+	if result := db.Where("student_id = ?", reservation.StudentID).First(&studentCheck); result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
 			return
@@ -64,7 +64,7 @@ func CreateReservation(c *gin.Context) {
 	// สร้างการจอง
 	rs := entity.Reservation{
 		ReservationDate: 	reservation.ReservationDate,
-		StudentsID:   		reservation.StudentsID,
+		StudentID:   		reservation.StudentID,
 		DormID:      		reservation.DormID,
 		RoomID:      		reservation.RoomID,
 	}

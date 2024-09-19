@@ -14,7 +14,10 @@ import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import { GenderInterface } from "../../interfaces/gender";
-import { ExpenseInterface } from "../../interfaces/Expense";
+import { ExpenseInterface } from '../../interfaces/Expense'; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
+import { RentInterface } from "../../interfaces/Rentfee";
+import { ElectricityInterface } from "../../interfaces/Electricityfee";
+import { WaterInterface } from "../../interfaces/Waterfee";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
@@ -188,8 +191,6 @@ async function GetRepair(id: number | undefined) {
   }
 }
 
-
-
 async function GetListRepairs() {
   const requestOptions = {
     method: "GET",
@@ -214,13 +215,13 @@ async function GetListRepairs() {
     return false;
   }
 }
+
 async function UpdateRepair(id: string, data: Partial<RepairInterface>) {
   return await axios
     .put(`${apiUrl}/repair-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
     .catch((e) => e.response);
 }
-
 //---------------------   DelayedPaymentForm ---------------------------------
 async function CreateDelayedPaymentForm(data: DelayedPaymentFormInterface) {
   return await axios
@@ -259,6 +260,7 @@ async function GetDelayedPaymentForm(id: number | undefined) {
     return false;
   }
 }
+
 async function ListDelayedPaymentForms() {
   const requestOptions = {
     method: "GET",
@@ -283,6 +285,7 @@ async function ListDelayedPaymentForms() {
     return false;
   }
 }
+
 async function UpdateDelayedPaymentForm(id: string, data: Partial<RepairInterface>) {
   return await axios
     .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions) // ใช้ URL ใหม่
@@ -327,6 +330,7 @@ async function GetEn_ExitingForm(id: number | undefined) {
     return false;
   }
 }
+
 async function ListEn_ExitingForm() {
   const requestOptions = {
     method: "GET",
@@ -351,6 +355,7 @@ async function ListEn_ExitingForm() {
     return false;
   }
 }
+
 async function UpdateEn_ExitingForm(id: string, data: Partial<En_ExitingFormInterface>) {
   return await axios
     .put(`${apiUrl}/En_ExitingForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
@@ -419,12 +424,12 @@ async function ListResigningForm() {
     return false;
   }
 }
+
 async function UpdateResigningForm(id: number, data: Partial<ResigningFormInterface>) {
   return await axios
     .put(`${apiUrl}/Resigningform-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
-    .catch((e) => e.response);
-  }
+    .catch((e) => e.response);}
 //---------------------   Status ---------------------------------
 async function GetStatusById(id: number) {
   return await axios
@@ -484,6 +489,29 @@ async function DeleteAdmin(id: number) {
     .catch((e) => e.response);
 }
 
+async function GetLatestAnnouncements() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${Bearer} ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+    }
+  };
+  try {
+    const response = await fetch(`${apiUrl}/latest-announcement`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error(`Error: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
+
+
 async function GetAnnouncementById(id: string) {
   return await axios
     .get(`${apiUrl}/get-announcement/${id}`, requestOptions)
@@ -513,14 +541,109 @@ async function DeleteAnnouncementById(id: string) {
 }
 //-------------slip--------------------------------------------------------------------------------------------------------------
 async function CreateSlip(data: SlipInterface) {
+  return await axios
+  .post(`${apiUrl}/create-slip`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+async function GetSlip(id: number | undefined) {
+  return await axios
+  .get(`${apiUrl}/get-slip/${id}`, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+async function GetListSlips() {
   const requestOptions = {
-    method: "POST",
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`${apiUrl}/get-list-slip`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
+async function UpdateSlip(data: SlipInterface) {
+  const requestOptions = {
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
+  let res = await fetch(`${apiUrl}/update-slip`, requestOptions)
     .then((res) => {
-      if (res.status == 201) {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+  return res;
+}
+//-------------------------Expense----------------------------------------
+
+async function CreateExpense(data: ExpenseInterface) {
+  return await axios
+  .post(`${apiUrl}/create-expense`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function ListExpense() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
+  };
+
+  try {
+    const response = await fetch(`${apiUrl}/list-expense`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { status: response.status, data: errorData };
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
+}
+
+async function fetchExpenses(): Promise<ExpenseInterface[]> {
+  try {
+    const response = await fetch('/api/expenses');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data: ExpenseInterface[] = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch expenses:', error);
+    return []; // คืนค่าเป็นอาร์เรย์เปล่าหากเกิดข้อผิดพลาด
+  }
+}
+
+//-----------------------------Rentfee-------------------------------------
+
+async function ListRentFees() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/list-rentfees`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
         return res.json();
       } else {
         return false;
@@ -528,31 +651,129 @@ async function CreateSlip(data: SlipInterface) {
     });
   return res;
   }
+        
+  
+  async function  CreateRentFee(data: RentInterface) {
+    return await axios
+    .post(`/create-rentfee`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+  }
+  
+  async function GetRentFee() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let res = await fetch(`/get-rentfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
 
-async function GetSlip(id: Number | undefined) {
-  const requestOptions = {
-    method: "GET"
-  };
-  let res = await fetch(`${apiUrl}/slip/${id}`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
+  
+  //----------------------------------------------Electricity-------------------------------------
+async function ListElectricityFees() {
+const requestOptions = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+let res = await fetch(`/list-electricityfees`, requestOptions)
+  .then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+return res;
 }
 
-async function GetListSlips() {
+
+async function  CreateElectricityFee(data: ElectricityInterface) {
+  return await axios
+  .post(`/create-electricityfee`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+  
+  async function GetElectricityFee() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    let res = await fetch(`/get-electricityfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+
+  async function UpdateElectricityFee(data: SlipInterface) {
+    const requestOptions = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    };
+    let res = await fetch(`update-electricityfee/:id`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+//----------------------------------------water fee-------------------------------------------
+        
+async function ListWaterFees() {
+const requestOptions = {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+let res = await fetch(`/list-waterfees`, requestOptions)
+  .then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+return res;
+}
+async function  CreateWaterFee(data: WaterInterface) {
+  return await axios
+  .post(`/create-waterfee`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
+
+async function GetWaterFee() {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
     },
   };
-  let res = await fetch(`${apiUrl}/list-slip`, requestOptions)
+  let res = await fetch(`/get-waterfee/:id`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -562,31 +783,6 @@ async function GetListSlips() {
     });
   return res;
 }
-
-async function UpdateSlip(data: SlipInterface) {
-  const requestOptions = {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-
-  let res = await fetch(`${apiUrl}/slip`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-
-  return res;
-}
-async function Updateexpense(id: number, data: Partial<ExpenseInterface>) {
-  return await axios
-    .put(`${apiUrl}/update-expense/${id}`, data, requestOptions) // ใช้ URL ใหม่
-    .then((res) => res)
-    .catch((e) => e.response);}
-
 
 export {
   SignInStudent,
@@ -631,6 +827,7 @@ export {
   GetListStatus,
   // ----------------- Announcements --------------
   ListAnnouncements,
+  GetLatestAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,
   UpdateAnnouncementById,
@@ -638,10 +835,26 @@ export {
   Adminlist,
   CreateAdmin,
   DeleteAdmin,
-  //---------------Slip-------------
+  //------------------------Slip-------------
   CreateSlip,
   GetSlip,
   GetListSlips,
   UpdateSlip,
-  Updateexpense,
+  //-------------------------expense----------------
+  fetchExpenses,
+  CreateExpense,
+  ListExpense,
+  //-----------------------Elecfee---------------
+  ListElectricityFees,
+  CreateElectricityFee,
+  GetElectricityFee,
+  UpdateElectricityFee,
+  //------------------------Waterfee-------------
+  ListWaterFees,
+  CreateWaterFee,
+  GetWaterFee,
+  //---------------------------Rentfee---------------
+  ListRentFees,
+  CreateRentFee,
+  GetRentFee,
 };

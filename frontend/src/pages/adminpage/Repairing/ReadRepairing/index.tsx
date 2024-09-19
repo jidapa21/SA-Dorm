@@ -1,81 +1,144 @@
-import React from 'react';
-import { Card, Form, Input, Divider, Row, Col } from "antd";
-const ReadRepairing: React.FC = () => {
-  const formValues = {
-    subject: "ระบบไฟฟ้าเสีย",
-    detail: "ระบบไฟฟ้าในห้อง 414A ไม่ทำงาน",
-    location_detail: "ห้อง 414A, อาคาร 4",
-    remark: "รบกวนดำเนินการด่วน",
-    contact: "089-123-4567",
-    time_slot: " 10:00 - 12:00"
+import React, { useState, useEffect } from 'react';
+import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
+import { GetRepair, UpdateRepair } from '../../../../services/https'; // Import your API functions
+import { RepairInterface } from "../../../../interfaces/repairing";
+
+const { Option } = Select;
+
+const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
+  const [formValues, setFormValues] = useState<RepairInterface | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [form] = Form.useForm(); // สร้าง form instance
+
+  useEffect(() => {
+    const fetchRepair = async () => {
+      setLoading(true);
+      try {
+        // ดึงข้อมูลจาก API
+        const response = await GetRepair(Number(repairId));
+        if (response) {
+          console.log('Fetched data:', response); // Debug ข้อมูลที่ดึงมา
+          setFormValues(response);
+          form.setFieldsValue(response); // ตั้งค่าให้กับฟอร์มเมื่อได้ข้อมูลแล้ว
+          console.log('Form values set:', form.getFieldsValue()); // Debug ข้อมูลในฟอร์ม
+        } else {
+          setError('Failed to fetch repair details.');
+        }
+      } catch (e) {
+        setError('An error occurred while fetching repair details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRepair();
+  }, [repairId, form]);
+
+  const handleStatusChange = async (value: string) => {
+    try {
+      await UpdateRepair(repairId, { Status: value });
+      form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
-  const imageUrl = 'https://via.placeholder.com/600x400'; 
+
+  const imageUrl = formValues?.Image || 'https://via.placeholder.com/600x400';
+
   return (
-    <div className="container">
-      <Card title="แบบฟอร์มแจ้งซ่อม" bordered={false} style={{ width: '100%' }}>
-        <div className="form-header">
-          <p>ผู้รับบริการ: B191563 มนัสเต สวัสดิกะ</p>
-          <p>อาคาร: 4 ห้อง: 414A</p>
+    <div className="container" style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <Spin />
         </div>
-        <Divider />
-        <Form
-          name="repairing-form"
-          layout="vertical"
-          initialValues={formValues}
-        >
-          <Form.Item
-            label="หัวข้อการขอรับบริการ"
-            name="subject"
+      ) : error ? (
+        <Alert message={error} type="error" style={{ marginBottom: '20px' }} />
+      ) : formValues ? (
+        <Card title="แบบฟอร์มแจ้งซ่อม" bordered={false} style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
+          <Form
+            form={form}
+            name="repairing-form"
+            layout="vertical"
           >
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item
-            label="ภาพประกอบ"
-            name="image"
-          >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <img
-                src={imageUrl}
-                alt="Image"
-                style={{ width: '100%', maxWidth: '600px', maxHeight: '400px', objectFit: 'contain' }} // ขยายขนาดภาพ
-              />
-            </div>
-          </Form.Item>
-
-          <Form.Item
-            label="รายละเอียดการขอรับบริการ"
-            name="detail"
-          >
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item
-            label="รายละเอียดสถานที่รับบริการ"
-            name="location_detail"
-          >
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item
-            label="หมายเหตุ"
-            name="remark"
-          >
-            <Input readOnly />
-          </Form.Item>
-          <Form.Item
-            label="ช่องทางติดต่อ"
-            name="contact"
-          >
-            <Input readOnly />
-          </Form.Item>
-
-          <Form.Item
-            label="ช่วงเวลาที่รับบริการ"
-            name="time_slot"
-          >
-            <Input readOnly />
-          </Form.Item>
-        </Form>
-      </Card>
+            <Row justify="space-between" align="top">
+              <Col>
+                <div style={{ marginBottom: '16px', color: '#666' }}>
+                </div>
+              </Col>
+              <Col>
+                <Form.Item
+                  label="สถานะ"
+                  name="status"
+                >
+                  <Select
+                    value={form.getFieldValue("status")}
+                    style={{ width: '150px' }}
+                    onChange={handleStatusChange}
+                  >
+                    <Option value="pending" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
+                    <Option value="inProgress" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
+                    <Option value="completed" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Divider />
+            <Form.Item
+              label="หัวข้อการขอรับบริการ"
+              name="title"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="ภาพประกอบ"
+              name="image"
+            >
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <img
+                  src={imageUrl}
+                  alt="image"
+                  style={{ width: '100%', maxWidth: '600px', maxHeight: '400px', objectFit: 'contain' }}
+                />
+              </div>
+            </Form.Item>
+            <Form.Item
+              label="รายละเอียดการขอรับบริการ"
+              name="detail"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="รายละเอียดสถานที่รับบริการ"
+              name="location_details"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="หมายเหตุ"
+              name="remarks"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="ช่องทางติดต่อ"
+              name="contact"
+            >
+              <Input readOnly />
+            </Form.Item>
+            <Form.Item
+              label="ช่วงเวลาที่รับบริการ"
+              name="time_slot"
+            >
+              <Input readOnly />
+            </Form.Item>
+          </Form>
+        </Card>
+      ) : (
+        <div>ไม่มีข้อมูล</div>
+      )}
     </div>
   );
 };
+
 export default ReadRepairing;

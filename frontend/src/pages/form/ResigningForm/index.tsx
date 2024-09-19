@@ -31,109 +31,22 @@ import {
 const myId = localStorage.getItem("id");
 
 export default function Index() {
-
   interface StudentInfoRecord
-  extends StudentInterface,
-    DormInterface,
-    RoomInterface {
-  key: string;
-  DormID: number;
-  StudentID: string;
-  FirstName: string;
-  LastName: string;
-  RoomNumber: number;
-}
+    extends StudentInterface,
+      DormInterface,
+      RoomInterface {
+    key: string | null; // Allow null
+    DormID: number;
+    StudentID: string;
+    FirstName: string;
+    LastName: string;
+    RoomNumber: number;
+  }
 
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
   const [componentDisabled, setComponentDisabled] = useState(true);
 
-
-  /*
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 36 },
-      sm: { span: 7 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 16 },
-    },
-  };
-
-  interface DataType {
-    ID: number;
-    Date_Submission: Date;
-    Because_Of: string;
-    Accommodation: string;
-    Status: string;
-    ReservationID: number;
-    AdminID: number;
-  }
-
-  const columns: ColumnsType<ResigningFormInterface> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "id",
-    },
-    {
-      title: "หัวข้อการขอรับบริการ",
-      dataIndex: "Date",
-      key: "date",
-    },
-    {
-      title: "รายละเอียดการขอรับบริการ",
-      dataIndex: "Because_Of",
-      key: "because_of",
-    },
-    {
-      title: "รายละเอียดสถานที่รับบริการ",
-      dataIndex: "Accommodation",
-      key: "accommodation",
-    },
-    {
-      title: "สถานะ",
-      dataIndex: "Status",
-      key: "status",
-    },
-    {
-      title: "รหัสแอดมิน",
-      dataIndex: "AdminID",
-      key: "adminid",
-    },
-    {
-      title: "รหัสการจอง",
-      dataIndex: "ReservationID",
-      key: "reservationid",
-    },
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {myId === record?.ID ? (
-            messageApi.open({
-              type: "error",
-              content: "Student ID on finish is not found.",
-            })
-          ) : (
-            // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PlusOutlined />}
-              onClick={() => CreateResigningForm(record)}
-            >
-              ยืนยัน
-            </Button>
-          )}
-        </>
-      ),
-    },
-  ];
-
-  const data: DataType[] = [];
-*/
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -152,31 +65,46 @@ export default function Index() {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
 
-  const openNotification = (type: 'success' | 'info' | 'warning' | 'error', message: string, description?: string) => {
+  const openNotification = (
+    type: "success" | "info" | "warning" | "error",
+    message: string,
+    description?: string
+  ) => {
     notification[type]({
       message: message,
       description: description,
-      placement: 'bottomRight',
+      placement: "bottomRight",
     });
   };
 
   const onFinish = async (values: ResigningFormInterface) => {
-  
     const studentId = localStorage.getItem("id");
     if (studentId) {
       values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      openNotification('error', 'ไม่พบ Student ID', 'ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID');
+      openNotification(
+        "error",
+        "ไม่พบ Student ID",
+        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID"
+      );
       return;
     }
-    
+
     let res = await CreateResigningForm(values);
     console.log(res);
     if (res) {
-      openNotification('success', 'บันทึกข้อมูลสำเร็จ', 'ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว');
+      openNotification(
+        "success",
+        "บันทึกข้อมูลสำเร็จ",
+        "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
+      );
       form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
     } else {
-      openNotification('error', 'เกิดข้อผิดพลาด!', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+      openNotification(
+        "error",
+        "เกิดข้อผิดพลาด!",
+        "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+      );
     }
   };
 
@@ -188,17 +116,17 @@ export default function Index() {
         console.log("Received data:", data);
 
         // ตรวจสอบว่า student, dorm และ room มีข้อมูลหรือไม่
-        if (data && data.length > 0) {
-          const combinedData = data.map((item: any, index: number) => ({
-            key: `item-${index}`,
-            StudentID: item.reservation?.student?.student_id || "ไม่พบข้อมูล",
-            FirstName: item.reservation?.student?.first_name || "ไม่พบข้อมูล",
-            LastName: item.reservation?.student?.last_name || "ไม่พบข้อมูล",
-            DormID: item.reservation?.Dorm?.ID || "ไม่พบข้อมูล",
-            RoomNumber: item.reservation?.Room?.RoomNumber || "ไม่พบข้อมูล",
-          }));
+        if (data && data.reservation && data.student) {
+          const studentData = {
+            key: studentId,
+            StudentID: data.student.student_id || "ไม่พบข้อมูล",
+            FirstName: data.student.first_name || "ไม่พบข้อมูล",
+            LastName: data.student.last_name || "ไม่พบข้อมูล",
+            DormID: data.reservation.Dorm.ID || "ไม่พบข้อมูล",
+            RoomNumber: data.reservation.Room.room_number || "ไม่พบข้อมูล",
+          };
 
-          setStudent(combinedData); // ตั้งค่าข้อมูลให้กับ state
+          setStudent([studentData]); // Setting student data
         } else {
           setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
         }

@@ -11,7 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 var db *gorm.DB
 
 func DB() *gorm.DB {
@@ -117,7 +116,7 @@ func SetupDatabase() {
 	*/
 
 	// Seed ข้อมูล student
-	studentHashedPassword, _ := HashPassword("B6510001")
+	studentHashedPassword, _ := HashPassword("1234567890123")
 	Birthday, _ := time.Parse("2006-01-02", "1988-11-12")
 	User := &entity.Students{
 		FirstName: "Nicha",
@@ -134,20 +133,20 @@ func SetupDatabase() {
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 		ReservationDate: ReservationDate,
-		StudentsID:      User.ID,
+		StudentID:       User.ID,
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentsID: User.ID, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
 
 	ReservationDate2, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation2 := &entity.Reservation{
 		ReservationDate: ReservationDate2,
-		StudentsID:      2,
+		StudentID:       2,
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation2, &entity.Reservation{StudentsID: 2, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: 2, DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminHashedPassword1, err := HashPassword("Ad01")
@@ -261,12 +260,12 @@ func SetupDatabase() {
 	db.FirstOrCreate(&waterFee, entity.WaterFee{ID: 1})
 
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
-	var reservations []entity.Reservation
-	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
+	var reservations1 []entity.Reservation
+	db.Preload("Dorm").Find(&reservations1) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
 
 	var rentFee entity.RentFee
 
-	for _, reservation := range reservations {
+	for _, reservation := range reservations1 {
 		var amount float64
 
 		// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
@@ -298,12 +297,15 @@ func SetupDatabase() {
 	}
 
 	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
+	totalAmount := float64(rentFee.Amount) + float64(waterFee.Amount) + float64(electricityFee.Amount)
 	expense := entity.Expense{
 		Remark:           " - ",
 		Status:           "กำลังดำเนินการ",
-		RentFeeID:        rentFee.ID,        // เชื่อมโยง RentFee
-		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
-		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
+		RentFeeID:        uint(rentFee.Amount),        // เชื่อมโยง RentFee
+		WaterFeeID:       uint(waterFee.Amount),       // เชื่อมโยง WaterFee
+		ElectricityFeeID: uint(electricityFee.Amount), // เชื่อมโยง ElectricityFee
+		TotalAmount:      totalAmount,
+		StudentsID:       reservation.StudentID,
 	}
 	db.FirstOrCreate(&expense, entity.Expense{Remark: " - "})
 
@@ -313,15 +315,13 @@ func SetupDatabase() {
 
 	// Seed ข้อมูล Slip
 	slip := entity.Slip{
-		Path:        "1667801636944.jpg",
-		Date:        time.Now(),
-		AdminID:     rentFee.ID,
-		ExpenseID:   expense.ID,
-		Totalamount: 3690.00,
+		Path:      "1667801636944.jpg",
+		Date:      time.Now(),
+		AdminID:   rentFee.ID,
+		ExpenseID: expense.ID,
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path: "รูปสลิป"})
 }
-
 func seedFamilyStatuses() {
 	familyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
 	familyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}
@@ -422,10 +422,10 @@ func seedFamilies() {
 func seedOthers() {
 	for i := 1; i <= 5; i++ {
 		other := entity.Other{
-			StudentsID:           uint(i),
+			StudentID:            uint(i),
 			LatestGraduationFrom: "",
 		}
-		db.FirstOrCreate(&other, entity.Other{StudentsID: other.StudentsID})
+		db.FirstOrCreate(&other, entity.Other{StudentID: other.StudentID})
 	}
 }
 

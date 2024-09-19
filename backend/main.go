@@ -17,10 +17,12 @@ import (
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/resigningform"
-	
+	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/waterfee"
+	"dormitory.com/dormitory/controller/electricityfee"
+	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/status"
 	"dormitory.com/dormitory/controller/student"
@@ -76,7 +78,8 @@ func main() {
 		router.GET("/get-list-formstudent", repairing.GetListFormStudent)
 		
 		router.POST("/create-repair", repairing.CreateRepair)
-		//router.GET("/get-repair/:id", repairing.GetRepair)
+		router.GET("/get-repair/:id", repairing.GetRepair)
+		router.GET("/repair-getlist", repairing.GetListRepairs)
 		router.PUT("/repair-update/:id", repairing.UpdateRepair)
 
 		// DelayedPaymentForm Route
@@ -87,10 +90,14 @@ func main() {
 
 		// En_ExitingForm Route
 		router.POST("/create-en_exitingform", en_exitingform.CreateEn_ExitingForm)
+		router.GET("/get-En_ExitingForm/:id", en_exitingform.GetEn_ExitingForm)
+		router.GET("/En_ExitingForm-getlist", en_exitingform.ListEn_ExitingForm)
 		router.PUT("/En_ExitingForm-update/:id", en_exitingform.UpdateEn_ExitingForm)
 
 		// ResigningForm Route
 		router.POST("/create-resigningform", resigningform.CreateResigningForm)
+		router.GET("/get-ResigningForm/:id", resigningform.GetResigningForm)
+		router.GET("/Resigningform-getlist", resigningform.ListResigningForm)
 		router.PUT("/Resigningform-update/:id", resigningform.UpdateResigningForm)
 
 		// ResigningForm Route
@@ -106,6 +113,7 @@ func main() {
 		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
 		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
 		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
+		
 		// Admin Routes
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
@@ -113,9 +121,31 @@ func main() {
 		router.GET("/admin/:id", admin.GetAdminByID)
 
 		//Slip Routes
-		//Slip Routes
 		router.POST("/create-slip", slip.CreateSlip)
-		router.PATCH("/update-/slip/:id", slip.UpdateSlip)
+		router.PATCH("/slip/:id", slip.UpdateSlip)
+
+		//Slip expense
+		router.POST("/create-expense", expense.CreateExpense)
+		router.GET("/get-expense/:id", expense.GetExpense)
+		router.GET("/list-expense", expense.ListExpense)
+
+		// RentFee Route
+		router.POST("/create-rentfee", rentfee.CreateRentFee)
+		router.GET("/get-rentfee/:id", rentfee.GetRentFee)
+		router.GET("/list-rentfees", rentfee.ListRentFees)
+		
+
+		//waterFee Route
+		router.POST("/create-waterfee", waterfee.CreateWaterFee)
+		router.GET("/get-waterfee/:id", waterfee.GetWaterFee)
+		router.GET("/list-waterfees", waterfee.ListWaterFees)
+	
+
+		//elecFee Route
+		router.POST("/create-electricityfee", electricityfee.CreateElectricityFee)
+		router.GET("/get-electricityfee/:id", electricityfee.GetElectricityFee)
+		router.GET("/list-electricityfees", electricityfee.ListElectricityFees)
+		router.PATCH("update-electricityfee/:id", electricityfee.UpdateElectricityFee)
 
 	}
 
@@ -130,6 +160,7 @@ func main() {
 	// Run the server
 	r.Run("localhost:" + PORT)
 }
+
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

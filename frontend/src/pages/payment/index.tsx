@@ -4,140 +4,162 @@ import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Ste
 import Barcode from 'react-barcode'; // นำเข้า Barcode
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "./index.css";
-
+import axios from 'axios';
 
 import { StudentInterface } from "./../../interfaces/Student";
 import { SlipInterface } from "../../interfaces/slip";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "./../../interfaces/Reservation";
-import {CreateSlip, GetListSlips, GetSlip, UpdateSlip } from "./../../services/https";
+import {CreateSlip, GetListSlips, GetSlip, UpdateSlip, CreateExpense, fetchExpenses, ListExpense } from "../../services/https";
 import Slip from "./../adminpage/PaymentConfirmation";
-import { ExpenseInterface } from './../../interfaces/Expense';
+import { ExpenseInterface } from '../../interfaces/Expense';
+import { WaterInterface } from '../../interfaces/Waterfee';
+import { RentInterface } from '../../interfaces/Rentfee';
+import { ElectricityInterface } from '../../interfaces/Electricityfee';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface;
+type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface & ExpenseInterface;
 
 const { TextArea } = Input;
-const myId = localStorage.getItem("id");
+
+
+interface ExpenseData 
+  extends StudentInterface,
+  WaterInterface,
+  RentInterface,
+  ElectricityInterface{
+
+  ID: number;
+  Date: Date;
+  status: string;
+  totalamount: number;
+  remark: string;
+  rent_id:  number;
+  elec_id:  number;
+  water_id: number;
+  student_id: string;
+}
 
 const Index: React.FC = () => {
-  const studentID = localStorage.getItem("studentID");
-  const studentDbID = localStorage.getItem("id");
-
-  const [text] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  interface SlipInterface {
-    ID: number;
-    Path: string;
-    Date: Date;
-    RentID?: number;
-    ElectricityID?: number;
-    WaterID?: number;
-  }
-
-    interface DataType {
-        ID: number;
-        Date: Date;
-        List: string;
-        Amount: number;
-        Remark: string;
-        AdminID: string;
-        ReservationID: string;
-      }
       
-      const columns: TableProps<DataType>['columns'] = [
-        { title: 'วันที่', dataIndex: 'Date', key: 'Date',render: (date: Date) => date.toLocaleDateString(), }, 
-        { title: 'รายการ', dataIndex: 'List', key: 'List' },
-        { title: 'จำนวน', dataIndex: 'Amount', key: 'Amount' },
-        { title: 'หมายเหตุ', key: 'Remark' }, 
-      ];
+      const studentDbID = localStorage.getItem("id");
 
-      const data: DataType[] = [
-        {
-          Date: new Date(),
-          List: 'ค่าหอพัก',
-          Amount: 100,
-          Remark: '',
-          AdminID: '',
-          ReservationID: '',
-          ID: 1
-        },
-        {
-          Date: new Date(),
-          List: 'ค่าไฟฟ้า',
-          Amount: 165.00,
-          Remark: '',
-          AdminID: '',
-          ReservationID: '',
-          ID: 1
-        },
-        {
-          Date: new Date(),
-          List: 'ค่าน้ำ',
-          Amount: 100.00,
-          Remark: '',
-          AdminID: '',
-          ReservationID: '',
-          ID: 0
-        },
-      ];
+      const [text] = useState('');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [totalamount, setTotalAmount] = useState<number>(0);
+      const [ExpenseData, setExpenseData] = useState<ExpenseData[]>([]);
 
+      const showModal = () => {setIsModalOpen(true);};
+      const handleOk = () => {setIsModalOpen(false);};
 
       const navigate = useNavigate();
       const [messageApi, contextHolder] = message.useMessage();
-      const [studentData, setStudentData] = useState<StudentInterface | null>(null);
-      const [slip, setSlip] = useState<SlipInterface | null>(null);
-      const [Path, setPath] = useState('');
 
       const [fileList, setFileList] = useState<UploadFile[]>([]);
       const [form] = Form.useForm();
+      const [errorMessage, setErrorMessage] = useState<string | null>(null);
+      const [student, setStudent] = useState<ExpenseData[]>([]);
       //const response = await CreateSlip({Path});
 
+    useEffect(() => {
+      const myId = localStorage.getItem("id");
+      console.log("Student ID from localStorage:", myId);
 
-      // Model
-    const [open, setOpen] = useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
-    const [modalText, setModalText] = useState<String>();
-    const [deleteId, setDeleteId] = useState<Number>();
+      const fetchExpenses = async () => {
+        try {
+          const response = await ListExpense();
+          console.log("Received data:", response);
 
-// ฟังก์ชันคำนวณยอดรวม
-useEffect(() => {
-  const total = data.reduce((sum, record) => {
-    return sum + (record.Amount || 0); // ใช้ amount เป็น number ตรงๆ
-  }, 0);
-  setTotalAmount(total);
-}, [data]);
+           // ตรวจสอบว่า response มีคีย์ data และ data เป็น Array
+          if (response && response.data && Array.isArray(response.data)) {
+            const expense = response.data;
+            console.log("Expense data:", expense);
 
-/*
-const getSlip = async (id: number) => {
-    let res = await GetSlip(id);
-    if (res.status == 200) {
-      form.setFieldsValue({
-        Path: res.data.Path,
-        Date: res.data.Date,
-      });
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "ไม่พบข้อมูลผู้ใช้",
-      });
-      setTimeout(() => {
-        navigate("/slip");
-      }, 2000);
-    }
+            const CombinedData = expense.map((expense: any) => ({
+              ID: expense.ID,
+              Date: expense.Date, // แปลงเป็น Date
+              totalamount: expense.totalamount,
+              rent_id: expense.rent_id.amount || 0, // ใช้ rentfee แทน rent_id
+              elec_id: expense.elec_id.amount || 0, // ใช้ electricityfee แทน elec_id
+              water_id: expense.water_id.amount || 0, // ใช้ waterfee แทน water_id
+              remark: expense.remark || "",
+              student_id: expense.student_id,
+            }));
+
+        // กรองข้อมูลตาม studentID
+        const filteredData = CombinedData.filter(
+          (expense: ExpenseData) => expense.student_id === myId
+        );
+
+        console.log("Filtered data for student ID:", filteredData);
+
+
+        if (filteredData.length === 0) {
+          message.warning("ไม่พบข้อมูลสำหรับนักเรียนคนนี้");
+        } else {
+          
+        }
+        if (!myId) {
+          console.error("Student ID not found in localStorage.");
+          message.warning("Student ID not found.");
+          return;
+        }
+        
+            // คำนวณยอดรวมทั้งหมด
+          const total = CombinedData.reduce((sum: number, expense: ExpenseData) => {
+            return sum + expense.rent_id + expense.elec_id + expense.water_id;
+        },0 );
+
+        setTotalAmount(total); // ตั้งค่ายอดรวมทั้งหมด
+        
+        
+        }else {
+          message.error('ไม่พบข้อมูลค่าใช้จ่าย');
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+      }
   };
-*/
+
+  fetchExpenses();
+}, [studentDbID]);
+
+    const columns: TableProps<ExpenseData>['columns'] = [
+      { 
+        title: 'วันที่',
+        dataIndex: 'Date',
+        key: 'Date',
+        render: (date: Date) => date.toLocaleDateString(), // แสดงวันที่ในรูปแบบที่อ่านง่าย
+      },
+      {
+        title: 'ค่าหอพัก',
+        dataIndex: 'rent_id',
+        key: 'rent_id',
+        render: (rent_id: number) => `${rent_id.toFixed(2)} บาท`, // แสดงจำนวนเงินที่จ่ายเป็นบาท
+      },
+      {
+        title: 'ค่าไฟฟ้า',
+        dataIndex: 'elec_id',
+        key: 'elec_id',
+        render: (elec_id: number) => `${elec_id.toFixed(2)} บาท`, // แสดงจำนวนเงินที่จ่ายเป็นบาท
+      },
+      {
+        title: 'ค่าน้ำ',
+        dataIndex: 'water_id',
+        key: 'water_id',
+        render: (water_id: number) => `${water_id.toFixed(2)} บาท`, // แสดงจำนวนเงินที่จ่ายเป็นบาท
+      },
+      {
+        title: 'หมายเหตุ',
+        dataIndex: 'remark',
+        key: 'remark',
+      },
+    ];
+    console.log("Expense data state:", ExpenseData);
+
+
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -157,44 +179,38 @@ const getSlip = async (id: number) => {
     imgWindow?.document.write(path.outerHTML);
   };
 
-  const onFinish = async (Path: SlipInterface) => {
-    if (fileList.length === 0) {
+  const onFinish = async (values: SlipInterface) => {
+    values.path = fileList[0]?.thumbUrl || "";
+
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      
+    } else {
       messageApi.open({
         type: "error",
-        content: "กรุณาอัพโหลดไฟล์ก่อน",
+        content: "Student ID on finish is not found.",
       });
-      return;
     }
     
-    const file = fileList[0];
-    const fileUrl = file.url || (file.originFileObj ? URL.createObjectURL(file.originFileObj) : '');
-
-    // Make sure to use the correct URL or File path
-    Path.Path = fileUrl;
-  
-    //try {
-      const res = await CreateSlip(Path);
-      console.log(res)
-      if (res) {
-        messageApi.open({
-          type: "success",
-          content: "อัพโหลดรูปภาพสำเร็จ",
-        });
-        setTimeout(() => {
-        }, 2000);
-      } else {
-        messageApi.open({
-          type: "error",
-          content: "เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ!",
-        });
-      }
-    /*} catch (error) {
-      console.error("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ:", error);
+    let res = await CreateSlip(values);
+    console.log(res);
+    if (res) {
+      messageApi.open({
+        type: "success",
+        content: "บันทึกข้อมูลสำเร็จ",
+      });
+      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      setFileList([]); // รีเซ็ตไฟล์อัปโหลด
+      setTimeout(() => {
+        // ตรวจสอบ URL ให้ถูกต้อง
+      }, 2000);
+    } else {
       messageApi.open({
         type: "error",
-        content: "เกิดข้อผิดพลาดในการเชื่อมต่อ!",
+        content: "เกิดข้อผิดพลาด!",
       });
-    }*/
+    }
+    
   };
 
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
@@ -203,55 +219,6 @@ const getSlip = async (id: number) => {
   return false;
 };
 
-  /*useEffect(() => {
-    const studentId = localStorage.getItem("id");
-    if (studentId) {
-      getSlip(studentId);  // Fetch repair data using studentId
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "Student ID not found.",
-      });
-    }
-  }, []);
-  */
-
-  /*
-  const handleSubmit = async () => {
-    if (!fileList) {
-      messageApi.open({
-        type: 'error',
-        content: 'กรุณาอัพโหลดรูปภาพ',
-      });
-      return;
-    }
-    try {
-      const response = await CreateSlip({ Path });
-  
-      if (response && response.status === 200) {
-        messageApi.open({
-          type: 'success',
-          content: 'อัพโหลดรูปภาพสำเร็จ',
-        });
-        setPath('');
-      } else {
-        const errorMessage = response && response.data && response.data.message ? 
-          response.data.message : 
-          response.statusText || 'เกิดข้อผิดพลาดในการอัพโหลด';
-        messageApi.open({
-          type: 'error',
-          content: `เกิดข้อผิดพลาดในการอัพโหลด: ${errorMessage}`,
-        });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      messageApi.open({
-        type: 'error',
-        content: `เกิดข้อผิดพลาดในการอัพโหลด: ${(error as Error).message}`,
-      });
-    }
-  };
-  */
 
 return (
     <>
@@ -281,9 +248,9 @@ return (
     />
     <Divider />
         <div className='text-container'></div>  
-          <Table columns={columns} dataSource={data} pagination={false} />
+          <Table columns={columns} dataSource={ExpenseData} />
           <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
-            ยอดรวมทั้งหมด: {totalAmount.toFixed(2)} บาท
+            ยอดรวมทั้งหมด: {totalamount.toFixed(2)} บาท
           </div>
           <br/>
           <Button type="primary" onClick={showModal}>
@@ -322,7 +289,7 @@ return (
               autoComplete="off"
             >
               <Form.Item>
-                <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <Space style={{ display: 'flex', justifyContent: '', marginTop: '20px' }}>
                   <Form.Item
                     name="path"
                     label="อัพโหลดไฟล์ที่นี่"

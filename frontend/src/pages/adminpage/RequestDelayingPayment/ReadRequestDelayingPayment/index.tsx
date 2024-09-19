@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Divider, Spin, Alert } from "antd";
-import { GetDelayedPaymentForm } from '../../../../services/https'; // Import your API functions
+import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
+import { GetDelayedPaymentForm,UpdateDelayedPaymentForm } from '../../../../services/https';
 import { DelayedPaymentFormInterface } from "../../../../interfaces/delayedpaymentform";
-import dayjs from 'dayjs'; // Import dayjs for date formatting
 
-const ReadDelayingPayment: React.FC<{ ID: string }> = ({ ID }) => {
+const { Option } = Select;
+
+const ReadRequestDelayingPayment: React.FC<{ ID: number }> = ({ ID }) => {
   const [formValues, setFormValues] = useState<DelayedPaymentFormInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [form] = Form.useForm(); // Create form instance
 
   useEffect(() => {
     const fetchDelayedPaymentForm = async () => {
@@ -16,49 +18,65 @@ const ReadDelayingPayment: React.FC<{ ID: string }> = ({ ID }) => {
         const response = await GetDelayedPaymentForm(ID);
         if (response) {
           setFormValues(response);
+          form.setFieldsValue(response); // Set values to the form
         } else {
-          setError('Failed to fetch payment form details.');
+          setError('Failed to fetch delayed payment details.');
         }
       } catch (e) {
-        setError('An error occurred while fetching payment form details.');
+        setError('An error occurred while fetching delayed payment details.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchDelayedPaymentForm();
-  }, [ID]);
-
-  const formattedDate = formValues && formValues.Due_Date ? dayjs(formValues.Due_Date).format('DD/MM/YYYY') : '';
-
+  }, [ID, form]);
+  const handleStatusChange = async (value: string) => {
+    try {
+      await UpdateDelayedPaymentForm( String (ID) , { Status: value });
+      form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  };
   return (
-    <div className="container">
-      <Card title="แบบฟอร์มขอผ่อนผันการชำระ" bordered={false} style={{ width: '100%' }}>
-        <div className="form-header">
-          <p>ผู้ทำเรื่อง: B191563 มนัสเต สวัสดิกะ</p>
-          <p>วันที่ปัจจุบัน: {dayjs().format('DD/MM/YYYY')}</p>
+    <div className="container" style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      {loading ? (
+        <div style={{ textAlign: 'center' }}>
+          <Spin />
         </div>
-        
-        <Divider />
-
-        {loading ? (
-          <Spin tip="Loading...">
-            <div style={{ minHeight: '200px' }}></div>
-          </Spin>
-        ) : error ? (
-          <Alert message="Error" description={error} type="error" />
-        ) : (
+      ) : error ? (
+        <Alert message={error} type="error" style={{ marginBottom: '20px' }} />
+      ) : formValues ? (
+        <Card title="แบบฟอร์มขอผ่อนผันการชำระ" bordered={false} style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
           <Form
+            form={form}
             name="delaying-payment-form"
             layout="vertical"
-            initialValues={{
-              dorm_payment: formValues?.Dorm_Payment,
-              electricly_bill: formValues?.Electricly_Bill,
-              water_bill: formValues?.Water_Bill,
-              because_of: formValues?.Because_Of,
-              due_date: formattedDate,
-            }}
           >
+            <Row justify="space-between" align="top">
+              <Col>
+                <div style={{ marginBottom: '16px', color: '#666' }}>
+                </div>
+              </Col>
+              <Col>
+                <Form.Item
+                  label="สถานะ"
+                  name="status"
+                >
+                  <Select
+                    value={form.getFieldValue("status")}
+                    style={{ width: '150px' }}
+                    onChange={handleStatusChange}
+                  >
+                    <Option value="pending" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
+                    <Option value="inProgress" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
+                    <Option value="completed" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Divider />
             <Form.Item
               label="ค่าหอพัก"
               name="dorm_payment"
@@ -94,10 +112,12 @@ const ReadDelayingPayment: React.FC<{ ID: string }> = ({ ID }) => {
               <Input readOnly />
             </Form.Item>
           </Form>
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <div>ไม่มีข้อมูล</div>
+      )}
     </div>
   );
 };
 
-export default ReadDelayingPayment;
+export default ReadRequestDelayingPayment;

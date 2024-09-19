@@ -89,7 +89,7 @@ func ListDelayedPaymentForms(c *gin.Context) {
 	c.JSON(http.StatusOK, delayedpaymentform)
 }
 
-// PATCH /DelayedPaymentForm
+// PATCH /repairings
 func UpdateDelayedPaymentForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {

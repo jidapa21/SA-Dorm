@@ -55,52 +55,31 @@ func CreateEn_ExitingForm(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": ee})
 }
-
-// GET /Repairing/:id
-func GetRepair(c *gin.Context) {
+// GET /En_ExitingForm/:id
+func GetEn_ExitingForm(c *gin.Context) {
 	ID := c.Param("id")
-	var repairing entity.Repairing
-	var reservation entity.Reservation
+	var En_ExitingForm entity.En_ExitingForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
-		if err := db.Preload("Students").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.StudentsID not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Dorm").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.DormID not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Room").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.RoomID not found": err.Error()})
-			return
-		}
+	if err := db.Preload("Reservation").First(&En_ExitingForm, ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, repairing)
+
+	c.JSON(http.StatusOK, En_ExitingForm)
 }
 
-// GET /Repairings
-func GetListRepairs(c *gin.Context) {
-	var repairings []entity.Repairing
-	var reservation []entity.Reservation
+// GET /En_ExitingForm
+func ListEn_ExitingForm(c *gin.Context) {
+	var En_ExitingForm []entity.En_ExitingForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
-		if err := db.Preload("Students").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Students not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Dorm").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Dorm not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Room").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Room not found": err.Error()})
-			return
-		}
+	if err := db.Preload("Reservation").Find(&En_ExitingForm).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, repairings)
+
+	c.JSON(http.StatusOK, En_ExitingForm)
 }
 
 // PATCH /En_ExitingForm

@@ -24,6 +24,6 @@ type Other struct {
 
 	// One-to-one relationship with Student
 
-	StudentsID uint      `json:"student_id"`
-	Student   *Students `gorm:"foreignKey: StudentsID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	StudentID uint      `json:"student_id"`
+	Student   *Students `gorm:"foreignKey: StudentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 }

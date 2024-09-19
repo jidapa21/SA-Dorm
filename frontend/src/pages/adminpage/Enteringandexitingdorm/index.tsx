@@ -11,8 +11,8 @@ interface TableEn_ExitingFormInterfaceRecord extends En_ExitingFormInterface {
   date: string;
 }
 
-const DelayingPayment: React.FC = () => {
-  const [repairs, setRepairs] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
+const EnteringAndExitingDorm: React.FC = () => {
+  const [repairs, setEnteringAndExitingDorm] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -21,12 +21,13 @@ const DelayingPayment: React.FC = () => {
         const data = await ListEn_ExitingForm();
         console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
-          const transformedData = data.map((item: En_ExitingFormInterface, index: number) => ({
+          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'completed')
+          const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
           }));
           console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
-          setRepairs(transformedData);
+          setEnteringAndExitingDorm(transformedData);
         }
       } catch (error) {
         console.error('Error fetching En_ExitingForm:', error);
@@ -34,6 +35,8 @@ const DelayingPayment: React.FC = () => {
     };
   
     fetchEn_ExitingForm();
+    const intervalId = setInterval(fetchEn_ExitingForm, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []); 
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
@@ -130,4 +133,4 @@ const DelayingPayment: React.FC = () => {
   );
 };
 
-export default DelayingPayment;
+export default EnteringAndExitingDorm;

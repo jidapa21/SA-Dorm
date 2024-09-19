@@ -78,7 +78,6 @@ func GetStudent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, student)
 }
-
 // GET /list-student
 func ListStudent(c *gin.Context) {
 

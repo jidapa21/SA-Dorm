@@ -58,53 +58,33 @@ func CreateResigningForm(c *gin.Context) {
 }
 
 // GET /Repairing/:id
-func GetRepair(c *gin.Context) {
+func GetResigningForm(c *gin.Context) {
 	ID := c.Param("id")
-	var repairing entity.Repairing
-	var reservation entity.Reservation
+	var ResigningForm entity.ResigningForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
-		if err := db.Preload("Students").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.StudentsID not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Dorm").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.DormID not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Room").First(&reservation, ID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.RoomID not found": err.Error()})
-			return
-		}
+	if err := db.Preload("Reservation").First(&ResigningForm, ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, repairing)
+
+	c.JSON(http.StatusOK, ResigningForm)
 }
 
 // GET /Repairings
-func GetListRepairs(c *gin.Context) {
-	var repairings []entity.Repairing
-	var reservation []entity.Reservation
+func ListResigningForm(c *gin.Context) {
+	var ResigningForm []entity.ResigningForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
-		if err := db.Preload("Students").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Students not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Dorm").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Dorm not found": err.Error()})
-			return
-		}
-		if err := db.Preload("Room").Find(&reservation).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error: Repairing.Reservation.Room not found": err.Error()})
-			return
-		}
+	if err := db.Preload("Reservation").Find(&ResigningForm).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	c.JSON(http.StatusOK, repairings)
+
+	c.JSON(http.StatusOK, ResigningForm)
 }
 
-// PATCH /ResigningForm
+// PATCH /repairings
 func UpdateResigningForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {

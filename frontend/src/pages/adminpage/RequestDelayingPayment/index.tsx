@@ -12,7 +12,7 @@ interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface 
 }
 
 const DelayingPayment: React.FC = () => {
-  const [delayingPayment, setRepairs] = useState<TableRequestDelayingPaymentRecord[]>([]);
+  const [repairs, setDelayingPayment] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,21 +20,25 @@ const DelayingPayment: React.FC = () => {
       try {
         const data = await ListDelayedPaymentForms();
         if (data) {
-          const transformedData = data.map((item: DelayedPaymentFormInterface, index: number) => ({
+          // กรองข้อมูลที่มีสถานะ "completed"
+          const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'completed');
+          const transformedData = filteredData.map((item: DelayedPaymentFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            //date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
-          setRepairs(transformedData);
+          setDelayingPayment(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching repairs:', error);
+        console.error('Error fetching DelayingPayment:', error);
       }
     };
 
-    fetchDelayingPayment();
-  }, []);
+    fetchDelayingPayment(); // เรียกข้อมูลครั้งแรก
 
+    // ตั้งค่า setInterval
+    const intervalId = setInterval(fetchDelayingPayment, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
+  }, []);
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };
@@ -45,14 +49,15 @@ const DelayingPayment: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการแจ้งซ่อม',
+      title: 'รายการฟอร์มผ่อนผัน',
       children: [
         {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-          ),
+            title: 'สภานะ',
+            dataIndex: 'status',
+            key: 'Status',
+            render: (text: string) => (
+              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+            ),
         },
         {
           key: 'details',
@@ -71,7 +76,6 @@ const DelayingPayment: React.FC = () => {
       ],
     },
   ];
-
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
@@ -84,7 +88,8 @@ const DelayingPayment: React.FC = () => {
         }}
       >
         <Title level={2} style={{ margin: 0, color: '#333' }}>
-        แบบฟอร์มขอผ่อนผันการชำระ
+        รายการฟอร์มผ่อนผัน
+
         </Title>
         <div
           style={{
@@ -106,7 +111,7 @@ const DelayingPayment: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadDelayingPayment ID={selectedKey} />
+          <ReadDelayingPayment ID={Number(selectedKey)} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -116,7 +121,7 @@ const DelayingPayment: React.FC = () => {
           >
             <Table
               columns={columns}
-              dataSource={delayingPayment}
+              dataSource={repairs}
               pagination={false}
               bordered
               showHeader={false}

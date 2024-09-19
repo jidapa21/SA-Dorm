@@ -1,4 +1,6 @@
 export interface RepairInterface {
+    status:             string;
+    repairId:           string;
     ID?:                number;
     Title?:             string;
     Type?:              string;
