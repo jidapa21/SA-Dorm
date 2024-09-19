@@ -3,8 +3,8 @@ package electricityfee
 import (
 	"net/http"
 
-	"dormitory.com/dormitory/entity"
 	"dormitory.com/dormitory/config"
+	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
 )
 
@@ -84,6 +84,7 @@ func UpdateElectricityFee(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "ElectricityFee updated successfully", "data": electricityFee})
 }
+
 // GET /get-latest-electricity-fee
 func GetLatestElectricityFee(c *gin.Context) {
 	var electricityFee entity.ElectricityFee
@@ -96,6 +97,7 @@ func GetLatestElectricityFee(c *gin.Context) {
 
 	c.JSON(http.StatusOK, electricityFee)
 }
+
 // PATCH /update-expense/:id
 func UpdateExpense(c *gin.Context) {
 	var expense entity.Expense
@@ -122,4 +124,3 @@ func UpdateExpense(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Expense updated successfully", "data": expense})
 }
-

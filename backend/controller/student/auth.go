@@ -14,6 +14,7 @@ type (
 	StudentAuthen struct {
 		StudentID string `json:"student_id"`
 		Password  string `json:"password"`
+		ExID      string `json:"ex_id"`
 	}
 )
 
@@ -50,15 +51,15 @@ func SignInStudent(c *gin.Context) {
 		Issuer:          "AuthService",
 		ExpirationHours: 24,
 	}
-	// ส่งพารามิเตอร์ทั้งหมดให้กับ GenerateToken
-	signedToken, err := jwtWrapper.GenerateToken(payload.StudentID, "", "")
+	signedToken, err := jwtWrapper.GenerateToken(payload.StudentID, "", "", payload.ExID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error signing token"})
 		return
 	}
+
+	// Return the response with token and student ID
 	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": student.ID})
 }
-
 func GetStudentDetails(c *gin.Context) {
 	var studentID string
 	var result struct {

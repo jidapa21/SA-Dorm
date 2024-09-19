@@ -37,7 +37,6 @@ func GetWaterFee(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "WaterFee not found"})
 		return
 	}
-
 	c.JSON(http.StatusOK, waterFee)
 }
 

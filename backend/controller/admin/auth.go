@@ -49,7 +49,7 @@ func SignInAdmin(c *gin.Context) {
 	}
 	// แปลง admin.ID เป็น string ก่อนส่งไปยัง GenerateToken
 	adminIDStr := strconv.Itoa(int(admin.ID))
-	signedToken, err := jwtWrapper.GenerateToken("", admin.Username, adminIDStr)
+	signedToken, err := jwtWrapper.GenerateToken("", admin.Username, adminIDStr,"")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return

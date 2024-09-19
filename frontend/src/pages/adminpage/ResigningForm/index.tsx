@@ -21,7 +21,8 @@ const ResigningForm: React.FC = () => {
         const data = await ListResigningForm();
         console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
-          const transformedData = data.map((item: ResigningFormInterface, index: number) => ({
+          const filteredData = data.filter((item: ResigningFormInterface) => item.status !== 'completed')
+          const transformedData = filteredData.map((item: ResigningFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
           }));
@@ -34,6 +35,8 @@ const ResigningForm: React.FC = () => {
     };
   
     fetchResigningForm();
+    const intervalId = setInterval(fetchResigningForm, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []); 
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);

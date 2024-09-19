@@ -1,4 +1,5 @@
 export interface En_ExitingFormInterface {
+  status: string;
     ID?:                number;
 	Date_Submission?:	Date;
 	Request?:			string;

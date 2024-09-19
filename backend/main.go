@@ -9,6 +9,7 @@ import (
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
 	"dormitory.com/dormitory/controller/en_exitingform"
+	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -18,12 +19,11 @@ import (
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
-	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/controller/resigningform"
+	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
-	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -111,6 +111,7 @@ func main() {
 		router.PATCH("/slip/:id", slip.UpdateSlip)
 		router.GET("/list-slip", slip.GetListSlips)
 		router.PUT("/update-expense/:id", expense.UpDateExpense)
+		router.GET("/get-slipcomplete", slip.GetSlipsWithUncompletedStatus)
 	}
 
 	r.GET("/genders", genders.GetAll)

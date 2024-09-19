@@ -1,4 +1,5 @@
 export interface DelayedPaymentFormInterface {
+    status: string;
     ID?:                number;
     Dorm_Payment?:      number;
     Electricly_Bill?:   number;

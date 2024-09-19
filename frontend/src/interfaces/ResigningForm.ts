@@ -1,4 +1,5 @@
 export interface ResigningFormInterface {
+  status: string;
     ID?:                number;
     Name?:			    string;
 	Date?:			    Date;

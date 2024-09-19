@@ -19,22 +19,26 @@ const DelayingPayment: React.FC = () => {
     const fetchDelayingPayment = async () => {
       try {
         const data = await ListDelayedPaymentForms();
-        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
-          const transformedData = data.map((item: DelayedPaymentFormInterface, index: number) => ({
+          // กรองข้อมูลที่มีสถานะ "completed"
+          const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'completed');
+          const transformedData = filteredData.map((item: DelayedPaymentFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
           }));
-          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
           setDelayingPayment(transformedData);
         }
       } catch (error) {
         console.error('Error fetching DelayingPayment:', error);
       }
     };
-  
-    fetchDelayingPayment();
-  }, []); 
+
+    fetchDelayingPayment(); // เรียกข้อมูลครั้งแรก
+
+    // ตั้งค่า setInterval
+    const intervalId = setInterval(fetchDelayingPayment, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
+  }, []);
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };

@@ -2,42 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FileImageOutlined } from '@ant-design/icons';
-import { GetListSlips, Updateexpense } from '../../../services/https';
+import { Getslipcompleted, Updateexpense ,} from '../../../services/https';
+import { SlipInterface } from "../../../interfaces/slip";
+import dayjs from 'dayjs';
 
 interface PaymentData {
   key: string;
   time: string;
   amount: number;
-  slip: string;
+  slip: string; // This should be a base64 string or a valid URL
   confirmed?: boolean;
-  expenseId: number; // เพิ่มฟิลด์นี้เพื่อเชื่อมกับ expenses
+  expenseId: number;
 }
 
 const PaymentConfirmation: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState<boolean>(false); // สำหรับ modal ยืนยัน
   const [currentImage, setCurrentImage] = useState<string>('');
-  const [paymentData, setPaymentData] = useState<PaymentData[]>([]); // เปลี่ยนเป็น state ที่ดึงข้อมูลจาก API
+  const [currentRecord, setCurrentRecord] = useState<PaymentData | null>(null); // เก็บข้อมูลรายการปัจจุบัน
+  const [paymentData, setPaymentData] = useState<PaymentData[]>([]);
 
-  // ดึงข้อมูลสลิปจาก API เมื่อโหลด component
+  // Fetch slips from API when component mounts
   useEffect(() => {
     const fetchSlips = async () => {
-      const slips = await GetListSlips();
-      if (slips) {
-        const formattedData = slips.map((slip: any) => ({
-          key: slip.ID,
-          time: slip.Date, // แสดงเวลา
-          amount: slip.Totalamount, // แสดงจำนวนเงินที่จ่าย
-          slip: slip.Path, // URL สำหรับสลิป
-          expenseId: slip.ExpenseID,
-        }));
-        setPaymentData(formattedData);
-      } else {
-        message.error('ไม่สามารถดึงข้อมูลสลิปได้');
+      try {
+        const slips = await Getslipcompleted();
+        if (slips) {
+          // กรองข้อมูลที่มีสถานะเป็น 'complet' ออก
+          const formattedData = slips
+            .filter((slip: any) => slip.status !== 'complet') // ทำการกรองที่มีสถานะ 'complet'
+            .map((slip: any) => ({
+              key: slip.ID,
+              time: slip.date,
+              amount: slip.totalamount,
+              slip: slip.path, // This should be a valid base64 string or URL
+              expenseId: slip.ex_id,
+              confirmed: slip.confirmed, // เพิ่ม field confirmed ใน data
+            }));
+          setPaymentData(formattedData);
+        } else {
+          message.error('ไม่สามารถดึงข้อมูลสลิปได้');
+        }
+      } catch (error) {
+        message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
       }
     };
     fetchSlips();
+    const intervalId = setInterval(fetchSlips, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
-
+  
   const handleViewSlip = (url: string) => {
     if (url) {
       setCurrentImage(url);
@@ -52,16 +66,22 @@ const PaymentConfirmation: React.FC = () => {
     setCurrentImage('');
   };
 
-  const handleConfirm = async (key: string, expenseId: number) => {
-    // อัปเดตสถานะใน expenses
+  const handleConfirmClick = (record: PaymentData) => {
+    setCurrentRecord(record); // เก็บข้อมูลรายการที่ต้องการยืนยัน
+    setConfirmModalVisible(true); // แสดง modal เพื่อยืนยัน
+  };
+
+  const handleConfirm = async () => {
+    if (!currentRecord) return;
+
     try {
-      await Updateexpense(expenseId, { status: 'confirmed' });
-      // อัปเดตใน state หลังจากอัปเดตสำเร็จ
-      const updatedData = paymentData.map((item) =>
-        item.key === key ? { ...item, confirmed: true } : item
-      );
+      await Updateexpense(currentRecord.expenseId, { status: 'complet' }); // เปลี่ยนสถานะเป็น 'complet'
+      
+      const updatedData = paymentData.filter((item) => item.key !== currentRecord.key); // ลบรายการออกจากตาราง
       setPaymentData(updatedData);
-      message.success(`ยืนยันการชำระเงินสำหรับรายการ ${key} สำเร็จ`);
+      
+      message.success(`ยืนยันการชำระเงินสำหรับรายการ ${currentRecord.key} สำเร็จ`);
+      setConfirmModalVisible(false); // ปิด modal หลังจากยืนยัน
     } catch (error) {
       message.error('เกิดข้อผิดพลาดในการยืนยัน');
     }
@@ -69,51 +89,58 @@ const PaymentConfirmation: React.FC = () => {
 
   const columns: ColumnsType<PaymentData> = [
     {
-      title: 'เวลา',
+      title: <div style={{ textAlign: 'center' }}>เวลา</div>,
       dataIndex: 'time',
       key: 'time',
+      render: (record: SlipInterface) => (
+        <div style={{ textAlign: 'center' }}>
+          {dayjs(record.date).format('DD/MM/YYYY HH:mm:ss')}
+        </div>
+      ),
     },
     {
-      title: 'จำนวนเงิน',
+      title: <div style={{ textAlign: 'center' }}>จำนวนเงิน</div>,
       dataIndex: 'amount',
       key: 'amount',
-      render: (text) => `${text} บาท`,
+      render: (text) => <div style={{ textAlign: 'center' }}>{`${text} บาท`}</div>,
     },
     {
-      title: 'สลิป',
+      title: <div style={{ textAlign: 'center' }}>สลิป</div>,
       dataIndex: 'slip',
       key: 'slip',
       render: (text) => (
-        <Button
-          icon={<FileImageOutlined />}
-          onClick={() => handleViewSlip(text)}
-        >
-          ดูภาพ
-        </Button>
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            icon={<FileImageOutlined />}
+            onClick={() => handleViewSlip(text)}
+          >
+            ดูภาพ
+          </Button>
+        </div>
       ),
     },
     {
-      title: 'การดำเนินการ',
+      title: <div style={{ textAlign: 'center' }}>การดำเนินการ</div>,
       key: 'action',
       render: (_, record) => (
-        <Button
-          type="primary"
-          disabled={record.confirmed}
-          onClick={() => handleConfirm(record.key, record.expenseId)} // ส่ง expenseId ไปด้วย
-        >
-          {record.confirmed ? 'ยืนยันแล้ว' : 'ยืนยัน'}
-        </Button>
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            type="primary"
+            disabled={record.confirmed}
+            onClick={() => handleConfirmClick(record)} // เรียกใช้ modal ยืนยัน
+          >
+            {record.confirmed ? 'ยืนยันแล้ว' : 'ยืนยัน'}
+          </Button>
+        </div>
       ),
     },
   ];
-  
 
   return (
     <div style={{ padding: '20px' }}>
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
+          textAlign: 'center',
           marginBottom: '20px',
           position: 'relative',
         }}
@@ -122,7 +149,6 @@ const PaymentConfirmation: React.FC = () => {
           style={{
             fontSize: '25px',
             fontWeight: 'bold',
-            position: 'relative',
             paddingBottom: '10px',
           }}
         >
@@ -146,6 +172,8 @@ const PaymentConfirmation: React.FC = () => {
         bordered
         style={{ marginBottom: '20px' }}
       />
+
+      {/* Modal สำหรับดูสลิป */}
       <Modal
         visible={visible}
         footer={null}
@@ -157,6 +185,18 @@ const PaymentConfirmation: React.FC = () => {
           style={{ width: '100%', height: 'auto' }}
           src={currentImage}
         />
+      </Modal>
+
+      {/* Modal สำหรับยืนยันการชำระเงิน */}
+      <Modal
+        visible={confirmModalVisible}
+        onOk={handleConfirm} // ถ้าผู้ใช้กดยืนยัน
+        onCancel={() => setConfirmModalVisible(false)} // ถ้าผู้ใช้ยกเลิก
+        title="ยืนยันการดำเนินการ"
+        okText="ยืนยัน"
+        cancelText="ยกเลิก"
+      >
+        <p>คุณต้องการยืนยันการชำระเงินนี้หรือไม่?</p>
       </Modal>
     </div>
   );

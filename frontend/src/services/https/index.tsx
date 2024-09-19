@@ -3,7 +3,7 @@ import { SignInStudentInterface } from "../../interfaces/SignInStudent";
 import { SignInAdminInterface } from "../../interfaces/SignInAdmin";
 import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
-import { SlipInterface } from "../../interfaces/Slip";
+import { SlipInterface } from "../../interfaces/slip";
 import { RepairInterface } from "../../interfaces/repairing";
 import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
@@ -166,23 +166,12 @@ async function GetOtherById(id: string) {
 
 //---------------------   Repairing ---------------------------------
 
-async function CreateRepair(data: RepairInterface) {
-  const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/creat-repair`, requestOptions)
-    .then((res) => {
-      if (res.status == 201) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
+  async function CreateRepair(data: RepairInterface) {
+    return await axios
+      .post(`${apiUrl}/creat-repair`, data, requestOptions)
+      .then((res) => res)
+      .catch((e) => e.response);
   }
-
   async function GetRepair(id: number | undefined) {
     if (id === undefined) {
       throw new Error('ID cannot be undefined');
@@ -249,6 +238,13 @@ async function CreateRepair(data: RepairInterface) {
       .catch((e) => e.response);
 }
   //---------------------   En_ExitingForm ---------------------------------
+  async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
+    return await axios
+      .post(`${apiUrl}/create-en_exitingform`, data, requestOptions)
+      .then((res) => res)
+      .catch((e) => e.response);
+  }
+
   async function GetEn_ExitingForm(id: number | undefined) {
     if (id === undefined) {
       throw new Error('ID cannot be undefined');
@@ -315,6 +311,12 @@ async function CreateRepair(data: RepairInterface) {
       .catch((e) => e.response);
 } 
 //---------------------   ResigningForm ---------------------------------
+async function CreateResigningForm(data: ResigningFormInterface) {
+  return await axios
+    .post(`${apiUrl}/create-resigningform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 async function GetResigningForm(id: number | undefined) {
   if (id === undefined) {
     throw new Error('ID cannot be undefined');
@@ -347,7 +349,12 @@ async function GetResigningForm(id: number | undefined) {
   }
 }
 
-
+async function CreateDelayedPaymentForm(data: DelayedPaymentFormInterface) {
+  return await axios
+    .post(`${apiUrl}/create-delayedpaymentform`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 
 async function ListResigningForm() {
   const requestOptions = {
@@ -506,21 +513,11 @@ async function DeleteAnnouncementById(id: string) {
 //-------------slip------------------
 
 async function CreateSlip(data: SlipInterface) {
-  const requestOptions = {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  };
-  let res = await fetch(`${apiUrl}/repair`, requestOptions)
-    .then((res) => {
-      if (res.status == 201) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
-  return res;
-  }
+  return await axios
+  .post(`${apiUrl}/create-slip`, data, requestOptions)
+  .then((res) => res)
+  .catch((e) => e.response);
+}
 
 async function GetSlip(id: Number | undefined) {
   const requestOptions = {
@@ -580,6 +577,31 @@ async function Updateexpense(id: number, data: Partial<ExpenseInterface>) {
     .then((res) => res)
     .catch((e) => e.response);}
 
+async function Getslipcompleted() {
+  const requestOptions = {
+     method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+      },
+    };
+    let res = await fetch(`${apiUrl}/get-slipcomplete`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
+  async function CreateExpense(data: ExpenseInterface) {
+    return await axios
+    .post(`${apiUrl}/create-expense`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+  }
+
 export {
   SignInStudent,
   SignInAdmin,
@@ -628,5 +650,10 @@ export {
   GetResigningForm,
   ListResigningForm,
   UpdateResigningForm,
-  Updateexpense
+  Updateexpense,
+  Getslipcompleted,
+  CreateEn_ExitingForm,
+  CreateResigningForm,
+  CreateDelayedPaymentForm,
+  CreateExpense
 };

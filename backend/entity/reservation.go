@@ -10,7 +10,7 @@ type Reservation struct {
 	gorm.Model
 
 	ReservationDate time.Time `json:"reservation_date"`
-	StudentID      string    `json:"student_id"`
+	StudentID      uint    `json:"student_id"`
 	Student         Students  `gorm:"foreignKey:StudentID;references:StudentID" json:"student"`
 
 	DormID          uint      `json:"dorm_id"`

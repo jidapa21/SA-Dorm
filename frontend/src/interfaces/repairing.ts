@@ -1,7 +1,9 @@
 export interface RepairInterface {
-    repairId: string;
+    status:             string;
+    repairId:           string;
     ID?:                number;
-    Subject?:           string;
+    Tatal?:             string;
+    Type?:              string;
     Detail?:            string;
     Image?:             string;
     Location_Details?:  string;

@@ -3,11 +3,11 @@ import { Button, Table, Typography, Card } from 'antd';
 import ReadRepairing from './ReadRepairing/index';
 import { GetListRepairs } from '../../../services/https';
 import { RepairInterface } from "../../../interfaces/repairing";
+
 const { Title } = Typography;
 
 interface TableRepairRecord extends RepairInterface {
   key: string;
-  date: string;
 }
 
 const Repairing: React.FC = () => {
@@ -18,22 +18,28 @@ const Repairing: React.FC = () => {
     const fetchRepairs = async () => {
       try {
         const data = await GetListRepairs();
-        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
-          const transformedData = data.map((item: RepairInterface, index: number) => ({
+          // กรองข้อมูลที่มีสถานะ "completed"
+          const filteredData = data.filter((item: RepairInterface) => item.status !== 'completed');
+          const transformedData = filteredData.map((item: RepairInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
           }));
-          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
           setRepairs(transformedData);
         }
       } catch (error) {
         console.error('Error fetching repairs:', error);
       }
     };
-  
-    fetchRepairs();
-  }, []); 
+
+    fetchRepairs(); // เรียกข้อมูลครั้งแรก
+
+    // ตั้งค่า setInterval
+    const intervalId = setInterval(fetchRepairs, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
+  }, []);
+
   const handleDetailsClick = (repairId: string) => {
     setSelectedKey(repairId);
   };
@@ -47,12 +53,12 @@ const Repairing: React.FC = () => {
       title: 'รายการแจ้งซ่อม',
       children: [
         {
-            title: 'รายละเอียดสถานที่',
-            dataIndex: 'location_details',
-            key: 'location_details',
-            render: (text: string) => (
-              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-            ),
+          title: 'สถานะ',
+          dataIndex: 'status',
+          key: 'status',
+          render: (text: string) => (
+            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+          ),
         },
         {
           key: 'details',
@@ -71,6 +77,7 @@ const Repairing: React.FC = () => {
       ],
     },
   ];
+
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
