@@ -14,6 +14,9 @@ import { ReservationInterface } from "./../../interfaces/Reservation";
 import {CreateSlip, GetListSlips, GetSlip, UpdateSlip, CreateExpense, fetchExpenses, ListExpense } from "../../services/https";
 import Slip from "./../adminpage/PaymentConfirmation";
 import { ExpenseInterface } from '../../interfaces/Expense';
+import { WaterInterface } from '../../interfaces/Waterfee';
+import { RentInterface } from '../../interfaces/Rentfee';
+import { ElectricityInterface } from '../../interfaces/Electricityfee';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface & ExpenseInterface;
@@ -23,8 +26,10 @@ const { TextArea } = Input;
 
 interface ExpenseData 
   extends StudentInterface,
-  DormInterface,
-  RoomInterface{
+  WaterInterface,
+  RentInterface,
+  ElectricityInterface{
+
   ID: number;
   Date: Date;
   status: string;
@@ -63,19 +68,23 @@ const Index: React.FC = () => {
 
       const fetchExpenses = async () => {
         try {
-          const expense = await ListExpense();
-          console.log("Received data:", expense);
+          const response = await ListExpense();
+          console.log("Received data:", response);
 
-          if (expense && expense.length > 0) {
-            const CombinedData = expense.map((item: any, index: number) => ({
-              key: `item-${index}`,
-              Date: new Date(item.CreatedAt), // แปลงเป็น Date
-              totalamount: item.totalamount,
-              rent_id: item.rentfee || 0, // ใช้ rentfee แทน rent_id
-              elec_id: item.electricityfee || 0, // ใช้ electricityfee แทน elec_id
-              water_id: item.waterfee || 0, // ใช้ waterfee แทน water_id
-              remark: item.remark || "",
-              student_id: item.student_id,
+           // ตรวจสอบว่า response มีคีย์ data และ data เป็น Array
+          if (response && response.data && Array.isArray(response.data)) {
+            const expense = response.data;
+            console.log("Expense data:", expense);
+
+            const CombinedData = expense.map((expense: any) => ({
+              ID: expense.ID,
+              Date: expense.Date, // แปลงเป็น Date
+              totalamount: expense.totalamount,
+              rent_id: expense.rent_id.amount || 0, // ใช้ rentfee แทน rent_id
+              elec_id: expense.elec_id.amount || 0, // ใช้ electricityfee แทน elec_id
+              water_id: expense.water_id.amount || 0, // ใช้ waterfee แทน water_id
+              remark: expense.remark || "",
+              student_id: expense.student_id,
             }));
 
         // กรองข้อมูลตาม studentID
@@ -89,19 +98,24 @@ const Index: React.FC = () => {
         if (filteredData.length === 0) {
           message.warning("ไม่พบข้อมูลสำหรับนักเรียนคนนี้");
         } else {
-          setExpenseData(filteredData);
+          
         }
-
+        if (!myId) {
+          console.error("Student ID not found in localStorage.");
+          message.warning("Student ID not found.");
+          return;
+        }
+        
             // คำนวณยอดรวมทั้งหมด
           const total = CombinedData.reduce((sum: number, expense: ExpenseData) => {
             return sum + expense.rent_id + expense.elec_id + expense.water_id;
         },0 );
 
         setTotalAmount(total); // ตั้งค่ายอดรวมทั้งหมด
-
+        
         
         }else {
-          message.error('ไม่สามารถดึงข้อมูลค่าใช้จ่ายได้!');
+          message.error('ไม่พบข้อมูลค่าใช้จ่าย');
         }
       } catch (error) {
         console.error("Error fetching data:", error);
