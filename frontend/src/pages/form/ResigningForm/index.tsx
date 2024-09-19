@@ -12,7 +12,6 @@ import {
   notification,
   message,
 } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import { PlusOutlined } from "@ant-design/icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -28,7 +27,6 @@ import {
   GetListFormStudent,
 } from "./../../../services/https";
 
-const myId = localStorage.getItem("id");
 
 export default function Index() {
   interface StudentInfoRecord
@@ -45,9 +43,7 @@ export default function Index() {
 
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
-  const [componentDisabled, setComponentDisabled] = useState(true);
 
-  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [form] = Form.useForm();
@@ -129,10 +125,20 @@ export default function Index() {
           setStudent([studentData]); // Setting student data
         } else {
           setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          openNotification(
+            "error",
+            "เกิดข้อผิดพลาด!",
+            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        );
       }
     };
 

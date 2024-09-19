@@ -14,7 +14,6 @@ import {
   message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
@@ -29,8 +28,6 @@ import {
   GetListFormStudent,
 } from "./../../../services/https";
 
-const myId = localStorage.getItem("id");
-
 export default function EnExitingFormCreate() {
   interface StudentInfoRecord
     extends StudentInterface,
@@ -44,11 +41,7 @@ export default function EnExitingFormCreate() {
     RoomNumber: number;
   }
 
-  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [repairing, setRepairing] = useState<En_ExitingFormInterface | null>(
-    null
-  );
 
   const [form] = Form.useForm();
 
@@ -59,6 +52,11 @@ export default function EnExitingFormCreate() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
+  const disabledDate = (current: any) => {
+    // Can not select days before today
+    return current && current.isBefore(today, 'day');
+  };
+  
   const onChange = (e: any) => {
     console.log("radio checked", e.target.value);
     setValue(e.target.value);
@@ -87,8 +85,8 @@ export default function EnExitingFormCreate() {
     } else {
       openNotification(
         "error",
-        "ไม่พบ Student ID",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID"
+        "ไม่พบรหัสนักศึกษา",
+        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
       );
       return;
     }
@@ -132,10 +130,20 @@ export default function EnExitingFormCreate() {
           setStudent([studentData]); // Setting student data
         } else {
           setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          openNotification(
+            "error",
+            "เกิดข้อผิดพลาด!",
+            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        );
       }
     };
 
@@ -224,7 +232,10 @@ export default function EnExitingFormCreate() {
                   { required: true, message: "กรุณาเลือกวัน/เดือน/ปี !" },
                 ]}
               >
-                <DatePicker style={{ width: "100%" }} />
+                <DatePicker
+                  style={{ width: "100%" }}
+                  disabledDate={disabledDate}
+                />
               </Form.Item>
             </Col>
           </Row>

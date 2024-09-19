@@ -9,24 +9,17 @@ import {
   Card,
   Divider,
   message,
-  Modal,
-  Select,
   notification,
   Typography,
   GetProp,
   UploadFile,
   UploadProps,
-  Spin,
 } from "antd";
 import {
   PlusOutlined,
   UploadOutlined,
-  DeleteOutlined,
-  EditOutlined,
 } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
 
@@ -36,25 +29,21 @@ import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
 import { CreateRepair, GetListFormStudent } from "./../../services/https";
 import "./../repair/index.css";
-import Repairing from "./../adminpage/Repairing";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const myId = localStorage.getItem("id");
-
 export default function RepairCreate() {
-
   interface StudentInfoRecord
-  extends StudentInterface,
-    DormInterface,
-    RoomInterface {
-  key: string | null;  // Allow null
-  DormID: number;
-  StudentID: string;
-  FirstName: string;
-  LastName: string;
-  RoomNumber: number;
-}
+    extends StudentInterface,
+      DormInterface,
+      RoomInterface {
+    key: string | null; // Allow null
+    DormID: number;
+    StudentID: string;
+    FirstName: string;
+    LastName: string;
+    RoomNumber: number;
+  }
 
   const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
@@ -158,10 +147,20 @@ export default function RepairCreate() {
           setStudent([studentData]); // Setting student data
         } else {
           setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          openNotification(
+            "error",
+            "เกิดข้อผิดพลาด!",
+            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        );
       }
     };
 

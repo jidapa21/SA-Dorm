@@ -14,7 +14,6 @@ import {
   message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useCallback } from "react";
 import dayjs from "dayjs";
@@ -26,13 +25,9 @@ import { DormInterface } from "./../../../interfaces/Dorm";
 import { RoomInterface } from "./../../../interfaces/Room";
 import {
   CreateDelayedPaymentForm,
-  GetListFormStudent,
-  ListDelayedPaymentForms,
-  UpdateDelayedPaymentForm,
+  GetListFormStudent
 } from "../../../services/https";
 import "../../repair/index.css";
-
-const myId = localStorage.getItem("id");
 
 export default function DelayedPaymentFormCreate() {
   const navigate = useNavigate();
@@ -45,29 +40,6 @@ export default function DelayedPaymentFormCreate() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 6 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 14 },
-    },
-  };
-  interface DataType {
-    ID: number;
-    Date_Submission: Date;
-    Dorm_Payment: number;
-    Electricly_Bill: number;
-    Water_Bill: number;
-    Because_Of: string;
-    Due_Date: Date;
-    Status: string;
-    ReservationID: number;
-    AdminID: number;
-  }
-
   interface StudentInfoRecord
     extends StudentInterface,
       DormInterface,
@@ -79,79 +51,11 @@ export default function DelayedPaymentFormCreate() {
     LastName: string;
     RoomNumber: number;
   }
-  const columns: ColumnsType<DelayedPaymentFormInterface> = [
-    {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "id",
-    },
-    {
-      title: "ค่าหอพัก",
-      dataIndex: "Dorm_Payment",
-      key: "dorm_payment",
-    },
-    {
-      title: "ค่าไฟฟ้า",
-      dataIndex: "Electricly_Bill",
-      key: "electricly_bill",
-    },
-    {
-      title: "ค่าน้ำ",
-      dataIndex: "Water_Bill",
-      key: "water_bill",
-    },
-    {
-      title: "เนื่องจาก",
-      dataIndex: "Because_Of",
-      key: "because_of",
-    },
-    {
-      title: "ชำระภายในวันที่",
-      dataIndex: "Due_Date",
-      key: "due_date",
-      //render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
-    },
-    {
-      title: "สถานะ",
-      dataIndex: "Status",
-      key: "status",
-    },
-    {
-      title: "รหัสแอดมิน",
-      dataIndex: "AdminID",
-      key: "adminid",
-    },
-    {
-      title: "รหัสการจอง",
-      dataIndex: "ReservationID",
-      key: "reservationid",
-    },
-    {
-      title: "",
-      render: (record) => (
-        <>
-          {myId === record?.ID ? (
-            messageApi.open({
-              type: "error",
-              content: "Student ID on finish is not found.",
-            })
-          ) : (
-            // ไม่แสดงอะไรถ้า myId ตรงกับ record.ID
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<PlusOutlined />}
-              onClick={() => CreateDelayedPaymentForm(record)}
-            >
-              ยืนยัน
-            </Button>
-          )}
-        </>
-      ),
-    },
-  ];
 
-  const data: DataType[] = [];
+  const disabledDate = (current: any) => {
+    // Can not select days before today
+    return current && current.isBefore(today, 'day');
+  };
 
   const handleReset = () => {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
@@ -221,10 +125,20 @@ export default function DelayedPaymentFormCreate() {
           setStudent([studentData]); // Setting student data
         } else {
           setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          openNotification(
+            "error",
+            "เกิดข้อผิดพลาด!",
+            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        );
       }
     };
 
@@ -334,7 +248,10 @@ export default function DelayedPaymentFormCreate() {
                   },
                 ]}
               >
-                <DatePicker style={{ width: "100%" }} />
+                <DatePicker 
+                style={{ width: "100%" }} 
+                disabledDate={disabledDate}
+                />
               </Form.Item>
             </Col>
           </Row>
