@@ -229,6 +229,7 @@ func SetupDatabase() {
 	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
 	totalAmount := float64(rentFee.Amount) + float64(waterFee.Amount) + float64(electricityFee.Amount)
 	expense := entity.Expense{
+		Date:           time.Now(),
 		Remark:           " - ",
 		Status:           "กำลังดำเนินการ",
 		RentFeeID:        uint(rentFee.Amount),        // เชื่อมโยง RentFee
@@ -248,9 +249,8 @@ func SetupDatabase() {
 	// Seed ข้อมูล Slip 
 	slip := entity.Slip{
 		Path:           "1667801636944.jpg",
-		Date:           time.Now(),
 		AdminID:        rentFee.ID,       
-		ExpenseID:      expense.ID,      
+		//ExpenseID:      expense.ID,      
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})
 }

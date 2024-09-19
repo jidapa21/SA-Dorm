@@ -31,7 +31,7 @@ interface ExpenseData
   ElectricityInterface{
 
   ID: number;
-  Date: Date;
+  date: Date;
   status: string;
   totalamount: number;
   remark: string;
@@ -63,59 +63,38 @@ const Index: React.FC = () => {
       //const response = await CreateSlip({Path});
 
     useEffect(() => {
-      const myId = localStorage.getItem("id");
-      console.log("Student ID from localStorage:", myId);
-
       const fetchExpenses = async () => {
         try {
           const response = await ListExpense();
           console.log("Received data:", response);
-
-           // ตรวจสอบว่า response มีคีย์ data และ data เป็น Array
-          if (response && response.data && Array.isArray(response.data)) {
+           
+          if (response && response.data) {
             const expense = response.data;
             console.log("Expense data:", expense);
 
-            const CombinedData = expense.map((expense: any) => ({
-              ID: expense.ID,
-              Date: expense.Date, // แปลงเป็น Date
-              totalamount: expense.totalamount,
-              rent_id: expense.rent_id.amount || 0, // ใช้ rentfee แทน rent_id
-              elec_id: expense.elec_id.amount || 0, // ใช้ electricityfee แทน elec_id
-              water_id: expense.water_id.amount || 0, // ใช้ waterfee แทน water_id
-              remark: expense.remark || "",
-              student_id: expense.student_id,
+            const CombinedData: ExpenseData[] = expense.map((exp: any) => ({
+              ID: exp.ID ,
+              date: new Date(exp.date), // ใช้ชื่อคุณสมบัติที่ถูกต้อง
+              status: exp.status || "", 
+              totalamount: exp.totalamount || 0,
+              remark: exp.remark || "",
+              rent_id: exp.rent_id || 0,
+              elec_id: exp.elec_id || 0,
+              water_id: exp.water_id || 0,
+              student_id: exp.student_id || "",
             }));
+            const totalamount = ExpenseData.reduce((acc, expense) => acc + (expense.totalamount || 0), 0);
 
-        // กรองข้อมูลตาม studentID
-        const filteredData = CombinedData.filter(
-          (expense: ExpenseData) => expense.student_id === myId
-        );
+            console.log("CombinedData:", CombinedData);
+            console.log(ExpenseData); // ตรวจสอบค่า ID ของแต่ละ expense
+            console.log("Response from ListExpense:", response.data);
 
-        console.log("Filtered data for student ID:", filteredData);
-
-
-        if (filteredData.length === 0) {
-          message.warning("ไม่พบข้อมูลสำหรับนักเรียนคนนี้");
-        } else {
-          
-        }
-        if (!myId) {
-          console.error("Student ID not found in localStorage.");
-          message.warning("Student ID not found.");
-          return;
-        }
-        
-            // คำนวณยอดรวมทั้งหมด
-          const total = CombinedData.reduce((sum: number, expense: ExpenseData) => {
-            return sum + expense.rent_id + expense.elec_id + expense.water_id;
-        },0 );
-
-        setTotalAmount(total); // ตั้งค่ายอดรวมทั้งหมด
-        
+            console.log("CombinedData:", CombinedData);
+            setExpenseData(CombinedData); // ตั้งค่า CombinedData ใน state
         
         }else {
-          message.error('ไม่พบข้อมูลค่าใช้จ่าย');
+          console.error("Unexpected data format:", response.data);
+          message.error('ไม่พบข้อมูลค่าใช้จ่าย หรือข้อมูลไม่อยู่ในรูปแบบที่คาดไว้');
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -123,15 +102,15 @@ const Index: React.FC = () => {
       }
   };
 
-  fetchExpenses();
-}, [studentDbID]);
+  fetchExpenses(); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+}, []);
 
-    const columns: TableProps<ExpenseData>['columns'] = [
+    const columns: TableProps<ExpenseData>['columns']  = [
       { 
         title: 'วันที่',
-        dataIndex: 'Date',
-        key: 'Date',
-        render: (date: Date) => date.toLocaleDateString(), // แสดงวันที่ในรูปแบบที่อ่านง่าย
+        dataIndex: 'date',
+        key: 'date',
+        render: (date: Date) => date ? new Date(date).toLocaleDateString() : 'Invalid Date', // แสดงวันที่
       },
       {
         title: 'ค่าหอพัก',
@@ -158,7 +137,7 @@ const Index: React.FC = () => {
       },
     ];
     console.log("Expense data state:", ExpenseData);
-
+    
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -245,12 +224,13 @@ return (
           description: '',
         },
       ]}
+
     />
     <Divider />
         <div className='text-container'></div>  
-          <Table columns={columns} dataSource={ExpenseData} />
+        <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.ID }))} />
           <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
-            ยอดรวมทั้งหมด: {totalamount.toFixed(2)} บาท
+            ยอดรวมทั้งหมด: {ExpenseData.reduce((acc, expense) => acc + (expense.totalamount || 0), 0).toFixed(2)} บาท
           </div>
           <br/>
           <Button type="primary" onClick={showModal}>

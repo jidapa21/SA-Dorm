@@ -1,10 +1,15 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Expense struct {
 	gorm.Model
 	ID		uint    `gorm:"primaryKey;autoIncrement"`
+	Date	time.Time `json:"date"`
 	Remark string `json:"remark"`
 	Status string `json:"status"`
 	TotalAmount	float64 `json:"totalamount"`
@@ -19,6 +24,6 @@ type Expense struct {
 	WaterFee   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
 
 	StudentID uint            `json:"student_id"`
-	Student   *FamilyStatuses `gorm:"foreignKey: StudentID" json:"student"`
+	Student   *Students `gorm:"foreignKey: StudentID" json:"student"`
 		
 }

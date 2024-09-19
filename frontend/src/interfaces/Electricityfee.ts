@@ -1,5 +1,5 @@
 export interface ElectricityInterface {
     ID?:            number;
-    tatalamount?:        number;
+    amount?:        number;
     reservation_id?:    number;
 }

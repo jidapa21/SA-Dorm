@@ -85,6 +85,7 @@ func CreateExpense(c *gin.Context) {
 	
 
 	rp := entity.Expense{
+		Date:        expense.Date,
         Remark:            expense.Remark,
         Status:            expense.Status,
         RentFeeID:         rentfee.ID,
