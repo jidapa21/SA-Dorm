@@ -86,7 +86,6 @@ func CreateExpense(c *gin.Context) {
 
 	rp := entity.Expense{
 		Date:        expense.Date,
-        Remark:            expense.Remark,
         Status:            expense.Status,
         RentFeeID:         rentfee.ID,
         RentFee:          &rentfee,
@@ -132,12 +131,13 @@ func ListExpense(c *gin.Context) {
 	// ดึงรายการค่าใช้จ่าย
 	var expenses []entity.Expense
 	db := config.DB()
-	if err := db.Find(&expenses).Error; err != nil {
+	if err := db.Preload("RentFee").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
 	  c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
 	  return
 	}
   
 	c.JSON(http.StatusOK, gin.H{"data": expenses})
+
   }
   
 /*

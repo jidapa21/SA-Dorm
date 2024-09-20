@@ -1,7 +1,6 @@
 export interface ExpenseInterface {
     ID?:            number;
     date:           Date;
-    remark?:          string;
     status?:         string;
     totalamount:    number;
     rent_id?:       number;

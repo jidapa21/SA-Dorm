@@ -97,12 +97,47 @@ func ListStudent(c *gin.Context) {
 func DeleteStudent(c *gin.Context) {
 	id := c.Param("id")
 	db := config.DB()
-	if tx := db.Exec("DELETE FROM students WHERE id = ?", id); tx.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id not found"})
+
+	// Begin a transaction to ensure atomicity
+	tx := db.Begin()
+
+	// Delete records from related tables first
+
+	if err := tx.Exec("DELETE FROM personals WHERE student_id = ?", id).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete personal information"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "ลบข้อมูลสำเร็จ"})
 
+	if err := tx.Exec("DELETE FROM families WHERE student_id = ?", id).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete personal information"})
+		return
+	}
+
+	if err := tx.Exec("DELETE FROM addresses WHERE student_id = ?", id).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete address"})
+		return
+	}
+
+	if err := tx.Exec("DELETE FROM others WHERE student_id = ?", id).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete other information"})
+		return
+	}
+
+	// Delete the student record
+	if tx := tx.Exec("DELETE FROM students WHERE id = ?", id); tx.RowsAffected == 0 {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student ID not found"})
+		return
+	}
+
+	// Commit the transaction if all operations succeed
+	tx.Commit()
+
+	c.JSON(http.StatusOK, gin.H{"message": "ลบข้อมูลสำเร็จ"})
 }
 
 // PATCH /update-student

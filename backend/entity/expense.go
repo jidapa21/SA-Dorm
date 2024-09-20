@@ -10,7 +10,6 @@ type Expense struct {
 	gorm.Model
 	ID		uint    `gorm:"primaryKey;autoIncrement"`
 	Date	time.Time `json:"date"`
-	Remark string `json:"remark"`
 	Status string `json:"status"`
 	TotalAmount	float64 `json:"totalamount"`
 
@@ -25,5 +24,8 @@ type Expense struct {
 
 	StudentID uint            `json:"student_id"`
 	Student   *Students `gorm:"foreignKey: StudentID" json:"student"`
-		
+	
+	AdminID     uint    `json:"admin_id"`
+    Admin       *Admins `gorm:"foreignKey:AdminID"`
+
 }
