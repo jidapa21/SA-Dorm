@@ -190,12 +190,23 @@ func SetupDatabase() {
 		Major:     "วิศวกรรมศาสตร์",
 		GenderID:  1,
 	}
+	User7 := &entity.Students{
+		FirstName: "กกก",
+		LastName:  "ขขข",
+		StudentID: "B6510007",
+		Password:  studentHashedPassword,
+		Birthday:  Birthday,
+		Year:      3,
+		Major:     "วิทยาศาสตร์",
+		GenderID:  1,
+	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 	db.FirstOrCreate(User2, &entity.Students{StudentID: "B6510002"})
 	db.FirstOrCreate(User3, &entity.Students{StudentID: "B6510003"})
 	db.FirstOrCreate(User4, &entity.Students{StudentID: "B6510004"})
 	db.FirstOrCreate(User5, &entity.Students{StudentID: "B6510005"})
 	db.FirstOrCreate(User6, &entity.Students{StudentID: "B6510006"})
+	db.FirstOrCreate(User7, &entity.Students{StudentID: "B6510007"})
 
 
 	ReservationDate := time.Now()
@@ -229,18 +240,18 @@ func SetupDatabase() {
         DormID:          1,
         RoomID:          5,
     }
-	reservation6 := &entity.Reservation{
+	/*reservation6 := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
         DormID:          1,
         RoomID:          6,
-    }
+    }*/
     db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 1, RoomID: 1})
 	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
 	db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
 	db.FirstOrCreate(reservation4, &entity.Reservation{StudentID: User4.ID, DormID: 1, RoomID: 4})
 	db.FirstOrCreate(reservation5, &entity.Reservation{StudentID: User5.ID, DormID: 1, RoomID: 5})
-	db.FirstOrCreate(reservation6, &entity.Reservation{StudentID: User6.ID, DormID: 1, RoomID: 6})
+	//db.FirstOrCreate(reservation6, &entity.Reservation{StudentID: User6.ID, DormID: 1, RoomID: 6})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")

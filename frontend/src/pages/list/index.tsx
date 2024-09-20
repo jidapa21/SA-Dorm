@@ -28,6 +28,7 @@ const Listpages: React.FC = () => {
     fetchUserRoom();
   }, []);
 
+
   useEffect(() => {
     if (roomID !== null) {
       const fetchStudents = async () => {
@@ -37,11 +38,11 @@ const Listpages: React.FC = () => {
 
           if (Array.isArray(result)) {
             const formattedStudents = result.map(student => ({
-              StudentID: student.StudentID || 'ไม่ระบุ',
-              name: `${student.FirstName || 'ไม่ระบุ'} ${student.LastName || 'ไม่ระบุ'}`, 
-              major: student.Major || 'ไม่ระบุ',
-              year: student.Year || 'ไม่ระบุ',
-              roomRate: "2900", 
+              StudentID: student.student_id || 'ไม่ระบุ',
+              name: `${student.first_name || 'ไม่ระบุ'} ${student.last_name || 'ไม่ระบุ'}`, 
+              major: student.major || 'ไม่ระบุ',
+              year: student.year || 'ไม่ระบุ',
+              roomRate: "2,900" || 'ไม่ระบุ', 
             }));
             setStudents(formattedStudents); 
           } else {
@@ -56,6 +57,7 @@ const Listpages: React.FC = () => {
     }
   }, [roomID]);
 
+  
   const columns = [
     {
       title: 'รหัสนักศึกษา',

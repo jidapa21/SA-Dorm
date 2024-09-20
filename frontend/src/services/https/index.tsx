@@ -5,12 +5,11 @@ import { PersonalInterface } from "../../interfaces/Personal";
 import { PersonalDetailInterface } from "../../interfaces/PersonalDetails";
 import { SlipInterface } from "../../interfaces/Slip";
 import { RepairInterface } from "../../interfaces/repairing";
-import { ResigningFormInterface } from "../../interfaces/ResigningForm";
+/*import { ResigningFormInterface } from "../../interfaces/ResigningForm";
 import { DelayedPaymentFormInterface } from "../../interfaces/delayedpaymentform";
-import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
+import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";*/
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
-
 import { DormInterface } from "../../interfaces/Dorm";
 import { RoomInterface } from "../../interfaces/Room";
 import { ReservationInterface } from "../../interfaces/Reservation";
@@ -416,7 +415,7 @@ async function UpdateRoom(id: number) {
     .catch((e) => e.response);
 }
 //------------Reservation------------//
-export const CreateReservation = async (data: ReservationInterface) => {
+/*export const CreateReservation = async (data: ReservationInterface) => {
   try {
       const response = await axios.post(`${apiUrl}/CreateReservation`, data);
       return response.data;
@@ -426,7 +425,29 @@ export const CreateReservation = async (data: ReservationInterface) => {
       }
       throw new Error("Error creating reservation");
   }
+};*/
+
+export const CreateReservation = async (data: ReservationInterface) => {
+  try {
+    const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      // ตรวจสอบข้อมูลข้อผิดพลาดจากเซิร์ฟเวอร์
+      console.error("รายละเอียดข้อผิดพลาดจาก Axios:", error.response?.data);
+      // เพิ่มข้อมูลสถานะ HTTP ถ้ามี
+      const statusCode = error.response?.status;
+      const errorMessage = error.response?.data?.message || "ข้อผิดพลาดในการสร้างการจอง";
+      throw new Error(`HTTP ${statusCode}: ${errorMessage}`);
+    } else {
+      // ตรวจสอบข้อผิดพลาดที่ไม่ใช่ Axios
+      console.error("รายละเอียดข้อผิดพลาดที่ไม่คาดคิด:", error);
+      throw new Error("ข้อผิดพลาดในการสร้างการจอง");
+    }
+  }
 };
+
+
 
 async function GetReservationsByRoomID(roomID: number) {
   try {
@@ -439,6 +460,21 @@ async function GetReservationsByRoomID(roomID: number) {
     return { error: "An unknown error occurred" };
   }
 }
+
+// ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
+async function GetReservationsByStudentID(studentID: number): Promise<any> {
+  try {
+    const response = await axios.get(`${apiUrl}/reservations/student/${studentID}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { error: error.response ? error.response.data : "An error occurred" };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+
 
 async function DeleteReservation(id: number) {
   return await axios
@@ -555,5 +591,6 @@ export {
   UpdateReservation,
   GetReservationsByRoomID,
   GetUserRoom,
-  getStudentGender
+  getStudentGender,
+  GetReservationsByStudentID
 };

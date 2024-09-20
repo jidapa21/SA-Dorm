@@ -1,7 +1,7 @@
 export interface ReservationInterface {
     ID?:                number;
-    ReservationDate?:   Date;
-    StudentID?:         number;
-    DormID?:            number;
-    RoomID?:            number;
+    reservation_date?:   Date;
+    student_id?:         number;
+    dorm_id?:            number;
+    room_id?:            number;
 }

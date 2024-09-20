@@ -8,5 +8,4 @@ export interface StudentInterface {
     Year?: number;
     Major?: string;
     GenderID?: number;  
-
   }

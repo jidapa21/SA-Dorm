@@ -20,7 +20,7 @@ import (
 	"dormitory.com/dormitory/controller/repairing"
 	////////////////////////////////////////////////////"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
-	"dormitory.com/dormitory/middlewares"
+	//"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 
 	//-------dorm-room-reservation-------//
@@ -44,7 +44,7 @@ func main() {
 
 	router := r.Group("/")
 	{
-		router.Use(middlewares.Authorizes())
+		//router.Use(middlewares.Authorizes())
 
 		// Student Route
 		router.POST("/create-student", student.CreateStudent)
@@ -119,6 +119,7 @@ func main() {
 		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
 		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
 		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
+		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID)
 	}
 
 	r.GET("/genders", genders.GetAll)
