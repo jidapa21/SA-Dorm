@@ -36,7 +36,7 @@ const ModalTest: React.FC<ReviewModelProps> = ({
     { title: "ชื่อ - นามสกุล", dataIndex: "name", key: "name" },
     { title: "สำนัก", dataIndex: "major", key: "major" },
     { title: "ชั้นปี", dataIndex: "year", key: "year" },
-    { title: "ค่าห้อง", dataIndex: "roomRate", key: "roomRate" }
+    { title: "ค่าห้อง", dataIndex: "amount", key: "amount" }
   ];
 
   const fetchStudents = async () => {
@@ -88,7 +88,7 @@ const ModalTest: React.FC<ReviewModelProps> = ({
     try {
       const studentReservations = await GetReservationsByStudentID(studentID);
       if (studentReservations.length > 0) {
-        message.error("นักเรียนได้จองห้องแล้ว กรุณายกเลิกการจองห้องก่อนจองห้องใหม่");
+        message.warning("นักเรียนได้จองห้องแล้ว กรุณายกเลิกการจองห้องก่อนจองห้องใหม่");
         return;
       }
   

@@ -35,7 +35,7 @@ const FullLayout: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-  const gender = localStorage.getStudentGender("gender"); // ดึงเพศจาก localStorage
+  
 
   const setCurrentPage = (val: string) => {
     localStorage.setItem("page", val);
@@ -113,35 +113,27 @@ const FullLayout: React.FC = () => {
                   </span>
                 }
               >
-                {/* แสดงหอพักตามเพศ */}
-        {gender === "male" && (
-          <>
-            <Menu.Item key="mainDorm1">
-              <Link to="/dorm-booking/mainDorm?dorm=1&NameDorm=หอพักชาย">
-                <span>หอพักชาย 1</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="mainDorm2">
-              <Link to="/dorm-booking/mainDorm?dorm=2&NameDorm=หอพักชาย">
-                <span>หอพักชาย 2</span>
-              </Link>
-            </Menu.Item>
-          </>
-        )}
-        {gender === "female" && (
-          <>
-            <Menu.Item key="mainDorm3">
-              <Link to="/dorm-booking/mainDorm?dorm=3&NameDorm=หอพักหญิง">
-                <span>หอพักหญิง 3</span>
-              </Link>
-            </Menu.Item>
-            <Menu.Item key="mainDorm4">
-              <Link to="/dorm-booking/mainDorm?dorm=4&NameDorm=หอพักหญิง">
-                <span>หอพักหญิง 4</span>
-              </Link>
-            </Menu.Item>
-          </>
-        )}
+                {/*optimize code*/}
+                <Menu.Item key="mainDorm1">
+                  <Link to="/dorm-booking/mainDorm?dorm=1&NameDorm=หอพักชาย">
+                    <span>หอพักชาย 1</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm2">
+                  <Link to="/dorm-booking/mainDorm?dorm=2&NameDorm=หอพักชาย">
+                    <span>หอพักชาย 2</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm3">
+                  <Link to="/dorm-booking/mainDorm?dorm=3&NameDorm=หอพักหญิง">
+                    <span>หอพักหญิง 3</span>
+                  </Link>
+                </Menu.Item>
+                <Menu.Item key="mainDorm4">
+                  <Link to="/dorm-booking/mainDorm?dorm=4&NameDorm=หอพักหญิง">
+                    <span>หอพักหญิง 4</span>
+                  </Link>
+                </Menu.Item>
               </Menu.SubMenu>
 
               <Menu.Item key="list" onClick={() => setCurrentPage("list")}>

@@ -222,7 +222,7 @@ func SetupDatabase() {
         DormID:          1,
         RoomID:          2,
     }
-	reservation3 := &entity.Reservation{
+	/*reservation3 := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
         DormID:          1,
@@ -239,20 +239,14 @@ func SetupDatabase() {
         StudentID:       User.ID,
         DormID:          1,
         RoomID:          5,
-    }
-	/*reservation6 := &entity.Reservation{
-        ReservationDate: ReservationDate,
-        StudentID:       User.ID,
-        DormID:          1,
-        RoomID:          6,
     }*/
+
     db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 1, RoomID: 1})
 	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
-	db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
+	/*db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
 	db.FirstOrCreate(reservation4, &entity.Reservation{StudentID: User4.ID, DormID: 1, RoomID: 4})
-	db.FirstOrCreate(reservation5, &entity.Reservation{StudentID: User5.ID, DormID: 1, RoomID: 5})
-	//db.FirstOrCreate(reservation6, &entity.Reservation{StudentID: User6.ID, DormID: 1, RoomID: 6})
-
+	db.FirstOrCreate(reservation5, &entity.Reservation{StudentID: User5.ID, DormID: 1, RoomID: 5})*/
+	
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
 	AdminUser := &entity.Admins{

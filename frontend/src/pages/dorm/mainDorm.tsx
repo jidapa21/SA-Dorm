@@ -3,11 +3,10 @@ import { Col, Divider, Row, message } from "antd";
 import { useLocation } from "react-router-dom"; 
 import Modal from "./Modal/Modal"; 
 import {
-  GetRoomsByFloorAndDorm,
+  GetRoomsByFloorAndDorm, GetReservationsByStudentID,
   GetReservationsByRoomID,
 } from "../../services/https"; 
 import { RoomInterface } from "./../../interfaces/Room"; 
-
 
 const style: React.CSSProperties = {
   padding: "30px 0",
@@ -22,10 +21,7 @@ const style: React.CSSProperties = {
   textAlign: "center",
 };
 
-
 const MainDorm: React.FC = () => {
-  
-  //const [rooms, setRooms] = useState<RoomInterface[]>([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null); 
   const [isModalVisible, setIsModalVisible] = useState(false); 
@@ -33,20 +29,16 @@ const MainDorm: React.FC = () => {
   const [floorsData, setFloorsData] = useState<
     { floor: number; rooms: RoomInterface[]; count: number[] }[]
   >([]); 
+  const [studentReservations, setStudentReservations] = useState<RoomInterface[]>([]);
 
-  
   const showModal = (room: RoomInterface) => {
-    
     const floorIndex = floorsData.findIndex(floorData =>
       floorData.rooms.some(r => r.ID === room.ID)
     );
     
-    
     if (floorIndex === -1) return;
-  
-    
+
     const currentReservationCount = floorsData[floorIndex].count[floorsData[floorIndex].rooms.findIndex(r => r.ID === room.ID)] || 0; 
-  
     if (currentReservationCount >= 3) {
       message.warning("จองเต็มแล้ว"); 
     } else {
@@ -55,16 +47,13 @@ const MainDorm: React.FC = () => {
     }
   };
 
-  
   const handleCancel = () => {
     setIsModalVisible(false); 
   };
 
-  
   const fetchRoomData = async (floor: number, dorm: number) => {
     try {
       const response = await GetRoomsByFloorAndDorm(floor, dorm); 
-      console.log("API Response:", response); // ดูข้อมูลที่ได้รับจาก API
       if (response && !response.error) {
         const roomData = response.map((room: RoomInterface) => ({
           ...room,
@@ -80,9 +69,7 @@ const MainDorm: React.FC = () => {
       return []; 
     }
   };
-  
 
-  
   const fetchReservationsCount = async (rooms: RoomInterface[]) => {
     const counts = await Promise.all(
       rooms.map(async (room) => {
@@ -98,13 +85,19 @@ const MainDorm: React.FC = () => {
     return counts; 
   };
 
-  
+  const fetchStudentReservations = async () => {
+    const studentID = localStorage.getItem("studentId");
+    if (studentID) {
+      const reservations = await GetReservationsByStudentID(Number(studentID));
+      setStudentReservations(reservations);
+    }
+  };
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search); 
   const dorm = Number(queryParams.get("dorm")); 
-  const namedorm = String(queryParams.get("NameDorm"))
+  const namedorm = String(queryParams.get("NameDorm"));
 
-  
   useEffect(() => {
     const fetchAllRooms = async () => {
       const floors = [1, 2, 3]; 
@@ -115,7 +108,6 @@ const MainDorm: React.FC = () => {
       const counts = await fetchReservationsCount(allRooms.flat()); 
       setFloorsData(
         allRooms.map((rooms, index) => ({
-          
           floor: floors[index],
           rooms,
           count: counts.slice(index * rooms.length, (index + 1) * rooms.length), 
@@ -126,16 +118,15 @@ const MainDorm: React.FC = () => {
     };
 
     fetchAllRooms(); 
+    fetchStudentReservations(); // เรียกฟังก์ชันดึงการจองห้องของนักศึกษา
   }, [dorm]); 
 
-  
   const updateReservationsCount = async () => {
     const counts = await fetchReservationsCount(
       floorsData.flatMap((floorData) => floorData.rooms)
     ); 
     setFloorsData((prevFloorsData) =>
       prevFloorsData.map((floorData, index) => ({
-        
         ...floorData,
         count: counts.slice(
           index * floorData.rooms.length,
@@ -145,12 +136,10 @@ const MainDorm: React.FC = () => {
     );
   };
 
-  
   if (loading) {
     return <p>Loading...</p>;
   }
 
-  
   if (error) {
     return <p>{error}</p>;
   }
@@ -180,7 +169,10 @@ const MainDorm: React.FC = () => {
             {rooms.map((room, index) => {
               const currentCount = count[index];
               const isFull = currentCount >= 3; 
-              const roomStyle = isFull ? { ...style, backgroundColor: 'red', color: 'white' } : style; 
+              const isReserved = studentReservations.some(res => res.ID === room.ID); // เช็คว่ามีการจองห้องนี้ไหม
+
+              const roomStyle = isFull ? { ...style, backgroundColor: 'red', color: 'white' } : 
+                isReserved ? { ...style, backgroundColor: 'green', color: 'white' } : style; // เปลี่ยนสีเป็นเขียวหากจองไว้
 
               return (
                 <div key={room.ID} style={roomStyle} onClick={() => showModal(room)}>
