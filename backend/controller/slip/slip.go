@@ -11,7 +11,6 @@ import (
 func CreateSlip(c *gin.Context) {
     var slip entity.Slip
     var sid entity.Students
-    //var expense entity.Expense
     var reservation entity.Reservation
 
     studentID := c.MustGet("student_id").(string)
@@ -38,11 +37,10 @@ func CreateSlip(c *gin.Context) {
         return
     }
 
-
     rp := entity.Slip{
         Path:        slip.Path,
-        //ExpenseID:   expense.ID,
-        //Expense:     &expense,
+        ReservationID:   reservation.ID,
+        Reservation:     &reservation,
     }
 
     if err := db.Create(&rp).Error; err != nil {

@@ -17,7 +17,7 @@ import (
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/rentfee"
+	"dormitory.com/dormitory/controller/dorm"
 	"dormitory.com/dormitory/controller/waterfee"
 	"dormitory.com/dormitory/controller/electricityfee"
 	"dormitory.com/dormitory/controller/repairing"
@@ -98,10 +98,10 @@ func main() {
 		router.GET("/get-expense/:id", expense.GetExpense)
 		router.GET("/list-expense", expense.ListExpense)
 
-		// RentFee Route
-		router.POST("/create-rentfee", rentfee.CreateRentFee)
-		router.GET("/get-rentfee/:id", rentfee.GetRentFee)
-		router.GET("/list-rentfees", rentfee.ListRentFees)
+		// Dorm Route
+		router.POST("/create-dorm", dorm.CreateDorm)
+		router.GET("/get-dorm/:id", dorm.GetDorm)
+		router.GET("/list-dorms", dorm.ListDorms)
 		
 
 		//waterFee Route

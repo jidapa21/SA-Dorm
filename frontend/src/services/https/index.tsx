@@ -12,7 +12,7 @@ import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import axios from "axios";
 import { ExpenseInterface } from '../../interfaces/Expense'; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
-import { RentInterface } from "../../interfaces/Rentfee";
+import { DormInterface } from "../../interfaces/Dorm";
 import { ElectricityInterface } from "../../interfaces/Electricityfee";
 import { WaterInterface } from "../../interfaces/Waterfee";
 
@@ -259,6 +259,27 @@ async function DeleteAdmin(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function GetLatestAnnouncements() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${Bearer} ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+    }
+  };
+  try {
+    const response = await fetch(`${apiUrl}/latest-announcement`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      console.error(`Error: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    return false;
+  }
+}
 
 async function GetAnnouncementById(id: string) {
   return await axios
@@ -286,7 +307,9 @@ async function DeleteAnnouncementById(id: string) {
     .delete(`${apiUrl}/delete-announcement/${id}`, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
+
 }
+
 //-------------slip--------------------------------------------------------------------------------------------------------------
 async function CreateSlip(data: SlipInterface) {
   return await axios
@@ -390,7 +413,7 @@ async function fetchExpenses(): Promise<ExpenseInterface[]> {
   }
 }
 
-//-----------------------------Rentfee-------------------------------------
+//-----------------------------Dorm-------------------------------------
 
 async function ListDormFees() {
   const requestOptions = {
@@ -411,7 +434,7 @@ async function ListDormFees() {
   }
         
   
-  async function  CreateDormFee(data: RentInterface) {
+  async function  CreateDormFee(data: DormInterface) {
     return await axios
     .post(`/create-dormfee`, data, requestOptions)
     .then((res) => res)
@@ -543,6 +566,8 @@ async function GetWaterFee() {
   return res;
 }
 
+
+
 export {
   SignInStudent,
   SignInAdmin,
@@ -572,6 +597,7 @@ export {
   ListDelayedPaymentForms,
   UpdateDelayedPaymentForm,
   ListAnnouncements,
+  GetLatestAnnouncements,
   GetAnnouncementById,
   CreateAnnouncement,
   UpdateAnnouncementById,

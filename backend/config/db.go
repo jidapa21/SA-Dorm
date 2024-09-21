@@ -72,10 +72,10 @@ func SetupDatabase() {
 	DormMale2 := entity.Dorm{DormName: "หอพักชาย 2", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderMale.ID, Amount: 2900}
 	DormFemale3 := entity.Dorm{DormName: "หอพักหญิง 3", Type: "มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 6500}
 	DormFemale4 := entity.Dorm{DormName: "หอพักหญิง 4", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 2900}
-	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
-	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
-	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
-	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
+	db.FirstOrCreate(&DormMale1, &entity.Dorm{DormName: "หอพักชาย 1"})
+	db.FirstOrCreate(&DormMale2, &entity.Dorm{DormName: "หอพักชาย 2"})
+	db.FirstOrCreate(&DormFemale3, &entity.Dorm{DormName: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale4, &entity.Dorm{DormName: "หอพักหญิง 4"})
 
 	for roomNumber := 1100; roomNumber <= 4309; roomNumber++ {
 		// คำนวณ DormID จากหลักพันของ RoomNumber
@@ -124,7 +124,7 @@ func SetupDatabase() {
 		Birthday:  Birthday,
 		Year:      3,
 		Major:     "วิศวกรรมศาสตร์",
-		GenderID:  2,
+		GenderID:  1,
 	}
 	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
 
@@ -132,10 +132,10 @@ func SetupDatabase() {
 	reservation := &entity.Reservation{
 		ReservationDate: ReservationDate,
 		StudentID:       User.ID,
-		DormID:          1,
+		DormID:          2,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 1, RoomID: 100})
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 2, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminhashedPassword, _ := HashPassword("Ad01")
@@ -218,7 +218,7 @@ db.FirstOrCreate(&repairing1, entity.Repairing{ID: 1})
 	expense := entity.Expense{
 		ID:					1,
 		Date:           	time.Now(),
-		Status:           	"กำลังดำเนินการ",
+		Status:           	"ยังไม่ชำระเงิน",
 		DormID:        		dorm.ID,        
 		WaterFeeID:       	waterFee.ID,       // เชื่อมโยง WaterFee
 		ElectricityFeeID: 	electricityFee.ID, // เชื่อมโยง ElectricityFee
@@ -242,6 +242,7 @@ db.FirstOrCreate(&repairing1, entity.Repairing{ID: 1})
 	// Seed ข้อมูล Slip 
 	slip := entity.Slip{
 		Path:           "1667801636944.jpg",
+		ReservationID:        reservation.ID,
 		AdminID:        1,            
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})

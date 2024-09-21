@@ -33,4 +33,6 @@ type Reservation struct {
 	DelayedPaymentForms  	[]DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
 	En_ExitingForms  		[]En_ExitingForm `gorm:"foreignKey:ReservationID"`
 	ResigningForms  		[]ResigningForm `gorm:"foreignKey:ReservationID"`
+	Slip  					[]Slip `gorm:"foreignKey:ReservationID"`
+	
 }

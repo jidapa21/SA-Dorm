@@ -14,8 +14,8 @@ type Slip struct {
     AdminID     uint    `json:"admin_id"`
     Admin       *Admins `gorm:"foreignKey:AdminID"`
 
-	//ExpenseID	uint      `json:"ex_id"`
-	//Expense		*Expense `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
+	ReservationID	uint      `json:"reservation_id"`
+	Reservation		*Reservation `gorm:"foreignKey: ReservationID"`
 	
 
 }

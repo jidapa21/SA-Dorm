@@ -8,6 +8,52 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// POST /create-dorm
+func CreateDorm(c *gin.Context) {
+	var sid entity.Students
+	var reservation entity.Reservation
+	var dorm entity.Dorm
+
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+	db.First(&dorm, reservation.DormID)
+	if dorm.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
+		return
+	}
+
+	rp := entity.Dorm{
+		Amount:          dorm.Amount,
+		DormName: 		dorm.DormName,
+		Type:  			dorm.Type,
+		GenderID:      	dorm.GenderID,		
+	}
+
+	if err := db.Create(&rp).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+}
 // GET /dorm/:id
 func GetDorm(c *gin.Context) {
 	ID := c.Param("id")
