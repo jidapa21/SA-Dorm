@@ -70,14 +70,14 @@ func SetupDatabase() {
 	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
 	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
-	DormMale1 := entity.Dorm{Type: "หอพักชาย 1", GenderID: GenderMale.ID}
-	DormMale2 := entity.Dorm{Type: "หอพักชาย 2", GenderID: GenderMale.ID}
-	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3", GenderID: GenderFemale.ID}
-	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4", GenderID: GenderFemale.ID}
-	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
-	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
-	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
-	db.FirstOrCreate(&DormFemale4, &entity.Dorm{Type: "หอพักหญิง 4"})
+	DormMale1 := entity.Dorm{DormName: "หอพักชาย 1", Type: "มีเครื่องปรับอากาศ", GenderID: GenderMale.ID, Amount: 6500}
+	DormMale2 := entity.Dorm{DormName: "หอพักชาย 2", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderMale.ID, Amount: 2900}
+	DormFemale3 := entity.Dorm{DormName: "หอพักหญิง 3", Type: "มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 6500}
+	DormFemale4 := entity.Dorm{DormName: "หอพักหญิง 4", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 2900}
+	db.FirstOrCreate(&DormMale1, &entity.Dorm{DormName: "หอพักชาย 1"})
+	db.FirstOrCreate(&DormMale2, &entity.Dorm{DormName: "หอพักชาย 2"})
+	db.FirstOrCreate(&DormFemale3, &entity.Dorm{DormName: "หอพักหญิง 3"})
+	db.FirstOrCreate(&DormFemale4, &entity.Dorm{DormName: "หอพักหญิง 4"})
 
 	for roomNumber := 1100; roomNumber <= 4309; roomNumber++ {
 		// คำนวณ DormID จากหลักพันของ RoomNumber
@@ -96,15 +96,21 @@ func SetupDatabase() {
 
 			dormID := uint(roomNumber / 1000)
 
+			floor := uint((roomNumber / 100) % 10)
+
 			// สร้าง Room และกำหนดค่า DormID
 			room := entity.Room{
 				RoomNumber: uint(roomNumber),
 				DormID:     dormID, // DormID จะเป็น 1, 2, 3 หรือ 4 ตาม RoomNumber
+				Available:	3,
+				DormStatus: "ห้องว่าง",
+				Floor:		floor,
 			}
-			// บันทึก Room ลงในฐานข้อมูล
+
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
+
 
 	// Seed ข้อมูล student
 	studentHashedPassword, _ := HashPassword("1234567890123")
