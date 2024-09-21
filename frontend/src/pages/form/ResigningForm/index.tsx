@@ -25,20 +25,17 @@ import { RoomInterface } from "./../../../interfaces/Room";
 import {
   CreateResigningForm,
   GetListFormStudent,
+  GetListFormDorm,
 } from "./../../../services/https";
 
-
 export default function Index() {
-  interface StudentInfoRecord
-    extends StudentInterface,
-      DormInterface,
-      RoomInterface {
+  interface StudentInfoRecord extends StudentInterface, DormInterface {
     key: string | null; // Allow null
-    DormID: number;
+    DormID: number | string;
     StudentID: string;
     FirstName: string;
     LastName: string;
-    RoomNumber: number;
+    room_number: number | string;
   }
 
   const today = new Date();
@@ -76,30 +73,43 @@ export default function Index() {
   const onFinish = async (values: ResigningFormInterface) => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
+      values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       openNotification(
         "error",
-        "ไม่พบ Student ID",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID"
+        "ไม่พบรหัสนักศึกษา",
+        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
       );
       return;
     }
 
-    let res = await CreateResigningForm(values);
-    console.log(res);
-    if (res) {
-      openNotification(
-        "success",
-        "บันทึกข้อมูลสำเร็จ",
-        "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
-      );
-      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-    } else {
+    try {
+      // สร้างรายการแจ้งซ่อม
+      let res = await CreateResigningForm(values);
+      console.log(res);
+
+      // ตรวจสอบผลลัพธ์จาก CreateRepair อย่างละเอียด
+      if (res && res.status === 201) {
+        // ตรวจสอบว่ามีสถานะ HTTP 200 แสดงว่าคำขอสำเร็จ
+        openNotification(
+          "success",
+          "บันทึกข้อมูลสำเร็จ",
+          "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
+        );
+        form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      } else {
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาจองห้องพัก"
+        );
+      }
+    } catch (error) {
+      console.error(error);
       openNotification(
         "error",
-        "เกิดข้อผิดพลาด!",
-        "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        "ไม่สามารถแสดงข้อมูลได้",
+        "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาจองห้องพัก"
       );
     }
   };
@@ -108,27 +118,54 @@ export default function Index() {
     const studentId = localStorage.getItem("id");
     const fetchData = async () => {
       try {
-        const data = await GetListFormStudent();
-        console.log("Received data:", data);
+        const dataStudent = await GetListFormStudent();
+        const dataDorm = await GetListFormDorm();
+        console.log("Received dataStudent:", dataStudent);
+        console.log("Received dataDorm:", dataDorm);
 
-        // ตรวจสอบว่า student, dorm และ room มีข้อมูลหรือไม่
-        if (data && data.reservation && data.student) {
+        // ตรวจสอบว่ามีข้อมูล student หรือไม่
+        if (dataStudent) {
           const studentData = {
             key: studentId,
-            StudentID: data.student.student_id || "ไม่พบข้อมูล",
-            FirstName: data.student.first_name || "ไม่พบข้อมูล",
-            LastName: data.student.last_name || "ไม่พบข้อมูล",
-            DormID: data.reservation.Dorm.ID || "ไม่พบข้อมูล",
-            RoomNumber: data.reservation.Room.room_number || "ไม่พบข้อมูล",
+            StudentID: dataStudent.student.student_id || "ไม่พบข้อมูล",
+            FirstName: dataStudent.student.first_name || "ไม่พบข้อมูล",
+            LastName: dataStudent.student.last_name || "ไม่พบข้อมูล",
           };
 
-          setStudent([studentData]); // Setting student data
+          // ถ้ามีหอพัก ห้องพักแล้ว
+          if (dataDorm && dataDorm.reservation) {
+            const dormData = {
+              DormID: dataDorm.reservation.Dorm.ID || "ไม่มีหอ",
+              room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
+            };
+
+            const combinedData = {
+              ...studentData,
+              ...dormData,
+            };
+
+            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
+          }
+          //ถ้ามีแค่ข้อมูลนักศึกษา
+          if (dataStudent) {
+            const dormData = {
+              DormID: "ไม่มีหอ",
+              room_number: "ไม่มีห้อง",
+            };
+
+            const combinedData = {
+              ...studentData,
+              ...dormData,
+            };
+
+            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
+          }
         } else {
-          setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          setErrorMessage("ไม่พบข้อมูลนักศึกษา");
           openNotification(
             "error",
             "เกิดข้อผิดพลาด!",
-            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+            "ไม่สามารถแสดงรหัสนักศึกษาได้"
           );
         }
       } catch (error) {
@@ -137,7 +174,7 @@ export default function Index() {
         openNotification(
           "error",
           "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง"
         );
       }
     };
@@ -167,9 +204,9 @@ export default function Index() {
                   {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
                 </Text>
                 <Text>
-                  หอ {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
-                  ห้อง{" "}
-                  {student.length > 0 ? student[0].RoomNumber : "ไม่พบข้อมูล"}
+                  หอพัก {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
+                  ห้องพัก{" "}
+                  {student.length > 0 ? student[0].room_number : "ไม่พบข้อมูล"}
                 </Text>
               </Space>
             </Col>

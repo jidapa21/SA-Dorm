@@ -1,9 +1,9 @@
 export interface ResigningFormInterface {
   status: string;
   ID?: number;
-  Title?: string;
-  Type?: string;
-  Date_Submission?: Date;
+  title?: string;
+  type?: string;
+  date_submission?: Date;
   Because_Of?: string;
   Accommodation?: string;
   Status?: string;

@@ -1,4 +1,6 @@
 export interface DormInterface {
     ID?:                number;
-    Type?:              string;
+    dorm_name?:         string;
+    type?:              string;
+    amount?:            number;
 }

@@ -7,17 +7,17 @@ import (
 
 type Repairing struct {
 	gorm.Model
-	ID               uint `gorm:"primaryKey;autoIncrement"`
-	Title            string
-	Type             string
-	Date_Submission  time.Time
-	Detail           string
-	Image            string `gorm:"type:longtext" json:"image"`
-	Location_Details string
-	Contact          string
-	Time_Slot        string
-	Remarks          *string
-	Status           string
+	ID               uint      `gorm:"primaryKey;autoIncrement"`
+	Title            string    `json:"title"`
+	Type             string    `json:"type"`
+	Date_Submission  time.Time `json:"date_submission"`
+	Detail           string    `json:"detail"`
+	Image            string    `gorm:"type:longtext" json:"image"`
+	Location_Details string    `json:"location_details"`
+	Contact          string    `json:"contact"`
+	Time_Slot        string    `json:"time_slot"`
+	Remarks          *string   `json:"remarks"`
+	Status           string    `json:"status"`
 
 	// One-to-one relationship
 	ReservationID uint        `json:"reservation_id"`

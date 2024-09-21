@@ -41,35 +41,6 @@
     font-size: 30px;
 }
 
-.status-text {
-    color: rgb(48, 48, 48);
-    font-size: 20px;
-    position: absolute;
-    right: 240px;
-    display: flex;
-    justify-content: flex-end;
-    /* จัดข้อความให้กลางแนวนอน */
-    align-items: flex-end;
-    /* จัดข้อความให้กลางแนวตั้ง */
-}
-
-.status-textbox {
-    color: rgb(48, 48, 48);
-    font-size: 20px;
-    width: 140px;
-    background-color: #bfbfbf;
-    border-radius: 10px;
-    padding: 10px;
-    position: absolute;
-    right: 55px;
-    display: flex;
-    justify-content: center;
-    /* จัดข้อความให้กลางแนวนอน */
-    align-items: center;
-    /* จัดข้อความให้กลางแนวตั้ง */
-}
-
-
 .name-text {
     color: rgb(48, 48, 48);
     font-size: 14px;

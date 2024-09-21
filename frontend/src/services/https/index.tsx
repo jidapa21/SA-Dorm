@@ -153,6 +153,22 @@ async function GetListFormStudent() {
   }
 }
 
+async function GetListFormDorm() {
+  try {
+    const response = await fetch(`${apiUrl}/get-list-formdorm`, requestOptions);
+    if (response.ok) {
+      return await response.json();
+    } else {
+      // แสดงข้อความข้อผิดพลาดจาก API หากมี
+      const errorData = await response.json();
+      return { data: errorData };
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { status: 500, data: { error: "Fetch error" } };
+  }
+}
+
 async function CreateRepair(data: RepairInterface) {
   return await axios
     .post(`${apiUrl}/create-repair`, data, requestOptions)
@@ -803,6 +819,7 @@ export {
   UpdateOtherById,
   // ----------------- Repairing --------------
   GetListFormStudent,
+  GetListFormDorm,
   CreateRepair,
   GetRepair,
   GetListRepairs,

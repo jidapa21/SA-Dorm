@@ -78,6 +78,7 @@ func GetStudent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, student)
 }
+
 // GET /list-student
 func ListStudent(c *gin.Context) {
 
@@ -159,4 +160,72 @@ func UpdateStudent(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
+}
+
+func GetListFormStudent(c *gin.Context) {
+	var sid entity.Students
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	// ใช้ ID ของ Student จาก Reservation เพื่อค้นหา Student
+	if err := db.Where("id = ?", sid.ID).Preload("Students").Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"student": sid,
+	})
+}
+
+func GetListFormDorm(c *gin.Context) {
+	var reservation entity.Reservation
+	var sid entity.Students
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	// เช็ค reservation ว่ามีข้อมูลหรือไม่
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+	// ใช้ ID ของ Student จาก Reservation เพื่อค้นหา Student
+	if err := db.Where("id = ?", sid.ID).Preload("Students").Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found " + err.Error()})
+		return
+	}
+
+	// ค้นหา Reservation และ Preload ความสัมพันธ์
+	db.Where("student_id = ?", sid.ID).
+		Preload("Dorm").
+		Preload("Room").
+		First(&reservation)
+
+	c.JSON(http.StatusOK, gin.H{
+		"reservation": reservation,
+	})
 }

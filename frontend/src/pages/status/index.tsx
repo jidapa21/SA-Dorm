@@ -19,7 +19,7 @@ export default function StatusCreate() {
       ResigningFormInterface {
     key: string;
     title: string;
-    Date: Date;
+    date_submission: Date;
     type: string;
     status: string;
   }
@@ -48,9 +48,9 @@ export default function StatusCreate() {
       dataIndex: "Date",
       key: "Date",
       sorter: (a: TableStatusRecord, b: TableStatusRecord) => {
-        const dateA = new Date(a.Date).getTime();
-        const dateB = new Date(b.Date).getTime();
-        return dateB - dateA; // Sort by new to old
+        const dateA = new Date(a.date_submission).getTime();
+        const dateB = new Date(b.date_submission).getTime();
+        return dateB - dateA; 
       },
       defaultSortOrder: "ascend" as SortOrder,
       sortDirections: ["ascend", "descend"] as SortOrder[],
@@ -60,7 +60,7 @@ export default function StatusCreate() {
           year: "numeric",
           month: "numeric",
           day: "numeric",
-        }); 
+        });
       },
     },
     {
@@ -122,37 +122,37 @@ export default function StatusCreate() {
             ...data.repairing_forms.map(
               (item: RepairInterface, index: number) => ({
                 key: `repair-${index}`,
-                Date: formatDate(item.Date_Submission),
-                Title: item.Title || "N/A",
-                Type: item.Type || "N/A",
-                Status: [item.Status || "Unknown"],
+                Date: formatDate(item.date_submission),
+                Title: item.title || "N/A",
+                Type: item.type || "N/A",
+                Status: [item.status || "Unknown"],
               })
             ),
             ...data.delayed_payment_forms.map(
               (item: DelayedPaymentFormInterface, index: number) => ({
                 key: `delayed-${index}`,
-                Date: formatDate(item.Date_Submission),
-                Title: item.Title || "N/A",
-                Type: item.Type || "N/A",
-                Status: [item.Status || "Unknown"],
+                Date: formatDate(item.date_submission),
+                Title: item.title || "N/A",
+                Type: item.type || "N/A",
+                Status: [item.status || "Unknown"],
               })
             ),
             ...data.en_exiting_forms.map(
               (item: En_ExitingFormInterface, index: number) => ({
                 key: `en-exiting-${index}`,
-                Date: formatDate(item.Date_Submission),
-                Title: item.Title || "N/A",
-                Type: item.Type || "N/A",
-                Status: [item.Status || "Unknown"],
+                Date: formatDate(item.date_submission),
+                Title: item.title || "N/A",
+                Type: item.type || "N/A",
+                Status: [item.status || "Unknown"],
               })
             ),
             ...data.resigning_forms.map(
               (item: ResigningFormInterface, index: number) => ({
                 key: `resigning-${index}`,
-                Date: formatDate(item.Date_Submission),
-                Title: item.Title || "N/A",
-                Type: item.Type || "N/A",
-                Status: [item.Status || "Unknown"],
+                Date: formatDate(item.date_submission),
+                Title: item.title || "N/A",
+                Type: item.type || "N/A",
+                Status: [item.status || "Unknown"],
               })
             ),
           ];

@@ -7,13 +7,13 @@ import (
 
 type ResigningForm struct {
 	gorm.Model
-	ID              uint `gorm:"primaryKey;autoIncrement"`
-	Title           string
-	Type            string
-	Date_Submission time.Time
-	Because_Of      string
-	Accommodation   string
-	Status          string
+	ID              uint      `gorm:"primaryKey;autoIncrement"`
+	Title           string    `json:"title"`
+	Type            string    `json:"type"`
+	Date_Submission time.Time `json:"date_submission"`
+	Because_Of      string    `json:"because_of"`
+	Accommodation   string    `json:"accommodation"`
+	Status          string    `json:"status"`
 
 	// One-to-one relationship
 	ReservationID uint        `json:"reservation_id"`

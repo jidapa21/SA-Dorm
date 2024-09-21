@@ -15,10 +15,7 @@ import {
   UploadFile,
   UploadProps,
 } from "antd";
-import {
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import React, { useState, useEffect, useCallback } from "react";
 const { Text } = Typography;
 import ImgCrop from "antd-img-crop";
@@ -27,22 +24,23 @@ import { RepairInterface } from "./../../interfaces/repairing";
 import { StudentInterface } from "./../../interfaces/Student";
 import { DormInterface } from "./../../interfaces/Dorm";
 import { RoomInterface } from "./../../interfaces/Room";
-import { CreateRepair, GetListFormStudent } from "./../../services/https";
+import {
+  CreateRepair,
+  GetListFormStudent,
+  GetListFormDorm,
+} from "./../../services/https";
 import "./../repair/index.css";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 export default function RepairCreate() {
-  interface StudentInfoRecord
-    extends StudentInterface,
-      DormInterface,
-      RoomInterface {
+  interface StudentInfoRecord extends StudentInterface, DormInterface {
     key: string | null; // Allow null
-    DormID: number;
+    DormID: number | string;
     StudentID: string;
     FirstName: string;
     LastName: string;
-    RoomNumber: number;
+    room_number: number | string;
   }
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -96,32 +94,43 @@ export default function RepairCreate() {
 
     const studentId = localStorage.getItem("id");
     if (studentId) {
-      values.Date_Submission = new Date(); // เพิ่มวันที่ปัจจุบัน
+      values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
       openNotification(
         "error",
-        "ไม่พบ Student ID",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบ Student ID"
+        "ไม่พบรหัสนักศึกษา",
+        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
       );
       return;
     }
 
-    // สร้างรายการแจ้งซ่อม
-    let res = await CreateRepair(values);
-    console.log(res);
-    if (res) {
-      openNotification(
-        "success",
-        "บันทึกข้อมูลสำเร็จ",
-        "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
-      );
-      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-      setFileList([]); // รีเซ็ตไฟล์อัปโหลด
-    } else {
+    try {
+      // สร้างรายการแจ้งซ่อม
+      let res = await CreateRepair(values);
+      console.log(res); // เพิ่ม console เพื่อตรวจสอบ res
+
+      // ตรวจสอบผลลัพธ์จาก CreateRepair อย่างละเอียด
+      if (res && res.status === 201) {
+        // ตรวจสอบว่ามีสถานะ HTTP 200 แสดงว่าคำขอสำเร็จ
+        openNotification(
+          "success",
+          "บันทึกข้อมูลสำเร็จ",
+          "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
+        );
+        form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      } else {
+        openNotification(
+          "error",
+          "เกิดข้อผิดพลาด!",
+          "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาจองห้องพัก"
+        );
+      }
+    } catch (error) {
+      console.error(error);
       openNotification(
         "error",
-        "เกิดข้อผิดพลาด!",
-        "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+        "ไม่สามารถแสดงข้อมูลได้",
+        "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาจองห้องพัก"
       );
     }
   };
@@ -130,27 +139,54 @@ export default function RepairCreate() {
     const studentId = localStorage.getItem("id");
     const fetchData = async () => {
       try {
-        const data = await GetListFormStudent();
-        console.log("Received data:", data);
+        const dataStudent = await GetListFormStudent();
+        const dataDorm = await GetListFormDorm();
+        console.log("Received dataStudent:", dataStudent);
+        console.log("Received dataDorm:", dataDorm);
 
-        // ตรวจสอบว่า student, dorm และ room มีข้อมูลหรือไม่
-        if (data && data.reservation && data.student) {
+        // ตรวจสอบว่ามีข้อมูล student หรือไม่
+        if (dataStudent) {
           const studentData = {
             key: studentId,
-            StudentID: data.student.student_id || "ไม่พบข้อมูล",
-            FirstName: data.student.first_name || "ไม่พบข้อมูล",
-            LastName: data.student.last_name || "ไม่พบข้อมูล",
-            DormID: data.reservation.Dorm.ID || "ไม่พบข้อมูล",
-            RoomNumber: data.reservation.Room.room_number || "ไม่พบข้อมูล",
+            StudentID: dataStudent.student.student_id || "ไม่พบข้อมูล",
+            FirstName: dataStudent.student.first_name || "ไม่พบข้อมูล",
+            LastName: dataStudent.student.last_name || "ไม่พบข้อมูล",
           };
 
-          setStudent([studentData]); // Setting student data
+          // ถ้ามีหอพัก ห้องพักแล้ว
+          if (dataDorm && dataDorm.reservation) {
+            const dormData = {
+              DormID: dataDorm.reservation.Dorm.ID || "ไม่มีหอ",
+              room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
+            };
+
+            const combinedData = {
+              ...studentData,
+              ...dormData,
+            };
+
+            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
+          }
+          //ถ้ามีแค่ข้อมูลนักศึกษา
+          if (dataStudent) {
+            const dormData = {
+              DormID: "ไม่มีหอ",
+              room_number: "ไม่มีห้อง",
+            };
+
+            const combinedData = {
+              ...studentData,
+              ...dormData,
+            };
+
+            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
+          }
         } else {
-          setErrorMessage("ไม่พบข้อมูลการแจ้งซ่อม");
+          setErrorMessage("ไม่พบข้อมูลนักศึกษา");
           openNotification(
             "error",
             "เกิดข้อผิดพลาด!",
-            "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+            "ไม่สามารถแสดงรหัสนักศึกษาได้"
           );
         }
       } catch (error) {
@@ -159,7 +195,7 @@ export default function RepairCreate() {
         openNotification(
           "error",
           "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล"
+          "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง"
         );
       }
     };
@@ -195,11 +231,11 @@ export default function RepairCreate() {
                       {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
                     </Text>
                     <Text>
-                      หอ{" "}
+                      หอพัก{" "}
                       {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
-                      ห้อง{" "}
+                      ห้องพัก{" "}
                       {student.length > 0
-                        ? student[0].RoomNumber
+                        ? student[0].room_number
                         : "ไม่พบข้อมูล"}
                     </Text>
                   </Space>

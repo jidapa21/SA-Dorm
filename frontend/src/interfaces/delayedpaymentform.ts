@@ -2,8 +2,9 @@ export interface DelayedPaymentFormInterface {
     status: string;
     ID?:                number;
     Title?:             string;
-    Type?:              string;
-    Date_Submission?:	Date;
+    title?: string;
+    type?: string;
+    date_submission?: Date;
     Dorm_Payment?:      number;
     Electricly_Bill?:   number;
     Water_Bill?:        number;

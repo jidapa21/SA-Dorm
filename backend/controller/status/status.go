@@ -23,9 +23,6 @@ func GetListStatus(c *gin.Context) {
 	// เชื่อมต่อกับฐานข้อมูล
 	db := config.DB()
 
-	// ตรวจสอบค่า studentID
-	fmt.Println("Student ID:", studentID)
-
 	results := db.Where("student_id = ?", studentID).First(&sid)
 	if results.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
@@ -50,19 +47,19 @@ func GetListStatus(c *gin.Context) {
 	var resigningForms []entity.ResigningForm
 
 	// ดึงข้อมูลจากตาราง DelayedPaymentForm โดยใช้ student_id
-	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&delayedPaymentForms).Error; err != nil {
+	if err := db.Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&delayedPaymentForms).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get DelayedPaymentForm data"})
 		return
 	}
 
 	// ดึงข้อมูลจากตาราง En_ExitingForm โดยใช้ student_id
-	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&enExitingForms).Error; err != nil {
+	if err := db.Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&enExitingForms).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get EnExitingForm data"})
 		return
 	}
 
 	// ดึงข้อมูลจากตาราง Repairing โดยใช้ student_id
-	if err := db.Preload("Reservation.Student").Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&repairingForms).Error; err != nil {
+	if err := db.Preload("Reservation.Dorm").Preload("Reservation.Room").Where("reservation_id = ?", reservation.ID).Find(&repairingForms).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get Repairing data"})
 		return
 	}

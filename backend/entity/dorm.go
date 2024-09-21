@@ -4,11 +4,12 @@ import "gorm.io/gorm"
 
 type Dorm struct {
 	gorm.Model
-	Type 		string
+	DormName	string	`json:"dorm_name"`
+	Type		string	`json:"type"`
 
-	GenderID uint
-	Gender   Genders `gorm:"foreignKey:GenderID"`
+	GenderID	uint	`json:"gender_id"`
+	Gender		Genders `gorm:"foreignKey:GenderID"`
 	
-	Rooms []Room `gorm:"foreignKey:DormID"`
-	Reservations []Reservation `gorm:"foreignKey:DormID"`
+	Rooms []Room 				`gorm:"foreignKey:DormID"`
+	Reservations []Reservation 	`gorm:"foreignKey:DormID"`
 }
