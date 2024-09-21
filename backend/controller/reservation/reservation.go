@@ -1,128 +1,68 @@
 package reservation
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 
 	"dormitory.com/dormitory/config"
 	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-// POST /student-create
+// POST /CreateReservation
 func CreateReservation(c *gin.Context) {
 	var reservation entity.Reservation
 
-	// bind เข้าตัวแปร reservation
+	// Bind เข้าตัวแปร reservation
 	if err := c.ShouldBindJSON(&reservation); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
 
 	db := config.DB()
 
-	var studentCheck entity.Students
-	var dormCheck entity.Dorm
-	var roomCheck entity.Room
-
-	// Check if the dorm with the provided DormID exists
-	if result := db.Where("id = ?", reservation.DormID).First(&dormCheck); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
-			return
+	// ฟังก์ชันช่วยเพื่อตรวจสอบการมีอยู่ของ Dorm, Room, และ Student
+	checkExists := func(table string, id uint) error {
+		var count int64
+		if err := db.Table(table).Where("id = ?", id).Count(&count).Error; err != nil {
+			return err
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		if count == 0 {
+			return fmt.Errorf("%s not found", table)
+		}
+		return nil
+	}
+
+	// ตรวจสอบ Dorm, Room และ Student
+	if err := checkExists("dorms", reservation.DormID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Check if the room with the provided RoomID exists
-	if result := db.Where("id = ?", reservation.RoomID).First(&roomCheck); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Room not found"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+	if err := checkExists("rooms", reservation.RoomID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Check if the student with the provided StudentID exists
-	if result := db.Where("student_id = ?", reservation.StudentID).First(&studentCheck); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
-		return
-	}
-	if studentCheck.ID != 0 {
-		// If the student with the provided StudentID already exists
-		c.JSON(http.StatusConflict, gin.H{"error": "StudentID already exists"})
+	if err := checkExists("students", reservation.StudentID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
 	// สร้างการจอง
-	rs := entity.Reservation{
-		ReservationDate: 	reservation.ReservationDate,
-		StudentID:   		reservation.StudentID,
-		DormID:      		reservation.DormID,
-		RoomID:      		reservation.RoomID,
-	}
-
-	// บันทึก
-	if err := db.Create(&rs).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := db.Create(&reservation).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create reservation"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created successfully", "data": rs})
-}
-func GetReservation(c *gin.Context) {
-    var reservations []entity.Reservation
-
-    db := config.DB()
-    if err := db.Preload("Student").Preload("Dorm").Preload("Room").Find(&reservations).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, reservations)
-}
-// function Get โดยในตัวอย่างเป็นการตั้งใจใช้คำสั่ง SELECT … WHERE id =... เพื่อดึงข้อมูล student ออกมาตาม primary key ที่กำหนด ผ่าน func DB.Raw(...)
-// GET /get-student/:id
-func GetStudent(c *gin.Context) {
-	ID := c.Param("id")
-	var student entity.Students
-
-	db := config.DB()
-	results := db.Preload("Gender").First(&student, ID)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-	if student.ID == 0 {
-		c.JSON(http.StatusNoContent, gin.H{})
-		return
-	}
-	c.JSON(http.StatusOK, student)
+	c.JSON(http.StatusCreated, gin.H{"message": "Reservation created successfully", "data": reservation})
 }
 
-// GET /list-student
-func ListStudent(c *gin.Context) {
 
-	var students []entity.Students
 
-	db := config.DB()
-	results := db.Preload("Gender").Find(&students)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, students)
-}
 
 // DELETE /delete-student/:id
-func DeleteStudent(c *gin.Context) {
+func DeleteReservation(c *gin.Context) {
 	id := c.Param("id")
 	db := config.DB()
 	if tx := db.Exec("DELETE FROM students WHERE id = ?", id); tx.RowsAffected == 0 {
@@ -133,23 +73,72 @@ func DeleteStudent(c *gin.Context) {
 }
 
 // PATCH /update-student
-func UpdateStudent(c *gin.Context) {
-	var student entity.Students
-	StudentID := c.Param("id")
+func UpdateReservation(c *gin.Context) {
+	var reservation entity.Reservation
+	id := c.Param("id")
+
 	db := config.DB()
-	result := db.First(&student, StudentID)
+	result := db.First(&reservation, id)
 	if result.Error != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(&student); err != nil {
+	if err := c.ShouldBindJSON(&reservation); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}
-	result = db.Save(&student)
+	result = db.Save(&reservation)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
+}
+
+func GetReservationsByRoomID(c *gin.Context) {
+	roomID := c.Param("roomID")
+	db := config.DB()
+	var reservations []entity.Reservation
+	if err := db.Where("room_id = ?", roomID).Preload("Student").Preload("Dorm").Find(&reservations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, reservations)
+}
+
+func GetReservationsByStudentID(c *gin.Context) {
+	studentID := c.Param("studentID") // รับ studentID จาก URL
+	db := config.DB()
+
+	var reservations []entity.Reservation
+	if err := db.Where("student_id = ?", studentID).Preload("Room").Preload("Dorm").Find(&reservations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, reservations)
+}
+
+func CheckUserRoom(c *gin.Context) {
+	userID := c.Param("userID") // รับ userID จาก URL
+	db := config.DB()
+
+	var reservations []entity.Reservation
+	if err := db.Where("student_id = ?", userID).Preload("Room").Find(&reservations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
+		return
+	}
+
+	// สร้างผลลัพธ์ที่ต้องการ
+	var result []gin.H
+	for _, reservation := range reservations {
+		result = append(result, gin.H{
+			"room_id": reservation.RoomID,
+			"room_number": reservation.Room.RoomNumber,
+			"dorm_id": reservation.DormID,
+		})
+	}
+
+	c.JSON(http.StatusOK, result)
 }

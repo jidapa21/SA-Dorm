@@ -30,7 +30,6 @@ func GetDorm(c *gin.Context) {
 
 // GET /dorms
 func ListDorms(c *gin.Context) {
-
 	var dorms []entity.Dorm
 
 	db := config.DB()
@@ -42,7 +41,7 @@ func ListDorms(c *gin.Context) {
 	c.JSON(http.StatusOK, dorms)
 }
 
-// PATCH /dorm
+// PUT /dorm/:id
 func UpdateDorm(c *gin.Context) {
 	var dorm entity.Dorm
 

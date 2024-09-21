@@ -1,54 +1,68 @@
-/*import { Col, Row,Divider} from "antd";
-function Listpages() {
-  
-  
-  return (
-    <div >
-      <Row>
-        <Col span={12}>
-          <h2 style={{color: '#1f1f1f'}}>รายชื่อผู้พักร่วม</h2>
-        </Col>
-      </Row>
-      
-      <Divider />
-      
-      
-    </div>
-  );
-}
-
-export default Listpages;*/
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import type { TableProps } from 'antd';
-import { Col, Row,Divider} from "antd";
-import "./list.css";
-
+import { GetStudentsByRoomID, GetUserRoom } from '../../services/https'; 
 
 const Listpages: React.FC = () => {
-  interface DataType {
-    key: string;
-    name: string;
-    sid: string;
-    major: string;
-    year: number;
-    roomRate: string;
-  }
+  const [students, setStudents] = useState<any[]>([]);
+  const [roomID, setRoomID] = useState<number | null>(null); // State สำหรับ roomID
+
+  useEffect(() => {
+    const userID = 1; // กำหนด userID ที่ต้องการตรวจสอบ
+
+    const fetchUserRoom = async () => {
+      try {
+        const roomData = await GetUserRoom(userID);
+        console.log(roomData); // ตรวจสอบข้อมูลที่ได้รับ
+
+        if (Array.isArray(roomData) && roomData.length > 0) {
+          const { room_id } = roomData[0]; // ดึง room_id จากข้อมูล
+          setRoomID(room_id); // ตั้งค่า roomID
+        } else {
+          console.error("ไม่พบข้อมูลห้องสำหรับผู้ใช้");
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการตรวจสอบห้องของผู้ใช้:", error);
+      }
+    };
+
+    fetchUserRoom();
+  }, []);
+
+
+  useEffect(() => {
+    if (roomID !== null) {
+      const fetchStudents = async () => {
+        try {
+          const result = await GetStudentsByRoomID(roomID);
+          console.log(result); // ตรวจสอบข้อมูลนักศึกษา
+
+          if (Array.isArray(result)) {
+            const formattedStudents = result.map(student => ({
+              StudentID: student.student_id || 'ไม่ระบุ',
+              name: `${student.first_name || 'ไม่ระบุ'} ${student.last_name || 'ไม่ระบุ'}`, 
+              major: student.major || 'ไม่ระบุ',
+              year: student.year || 'ไม่ระบุ',
+              roomRate: "2,900" || 'ไม่ระบุ', 
+            }));
+            setStudents(formattedStudents); 
+          } else {
+            console.error(result.error || "เกิดข้อผิดพลาดในการดึงข้อมูลนักศึกษา");
+          }
+        } catch (error) {
+          console.error("เกิดข้อผิดพลาดในการเรียก API:", error);
+        }
+      };
+
+      fetchStudents();
+    }
+  }, [roomID]);
+
   
-  const columns: TableProps<DataType>['columns'] = [
-    
-    {
-      title: '',
-      dataIndex: 'key',
-      key: 'key',
-      render: (text) => <a>{text}</a>,
-    },
+  const columns = [
     {
       title: 'รหัสนักศึกษา',
-      dataIndex: 'sid',
-      key: 'sid',
-      render: (text) => <a>{text}</a>,
+      dataIndex: 'StudentID',
+      key: 'StudentID',
     },
     {
       title: 'ชื่อ - นามสกุล',
@@ -68,59 +82,18 @@ const Listpages: React.FC = () => {
     {
       title: 'ค่าห้อง',
       dataIndex: 'roomRate',
-      key: 'year',
+      key: 'roomRate',
     },
   ];
-  
-  const data: DataType[] = [
-    {
-      key: 'A',
-      name: 'John Brown',
-      sid: 'B6512345',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-    {
-      key: 'B',
-      name: 'Jim Green',
-      sid: 'B6554321',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-    {
-      key: 'C',
-      name: 'Joe Black',
-      sid: 'B6543210',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-  ];
-  
-  
-  return (
-    <>
-      <br />
-      <div className="flex">
-        <div className='text-topic'>รายชื่อผู้พักร่วม</div>
-        <div className="text-right">Non-Air Conditioner</div>
-      </div>
-      <br />
-      <Divider />
-      <div className="flex">
-        <div className='box'>ห้อง 4100</div>
-        <div className='text-sub'>ปีการศึกษา 1/2565</div>
-      </div>
-      <Divider />
-      <div className='text-container'></div>  
-        <Table columns={columns} dataSource={data} pagination={false} />
-      <br/>
-    </>
-  );
-  
-}
 
+  return (
+    <Table 
+      columns={columns} 
+      dataSource={students} 
+      pagination={false} 
+      rowKey="StudentID" 
+    />
+  );
+};
 
 export default Listpages;

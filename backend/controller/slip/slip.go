@@ -5,13 +5,14 @@ import (
     "dormitory.com/dormitory/config"
     "dormitory.com/dormitory/entity"
     "github.com/gin-gonic/gin"
+    "gorm.io/gorm"
 )
 
 // POST /users
 func CreateSlip(c *gin.Context) {
     var slip entity.Slip
     var sid entity.Students
-    var expense entity.Expense
+    //var expense entity.Expense
     var reservation entity.Reservation
 
     studentID := c.MustGet("student_id").(string)
@@ -27,7 +28,7 @@ func CreateSlip(c *gin.Context) {
         return
     }
 
-    db.Where("students_id = ?", sid.ID).First(&reservation)
+    db.Where("student_id = ?", sid.ID).First(&reservation)
     if reservation.ID == 0 {
         c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
         return
@@ -41,9 +42,8 @@ func CreateSlip(c *gin.Context) {
 
     rp := entity.Slip{
         Path:        slip.Path,
-        Date:        slip.Date,
-        ExpenseID:   expense.ID,
-        Expense:     &expense,
+        //ExpenseID:   expense.ID,
+        //Expense:     &expense,
     }
 
     if err := db.Create(&rp).Error; err != nil {
@@ -103,4 +103,32 @@ func UpdateSlip(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
+}
+
+func GetSlipsWithUncompletedStatus(c *gin.Context) {
+	db := config.DB()
+
+	// เรียกใช้งานฟังก์ชันที่ดึงข้อมูล slip ที่สถานะไม่เป็น 'complet'
+	slips, err := getSlipsWithUncompletedStatusFromDB(db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch slips"})
+		return
+	}
+
+	c.JSON(http.StatusOK, slips)
+}
+
+// ฟังก์ชันดึงข้อมูลจากฐานข้อมูล
+func getSlipsWithUncompletedStatusFromDB(db *gorm.DB) ([]entity.Slip, error) {
+	var slips []entity.Slip
+
+	err := db.Joins("JOIN expenses ON expenses.id = slips.expense_id").
+		Where("expenses.status != ?", "complet").
+		Find(&slips).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return slips, nil
 }

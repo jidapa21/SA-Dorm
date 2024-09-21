@@ -109,3 +109,14 @@
 .bottom {
     align-self: end;
 }
+
+.row-container {
+    display: flex;
+    justify-content: space-between; /* จัดให้คอลัมน์อยู่ที่ขอบซ้ายและขวา */
+}
+  
+.heading-red {
+    color: #ff0000;
+    font-size: 15px;
+    font-weight: 400;
+}

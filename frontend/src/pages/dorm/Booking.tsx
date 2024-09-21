@@ -1,103 +1,79 @@
-import React from 'react';
-import { Table } from 'antd';
-import type { TableProps } from 'antd';
-import { Col, Row,Divider} from "antd";
-import "./Bsub.css";
+import React, { useEffect, useState } from "react";
+import { GetRoomsByFloorAndDorm } from "../../services/https";  // Import the function
+import { RoomInterface } from "./../../interfaces/Room"; 
 
+// Define the type for the room data
+/*interface Room {
+  RoomNumber: string;
+  DormStatus: string;
+  Available: boolean;
+  Floor: number;
+  Dorm: {
+    dorm_name: string;
+    Gender: {
+      Gender: string;
+    };
+  };
+}*/
 
-const Booking: React.FC = () => {
-  interface DataType {
-    key: string;
-    name: string;
-    sid: string;
-    major: string;
-    year: number;
-    roomRate: string;
+const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1, dormId = 1 }) => {
+  const [rooms, setRooms] = useState<RoomInterface[]>([]); // Change to an array of Room
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRoomData = async () => {
+      try {
+        const response = await GetRoomsByFloorAndDorm(floorId, dormId); // Call GetRoomsByFloorAndDorm function
+        if (response && !response.error) {
+          const roomData = response.map((room: RoomInterface) => ({
+            ...room,
+            Floor: Number(room.floor) // Ensure Floor is a number
+          }));
+
+          setRooms(roomData); // Store the room data
+        } else {
+          setError("Room not found");
+        }
+      } catch (error) {
+        setError("Error fetching room data");
+        console.error("Error fetching room data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoomData();
+  }, [floorId, dormId]); // Add floorId and dormId as dependencies
+
+  if (loading) {
+    return <p>Loading...</p>; // Display loading message
   }
-  
-  const columns: TableProps<DataType>['columns'] = [
-    
-    {
-      title: '',
-      dataIndex: 'key',
-      key: 'key',
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: 'รหัสนักศึกษา',
-      dataIndex: 'sid',
-      key: 'sid',
-      render: (text) => <a>{text}</a>,
-    },
-    {
-      title: 'ชื่อ - นามสกุล',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'สำนัก',
-      dataIndex: 'major',
-      key: 'major',
-    },
-    {
-      title: 'ชั้นปี',
-      dataIndex: 'year',
-      key: 'year',
-    },
-    {
-      title: 'ค่าห้อง',
-      dataIndex: 'roomRate',
-      key: 'year',
-    },
-  ];
-  
-  const data: DataType[] = [
-    {
-      key: 'A',
-      name: 'John Brown',
-      sid: 'B6512345',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-    {
-      key: 'B',
-      name: 'Jim Green',
-      sid: 'B6554321',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-    {
-      key: 'C',
-      name: 'Joe Black',
-      sid: 'B6543210',
-      major: 'Engineering',
-      year: 3,
-      roomRate: '2,900',
-    },
-  ];
-  
-  
-  return (
-    <>
-      <br />
-      <div className="flex">
-        <div className='text-topic'>รายชื่อผู้พักร่วม</div>
-        <div className="text-right">Non-Air Conditioner</div>
-      </div>
-      <br />
-      <Divider />
-      <div className="flex">
-        <div className='box'>ห้อง 4100</div>
-        <div className='text-sub'>ปีการศึกษา 1/2565</div>
-      </div>
-      <Divider />
-      <div className='text-container'></div>  
-        <Table columns={columns} dataSource={data} pagination={false} />
-      <br/>
-    </>
-  );
-}
 
-export default Booking;
+  if (error) {
+    return <p>{error}</p>; // Display error message
+  }
+
+  return (
+    <div>
+      <h2>Room Details</h2>
+      {rooms.length > 0 ? (
+        rooms.map((room) => (
+          <div key={room.room_number}>
+            <p><strong>Room Number:</strong> {room.room_number}</p>
+            <p><strong>Status:</strong> {room.dorm_status}</p>
+            <p><strong>Available:</strong> {room.available ? 'Yes' : 'No'}</p>
+            <p><strong>Floor:</strong> {room.floor}</p>
+            <p><strong>Dorm Name:</strong> {room.Dorm.dorm_name}</p>
+            <p><strong>Gender:</strong> {room.Dorm.Gender.Gender}</p>
+            <hr /> {/* Add a separator between rooms */}
+          </div>
+        ))
+      ) : (
+        <p>No rooms available.</p> // Message when no rooms are found
+      )}
+    </div>
+  );
+};
+
+export default RoomDetail;

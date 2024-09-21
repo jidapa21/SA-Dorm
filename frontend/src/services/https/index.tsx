@@ -14,10 +14,13 @@ import { En_ExitingFormInterface } from "../../interfaces/En_ExitingForm";
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import { GenderInterface } from "../../interfaces/gender";
-import { ExpenseInterface } from '../../interfaces/Expense'; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
+import { ExpenseInterface } from "../../interfaces/Expense"; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
 import { RentInterface } from "../../interfaces/Rentfee";
 import { ElectricityInterface } from "../../interfaces/Electricityfee";
 import { WaterInterface } from "../../interfaces/Waterfee";
+import { DormInterface } from "../../interfaces/Dorm";
+import { RoomInterface } from "../../interfaces/Room";
+import { ReservationInterface } from "../../interfaces/Reservation";
 import axios from "axios";
 
 const apiUrl = "http://localhost:8000";
@@ -78,29 +81,29 @@ async function CreateStudent(data: StudentInterface) {
 
 async function CreatePersonalDetail(data: PersonalDetailInterface) {
   return await axios
-  .post(`${apiUrl}/create-personal-detail`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .post(`${apiUrl}/create-personal-detail`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function GetPersonalById(id: string) {
   return await axios
-  .get(`${apiUrl}/get-personal/${id}`, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .get(`${apiUrl}/get-personal/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 async function GetAddressById(id: string) {
   return await axios
-  .get(`${apiUrl}/get-address/${id}`, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .get(`${apiUrl}/get-address/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function GetFamilyById(id: string) {
   return await axios
-  .get(`${apiUrl}/get-family/${id}`, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .get(`${apiUrl}/get-family/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function GetOtherById(id: string) {
@@ -139,7 +142,10 @@ async function UpdateOtherById(id: string, data: OtherInteface) {
 
 async function GetListFormStudent() {
   try {
-    const response = await fetch(`${apiUrl}/get-list-formstudent`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/get-list-formstudent`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -177,18 +183,18 @@ async function CreateRepair(data: RepairInterface) {
 }
 async function GetRepair(id: number | undefined) {
   if (id === undefined) {
-    throw new Error('ID cannot be undefined');
+    throw new Error("ID cannot be undefined");
   }
 
   const Authorization = localStorage.getItem("token");
   const Bearer = localStorage.getItem("token_type");
-  
+
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
-    }
+      Authorization: `${Bearer} ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
   };
 
   try {
@@ -202,7 +208,7 @@ async function GetRepair(id: number | undefined) {
       return false;
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -212,8 +218,8 @@ async function GetListRepairs() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
-    }
+      Authorization: `Bearer ${Authorization}`, // เพิ่ม Authorization header หากต้องการ
+    },
   };
 
   try {
@@ -221,13 +227,13 @@ async function GetListRepairs() {
     if (response.ok) {
       return await response.json();
     } else if (response.status === 401) {
-      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+      console.error("Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต");
     } else {
       console.error(`Error: ${response.status} - ${response.statusText}`);
     }
     return false;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -247,22 +253,25 @@ async function CreateDelayedPaymentForm(data: DelayedPaymentFormInterface) {
 }
 async function GetDelayedPaymentForm(id: number | undefined) {
   if (id === undefined) {
-    throw new Error('ID cannot be undefined');
+    throw new Error("ID cannot be undefined");
   }
 
   const Authorization = localStorage.getItem("token");
   const Bearer = localStorage.getItem("token_type");
-  
+
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
-    }
+      Authorization: `${Bearer} ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/get-delayedpaymentform/${id}`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/get-delayedpaymentform/${id}`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -272,7 +281,7 @@ async function GetDelayedPaymentForm(id: number | undefined) {
       return false;
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -282,27 +291,33 @@ async function ListDelayedPaymentForms() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
-    }
+      Authorization: `Bearer ${Authorization}`, // เพิ่ม Authorization header หากต้องการ
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/list-delayedpaymentform`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/list-delayedpaymentform`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else if (response.status === 401) {
-      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+      console.error("Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต");
     } else {
       console.error(`Error: ${response.status} - ${response.statusText}`);
     }
     return false;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
 
-async function UpdateDelayedPaymentForm(id: string, data: Partial<RepairInterface>) {
+async function UpdateDelayedPaymentForm(
+  id: string,
+  data: Partial<RepairInterface>
+) {
   return await axios
     .put(`${apiUrl}/update-delayedpaymentform/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
@@ -317,22 +332,25 @@ async function CreateEn_ExitingForm(data: En_ExitingFormInterface) {
 }
 async function GetEn_ExitingForm(id: number | undefined) {
   if (id === undefined) {
-    throw new Error('ID cannot be undefined');
+    throw new Error("ID cannot be undefined");
   }
 
   const Authorization = localStorage.getItem("token");
   const Bearer = localStorage.getItem("token_type");
-  
+
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
-    }
+      Authorization: `${Bearer} ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/get-En_ExitingForm/${id}`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/get-En_ExitingForm/${id}`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -342,7 +360,7 @@ async function GetEn_ExitingForm(id: number | undefined) {
       return false;
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -352,32 +370,38 @@ async function ListEn_ExitingForm() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
-    }
+      Authorization: `Bearer ${Authorization}`, // เพิ่ม Authorization header หากต้องการ
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/En_ExitingForm-getlist`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/En_ExitingForm-getlist`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else if (response.status === 401) {
-      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+      console.error("Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต");
     } else {
       console.error(`Error: ${response.status} - ${response.statusText}`);
     }
     return false;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
 
-async function UpdateEn_ExitingForm(id: string, data: Partial<En_ExitingFormInterface>) {
+async function UpdateEn_ExitingForm(
+  id: string,
+  data: Partial<En_ExitingFormInterface>
+) {
   return await axios
     .put(`${apiUrl}/En_ExitingForm-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
     .catch((e) => e.response);
-} 
+}
 //---------------------   ResigningForm ---------------------------------
 async function CreateResigningForm(data: ResigningFormInterface) {
   return await axios
@@ -387,22 +411,25 @@ async function CreateResigningForm(data: ResigningFormInterface) {
 }
 async function GetResigningForm(id: number | undefined) {
   if (id === undefined) {
-    throw new Error('ID cannot be undefined');
+    throw new Error("ID cannot be undefined");
   }
 
   const Authorization = localStorage.getItem("token");
   const Bearer = localStorage.getItem("token_type");
-  
+
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `${Bearer} ${Authorization}` // ตรวจสอบว่า Authorization header ถูกต้อง
-    }
+      Authorization: `${Bearer} ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/get-ResigningForm/${id}`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/get-ResigningForm/${id}`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -412,7 +439,7 @@ async function GetResigningForm(id: number | undefined) {
       return false;
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
@@ -421,31 +448,38 @@ async function ListResigningForm() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
-    }
+      Authorization: `Bearer ${Authorization}`, // เพิ่ม Authorization header หากต้องการ
+    },
   };
 
   try {
-    const response = await fetch(`${apiUrl}/Resigningform-getlist`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/Resigningform-getlist`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else if (response.status === 401) {
-      console.error('Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต');
+      console.error("Error 401: Unauthorized - ตรวจสอบ Token และการอนุญาต");
     } else {
       console.error(`Error: ${response.status} - ${response.statusText}`);
     }
     return false;
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
 
-async function UpdateResigningForm(id: number, data: Partial<ResigningFormInterface>) {
+async function UpdateResigningForm(
+  id: number,
+  data: Partial<ResigningFormInterface>
+) {
   return await axios
     .put(`${apiUrl}/Resigningform-update/${id}`, data, requestOptions) // ใช้ URL ใหม่
     .then((res) => res)
-    .catch((e) => e.response);}
+    .catch((e) => e.response);
+}
 //---------------------   Status ---------------------------------
 async function GetStatusById(id: number) {
   return await axios
@@ -492,13 +526,17 @@ async function CreateAdmin(data: AadminInterface) {
 }
 async function DeleteAdmin(id: number) {
   try {
-    const response = await axios.delete(`${apiUrl}/admin/${id}`, requestOptions);
+    const response = await axios.delete(
+      `${apiUrl}/admin/${id}`,
+      requestOptions
+    );
     return response;
   } catch (error) {
-    console.error('Error deleting admin:', error);
+    console.error("Error deleting admin:", error);
     throw error;
   }
-} async function ListAnnouncements() {
+}
+async function ListAnnouncements() {
   return await axios
     .get(`${apiUrl}/list-announcement`, requestOptions)
     .then((res) => res)
@@ -510,11 +548,14 @@ async function GetLatestAnnouncements() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `${Bearer} ${Authorization}` // เพิ่ม Authorization header หากต้องการ
-    }
+      Authorization: `${Bearer} ${Authorization}`, // เพิ่ม Authorization header หากต้องการ
+    },
   };
   try {
-    const response = await fetch(`${apiUrl}/latest-announcement`, requestOptions);
+    const response = await fetch(
+      `${apiUrl}/latest-announcement`,
+      requestOptions
+    );
     if (response.ok) {
       return await response.json();
     } else {
@@ -522,11 +563,10 @@ async function GetLatestAnnouncements() {
       return false;
     }
   } catch (error) {
-    console.error('Fetch error:', error);
+    console.error("Fetch error:", error);
     return false;
   }
 }
-
 
 async function GetAnnouncementById(id: string) {
   return await axios
@@ -558,16 +598,18 @@ async function DeleteAnnouncementById(id: string) {
 //-------------slip--------------------------------------------------------------------------------------------------------------
 async function CreateSlip(data: SlipInterface) {
   return await axios
-  .post(`${apiUrl}/create-slip`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .post(`${apiUrl}/create-slip`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
+
 async function GetSlip(id: number | undefined) {
   return await axios
-  .get(`${apiUrl}/get-slip/${id}`, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .get(`${apiUrl}/get-slip/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
+
 async function GetListSlips() {
   const requestOptions = {
     method: "GET",
@@ -575,39 +617,59 @@ async function GetListSlips() {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`${apiUrl}/get-list-slip`, requestOptions)
-    .then((res) => {
+  let res = await fetch(`${apiUrl}/get-list-slip`, requestOptions).then(
+    (res) => {
       if (res.status == 200) {
         return res.json();
       } else {
         return false;
       }
-    });
+    }
+  );
   return res;
 }
+
 async function UpdateSlip(data: SlipInterface) {
   const requestOptions = {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   };
-  let res = await fetch(`${apiUrl}/update-slip`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
+  let res = await fetch(`${apiUrl}/update-slip`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
   return res;
 }
+
+async function Getslipcompleted() {
+  const requestOptions = {
+     method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Authorization}` // เพิ่ม Authorization header หากต้องการ
+      },
+    };
+    let res = await fetch(`${apiUrl}/get-slipcomplete`, requestOptions)
+      .then((res) => {
+        if (res.status == 200) {
+          return res.json();
+        } else {
+          return false;
+        }
+      });
+    return res;
+  }
 //-------------------------Expense----------------------------------------
 
 async function CreateExpense(data: ExpenseInterface) {
   return await axios
-  .post(`${apiUrl}/create-expense`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
+    .post(`${apiUrl}/create-expense`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
 }
 
 async function ListExpense() {
@@ -636,150 +698,151 @@ async function ListExpense() {
 
 async function fetchExpenses(): Promise<ExpenseInterface[]> {
   try {
-    const response = await fetch('/api/expenses');
+    const response = await fetch("/api/expenses");
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
     const data: ExpenseInterface[] = await response.json();
     return data;
   } catch (error) {
-    console.error('Failed to fetch expenses:', error);
+    console.error("Failed to fetch expenses:", error);
     return []; // คืนค่าเป็นอาร์เรย์เปล่าหากเกิดข้อผิดพลาด
   }
 }
-
+async function Updateexpense(id: number, data: Partial<ExpenseInterface>) {
+  return await axios
+    .put(`${apiUrl}/update-expense/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .then((res) => res)
+    .catch((e) => e.response);
+  }
 //-----------------------------Rentfee-------------------------------------
 
-async function ListRentFees() {
+async function ListDormFees() {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`/list-rentfees`, requestOptions)
-    .then((res) => {
+  let res = await fetch(`/list-dorms`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+  return res;
+}
+
+async function CreateDormFee(data: RentInterface) {
+  return await axios
+    .post(`/create-dormfee`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetDormFee() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/get-dorm/:id`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+  return res;
+}
+
+//----------------------------------------------Electricity-------------------------------------
+async function ListElectricityFees() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/list-electricityfees`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+  return res;
+}
+
+async function CreateElectricityFee(data: ElectricityInterface) {
+  return await axios
+    .post(`/create-electricityfee`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetElectricityFee() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/get-electricityfee/:id`, requestOptions).then(
+    (res) => {
       if (res.status == 200) {
         return res.json();
       } else {
         return false;
       }
-    });
+    }
+  );
   return res;
-  }
-        
-  
-  async function  CreateRentFee(data: RentInterface) {
-    return await axios
-    .post(`/create-rentfee`, data, requestOptions)
+}
+
+async function UpdateElectricityFee(data: SlipInterface) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+  let res = await fetch(`update-electricityfee/:id`, requestOptions).then(
+    (res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    }
+  );
+  return res;
+}
+//----------------------------------------water fee-------------------------------------------
+
+async function ListWaterFees() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  let res = await fetch(`/list-waterfees`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
+  return res;
+}
+
+async function CreateWaterFee(data: WaterInterface) {
+  return await axios
+    .post(`/create-waterfee`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
-  }
-  
-  async function GetRentFee() {
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    let res = await fetch(`/get-rentfee/:id`, requestOptions)
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return false;
-        }
-      });
-    return res;
-  }
-
-  
-  //----------------------------------------------Electricity-------------------------------------
-async function ListElectricityFees() {
-const requestOptions = {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
-let res = await fetch(`/list-electricityfees`, requestOptions)
-  .then((res) => {
-    if (res.status == 200) {
-      return res.json();
-    } else {
-      return false;
-    }
-  });
-return res;
-}
-
-
-async function  CreateElectricityFee(data: ElectricityInterface) {
-  return await axios
-  .post(`/create-electricityfee`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
-}
-  
-  async function GetElectricityFee() {
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    let res = await fetch(`/get-electricityfee/:id`, requestOptions)
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return false;
-        }
-      });
-    return res;
-  }
-
-  async function UpdateElectricityFee(data: SlipInterface) {
-    const requestOptions = {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    };
-    let res = await fetch(`update-electricityfee/:id`, requestOptions)
-      .then((res) => {
-        if (res.status == 200) {
-          return res.json();
-        } else {
-          return false;
-        }
-      });
-    return res;
-  }
-//----------------------------------------water fee-------------------------------------------
-        
-async function ListWaterFees() {
-const requestOptions = {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
-let res = await fetch(`/list-waterfees`, requestOptions)
-  .then((res) => {
-    if (res.status == 200) {
-      return res.json();
-    } else {
-      return false;
-    }
-  });
-return res;
-}
-async function  CreateWaterFee(data: WaterInterface) {
-  return await axios
-  .post(`/create-waterfee`, data, requestOptions)
-  .then((res) => res)
-  .catch((e) => e.response);
 }
 
 async function GetWaterFee() {
@@ -789,15 +852,213 @@ async function GetWaterFee() {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`/get-waterfee/:id`, requestOptions)
-    .then((res) => {
-      if (res.status == 200) {
-        return res.json();
-      } else {
-        return false;
-      }
-    });
+  let res = await fetch(`/get-waterfee/:id`, requestOptions).then((res) => {
+    if (res.status == 200) {
+      return res.json();
+    } else {
+      return false;
+    }
+  });
   return res;
+}
+
+//------------Dorm------------//
+async function GetDorm(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListDorms(data: DormInterface) {
+  return await axios
+    .post(`${apiUrl}/ListDorms`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateDorm(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+//------------Room------------//
+async function GetRoom(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetRoomsByFloorAndDorm(floorId: number, dormId: number) {
+  try {
+    const response = await axios.get(
+      `${apiUrl}/rooms/floor/${floorId}/dorm/${dormId}`,
+      requestOptions
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error: error.response ? error.response.data : "An error occurred",
+      };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function ListRoom(data: RoomInterface) {
+  return await axios
+    .post(`${apiUrl}/ListRoom`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function DeleteRoom(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateRoom(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+//------------Reservation------------//
+/*export const CreateReservation = async (data: ReservationInterface) => {
+  try {
+      const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          throw new Error(error.response?.data.message || "Error creating reservation");
+      }
+      throw new Error("Error creating reservation");
+  }
+};*/
+
+export const CreateReservation = async (data: ReservationInterface) => {
+  try {
+    const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      // ตรวจสอบข้อมูลข้อผิดพลาดจากเซิร์ฟเวอร์
+      console.error("รายละเอียดข้อผิดพลาดจาก Axios:", error.response?.data);
+      // เพิ่มข้อมูลสถานะ HTTP ถ้ามี
+      const statusCode = error.response?.status;
+      const errorMessage =
+        error.response?.data?.message || "ข้อผิดพลาดในการสร้างการจอง";
+      throw new Error(`HTTP ${statusCode}: ${errorMessage}`);
+    } else {
+      // ตรวจสอบข้อผิดพลาดที่ไม่ใช่ Axios
+      console.error("รายละเอียดข้อผิดพลาดที่ไม่คาดคิด:", error);
+      throw new Error("ข้อผิดพลาดในการสร้างการจอง");
+    }
+  }
+};
+
+async function GetReservationsByRoomID(roomID: number) {
+  try {
+    const response = await axios.get(
+      `${apiUrl}/reservations/room/${roomID}`,
+      requestOptions
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error: error.response ? error.response.data : "An error occurred",
+      };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+// ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
+async function GetReservationsByStudentID(studentID: number): Promise<any> {
+  try {
+    const response = await axios.get(
+      `${apiUrl}/reservations/student/${studentID}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error: error.response ? error.response.data : "An error occurred",
+      };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function DeleteReservation(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateReservation(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
+async function GetStudentsByRoomID(roomID: number) {
+  try {
+    const response = await axios.get(
+      `${apiUrl}/reservations/${roomID}/students`,
+      requestOptions
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error: error.response ? error.response.data : "An error occurred",
+      };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function GetUserRoom(userID: number) {
+  try {
+    const response = await axios.get(
+      `${apiUrl}/check-user-room/${userID}`,
+      requestOptions
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return {
+        error: error.response ? error.response.data : "An error occurred",
+      };
+    }
+    return { error: "An unknown error occurred" };
+  }
+}
+
+async function getStudentGender(studentId: string): Promise<string> {
+  try {
+    // ทำการเรียก API เพื่อนำข้อมูลเพศของนักเรียน
+    const response = await fetch(`/api/students/${studentId}/gender`);
+
+    // ตรวจสอบว่า API ตอบกลับด้วยสถานะที่ถูกต้อง
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // แปลงข้อมูลการตอบกลับเป็น JSON
+    const data = await response.json();
+
+    // ส่งคืนข้อมูลเพศ
+    return data.gender; // ค่าที่ส่งคืนเป็น "male" หรือ "female"
+  } catch (error) {
+    console.error("Error fetching student gender:", error);
+    throw error; // โยนข้อผิดพลาดเพื่อให้สามารถจัดการได้ที่ชั้นสูงกว่า
+  }
 }
 
 export {
@@ -817,6 +1078,7 @@ export {
   UpdateAddressById,
   UpdateFamilyById,
   UpdateOtherById,
+  GetStudentsByRoomID,
   // ----------------- Repairing --------------
   GetListFormStudent,
   GetListFormDorm,
@@ -857,10 +1119,12 @@ export {
   GetSlip,
   GetListSlips,
   UpdateSlip,
+  Getslipcompleted,
   //-------------------------expense----------------
   fetchExpenses,
   CreateExpense,
   ListExpense,
+  Updateexpense,
   //-----------------------Elecfee---------------
   ListElectricityFees,
   CreateElectricityFee,
@@ -870,8 +1134,21 @@ export {
   ListWaterFees,
   CreateWaterFee,
   GetWaterFee,
-  //---------------------------Rentfee---------------
-  ListRentFees,
-  CreateRentFee,
-  GetRentFee,
+  //------------Dorm------------//
+  GetDorm,
+  ListDorms,
+  UpdateDorm,
+  //------------Room------------//
+  GetRoom,
+  ListRoom,
+  DeleteRoom,
+  UpdateRoom,
+  GetRoomsByFloorAndDorm,
+  //------------Reservation------------//
+  DeleteReservation,
+  UpdateReservation,
+  GetReservationsByRoomID,
+  GetUserRoom,
+  getStudentGender,
+  GetReservationsByStudentID,
 };

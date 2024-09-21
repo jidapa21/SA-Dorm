@@ -8,7 +8,10 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/dorm"
+	"dormitory.com/dormitory/controller/electricityfee"
 	"dormitory.com/dormitory/controller/en_exitingform"
+	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/controller/family"
 	familystatuses "dormitory.com/dormitory/controller/familyStatuses"
 	"dormitory.com/dormitory/controller/genders"
@@ -17,15 +20,15 @@ import (
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/resigningform"
 	"dormitory.com/dormitory/controller/rentfee"
-	"dormitory.com/dormitory/controller/waterfee"
-	"dormitory.com/dormitory/controller/electricityfee"
-	"dormitory.com/dormitory/controller/expense"
+	"dormitory.com/dormitory/controller/repairing"
+	"dormitory.com/dormitory/controller/reservation"
+	"dormitory.com/dormitory/controller/resigningform"
+	"dormitory.com/dormitory/controller/room"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/status"
 	"dormitory.com/dormitory/controller/student"
+	"dormitory.com/dormitory/controller/waterfee"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -77,7 +80,7 @@ func main() {
 		// Repair Route
 		router.GET("/get-list-formstudent", student.GetListFormStudent)
 		router.GET("/get-list-formdorm", student.GetListFormDorm)
-		
+
 		router.POST("/create-repair", repairing.CreateRepair)
 		router.GET("/get-repair/:id", repairing.GetRepair)
 		router.GET("/repair-getlist", repairing.GetListRepairs)
@@ -114,7 +117,7 @@ func main() {
 		router.PUT("/update-announcement/:id", announcement.UpdateAnnouncement)
 		router.DELETE("/delete-announcement/:id", announcement.DeleteAnnouncement)
 		router.GET("/latest-announcement", announcement.GetLatestAnnouncement)
-		
+
 		// Admin Routes
 		router.GET("/GetAllAdmins", admin.GetAllAdmins)
 		router.POST("/create-admin", admin.CreateAdmin)
@@ -124,6 +127,9 @@ func main() {
 		//Slip Routes
 		router.POST("/create-slip", slip.CreateSlip)
 		router.PATCH("/slip/:id", slip.UpdateSlip)
+		router.GET("/list-slip", slip.GetListSlips)
+		router.PUT("/update-expense/:id", expense.UpDateExpense)
+		router.GET("/get-slipcomplete", slip.GetSlipsWithUncompletedStatus)
 
 		//Slip expense
 		router.POST("/create-expense", expense.CreateExpense)
@@ -147,6 +153,26 @@ func main() {
 		router.GET("/get-electricityfee/:id", electricityfee.GetElectricityFee)
 		router.GET("/list-electricityfees", electricityfee.ListElectricityFees)
 		router.PATCH("update-electricityfee/:id", electricityfee.UpdateElectricityFee)
+
+		// Dorm
+		router.GET("/GetDorm/:id", dorm.GetDorm)
+		router.GET("/ListDorms", dorm.ListDorms)
+		router.PUT("/UpdateDorm/:id", dorm.UpdateDorm)
+		// Room
+		router.GET("/GetRoom/:id", room.GetRoom)
+		router.GET("/ListRoom", room.ListRoom)
+		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
+		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor) 
+
+		// Reservation
+		router.POST("/CreateReservation", reservation.CreateReservation)
+		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
+		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
+		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
+		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
+		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
+		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID)
 
 	}
 

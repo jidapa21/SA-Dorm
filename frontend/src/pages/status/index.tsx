@@ -180,11 +180,12 @@ export default function StatusCreate() {
   return (
     <>
       {contextHolder}
-      <br />
+      {/*
       <div className="text-container">
         <div className="text-1">ติดตามสถานะของปัญหา</div>
       </div>
-      <br />
+      */}
+      <h2>ติดตามสถานะของปัญหา</h2>
       <br />
       <Table
         columns={columns}

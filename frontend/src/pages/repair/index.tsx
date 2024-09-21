@@ -118,6 +118,7 @@ export default function RepairCreate() {
           "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
         );
         form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+        setFileList([]);
       } else {
         openNotification(
           "error",
@@ -153,33 +154,21 @@ export default function RepairCreate() {
             LastName: dataStudent.student.last_name || "ไม่พบข้อมูล",
           };
 
-          // ถ้ามีหอพัก ห้องพักแล้ว
+          // ถ้ามีหอและห้องพักแล้ว
           if (dataDorm && dataDorm.reservation) {
             const dormData = {
               DormID: dataDorm.reservation.Dorm.ID || "ไม่มีหอ",
               room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
             };
 
-            const combinedData = {
-              ...studentData,
-              ...dormData,
-            };
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
 
-            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
-          }
-          //ถ้ามีแค่ข้อมูลนักศึกษา
-          if (dataStudent) {
-            const dormData = {
-              DormID: "ไม่มีหอ",
-              room_number: "ไม่มีห้อง",
-            };
-
-            const combinedData = {
-              ...studentData,
-              ...dormData,
-            };
-
-            setStudent([combinedData]); // รวมข้อมูลนักศึกษาและหอพัก
+            // ถ้าไม่มีหอและห้องพัก
+          } else {
+            const dormData = { DormID: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
           }
         } else {
           setErrorMessage("ไม่พบข้อมูลนักศึกษา");
