@@ -15,7 +15,6 @@ import { CreateSlip, GetListSlips, GetSlip, UpdateSlip, CreateExpense, fetchExpe
 import Slip from "./../adminpage/PaymentConfirmation";
 import { ExpenseInterface } from '../../interfaces/Expense';
 import { WaterInterface } from '../../interfaces/Waterfee';
-import { RentInterface } from '../../interfaces/Rentfee';
 import { ElectricityInterface } from '../../interfaces/Electricityfee';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -27,7 +26,7 @@ const { TextArea } = Input;
 interface ExpenseData
   extends StudentInterface,
   WaterInterface,
-  RentInterface,
+  DormInterface,
   ElectricityInterface {
 
   ID: number;
@@ -35,7 +34,7 @@ interface ExpenseData
   status: string;
   totalamount: number;
   remark: string;
-  rent_id: number;
+  dorm_id: number;
   elec_id: number;
   water_id: number;
   student_id: string;
@@ -76,12 +75,14 @@ const Index: React.FC = () => {
             ID: data.ID,
             date: new Date(data.date), // ใช้ชื่อคุณสมบัติที่ถูกต้อง
             totalamount: data.totalamount || 0,
-            rent_id: data.rentfee.amount || 0,
+            dorm_id: data.Dorm.amount || 0,
             elec_id: data.electricityfee.amount || 0,
             water_id: data.waterfee.amount || 0,
-            student_id: data.student_id || "",
+            reservation_id: data.reservation.student_id,
             status: [data.status || "Unknown"],
           }));
+          console.log("Expense data:", expense);
+
           const totalamount = ExpenseData.reduce((acc, expense) => acc + (expense.totalamount || 0), 0);
 
           console.log("CombinedData:", CombinedData);
@@ -113,9 +114,9 @@ const Index: React.FC = () => {
     },
     {
       title: 'ค่าหอพัก',
-      dataIndex: 'rent_id',
-      key: 'rent_id',
-      render: (rent_id: number) => `${rent_id.toFixed(2)} `, // แสดงจำนวนเงิน
+      dataIndex: 'dorm_id',
+      key: 'dorm_id',
+      render: (dorm_id: number) => `${dorm_id.toFixed(2)} `, // แสดงจำนวนเงิน
     },
     {
       title: 'ค่าไฟฟ้า',

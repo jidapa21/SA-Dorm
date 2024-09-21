@@ -6,5 +6,5 @@ export interface ExpenseInterface {
     rent_id?:       number;
     elec_id?:     number;
     water_id?:     number;
-    student_id?:    string;
+    reservation_id?:    string;
 }

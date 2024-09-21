@@ -47,7 +47,6 @@ func SetupDatabase() {
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
 
-		&entity.RentFee{},
 		&entity.WaterFee{},
 		&entity.ElectricityFee{},
 		&entity.Expense{},
@@ -69,10 +68,10 @@ func SetupDatabase() {
 	db.FirstOrCreate(&GenderMale, &entity.Genders{Gender: "Male"})
 	db.FirstOrCreate(&GenderFemale, &entity.Genders{Gender: "Female"})
 
-	DormMale1 := entity.Dorm{Type: "หอพักชาย 1", GenderID: GenderMale.ID}
-	DormMale2 := entity.Dorm{Type: "หอพักชาย 2", GenderID: GenderMale.ID}
-	DormFemale3 := entity.Dorm{Type: "หอพักหญิง 3", GenderID: GenderFemale.ID}
-	DormFemale4 := entity.Dorm{Type: "หอพักหญิง 4", GenderID: GenderFemale.ID}
+	DormMale1 := entity.Dorm{DormName: "หอพักชาย 1", Type: "มีเครื่องปรับอากาศ", GenderID: GenderMale.ID, Amount: 6500}
+	DormMale2 := entity.Dorm{DormName: "หอพักชาย 2", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderMale.ID, Amount: 2900}
+	DormFemale3 := entity.Dorm{DormName: "หอพักหญิง 3", Type: "มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 6500}
+	DormFemale4 := entity.Dorm{DormName: "หอพักหญิง 4", Type: "ไม่มีเครื่องปรับอากาศ", GenderID: GenderFemale.ID, Amount: 2900}
 	db.FirstOrCreate(&DormMale1, &entity.Dorm{Type: "หอพักชาย 1"})
 	db.FirstOrCreate(&DormMale2, &entity.Dorm{Type: "หอพักชาย 2"})
 	db.FirstOrCreate(&DormFemale3, &entity.Dorm{Type: "หอพักหญิง 3"})
@@ -185,7 +184,7 @@ db.FirstOrCreate(&repairing1, entity.Repairing{ID: 1})
 		Amount:         150,
 		ReservationID:        reservation.ID,   
 	}
-	db.FirstOrCreate(&electricityFee, entity.Expense{ID:1})
+	db.FirstOrCreate(&electricityFee, entity.ElectricityFee{ID:1})
 
 
 	waterFee := entity.WaterFee{
@@ -195,101 +194,59 @@ db.FirstOrCreate(&repairing1, entity.Repairing{ID: 1})
 	}
 	db.FirstOrCreate(&waterFee, entity.WaterFee{ID:1})
 
-	// สร้างข้อมูล RentFee ตามประเภทหอพัก
-rentFees := []struct {
-	DormType    string
-	Amount      float64
-}{
-	{"หอพักชาย 1", 6500.00},
-	{"หอพักชาย 2", 2900.00},
-	{"หอพักหญิง 3", 6500.00},
-	{"หอพักหญิง 4", 2900.00},
-}
-
-// สร้าง RentFee สำหรับแต่ละประเภทหอพัก
-for _, rf := range rentFees {
-	// ตรวจสอบว่ามี RentFee สำหรับ DormType นี้อยู่แล้วหรือไม่
-	var existingRentFee entity.RentFee
-	result := db.Where("amount = ? AND reservation_id IN (?)", rf.Amount, db.Model(&entity.Dorm{}).Where("type = ?", rf.DormType).Select("id")).First(&existingRentFee)
-
-	if result.Error != nil {
-		// ถ้าไม่พบ RentFee ที่มีอยู่แล้ว ให้สร้างใหม่
-		var dorm entity.Dorm
-		db.Where("type = ?", rf.DormType).First(&dorm)
-		if dorm.ID != 0 {
-			rentFee := entity.RentFee{
-				Amount:        rf.Amount,
-				ReservationID: dorm.ID, // เชื่อมโยงกับ Dorm
-			}
-			db.Create(&rentFee)
-		}
-	} else {
-		// ถ้าพบ RentFee ที่มีอยู่แล้ว สามารถอัปเดตข้อมูลได้ที่นี่
-		db.Model(&existingRentFee).Updates(entity.RentFee{Amount: rf.Amount})
-	}
-}
 	// ดึงข้อมูล Reservation พร้อมกับ Dorm ที่เกี่ยวข้อง
-	var reservations1 []entity.Reservation
-	db.Preload("Dorm").Find(&reservations1) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
-
-	var rentFee entity.RentFee
-	for _, reservation := range reservations1 {
-		var amount float64
-
-		// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
-		switch reservation.Dorm.Type {
-		case "หอพักชาย 1", "หอพักหญิง 3":
-			amount = 6500.00
-		case "หอพักชาย 2", "หอพักหญิง 4":
-			amount = 2900.00
-		}
-
-		// สร้างข้อมูล RentFee
-		rentFee = entity.RentFee{
-			Amount:        	amount,
-			ReservationID: 	reservation.ID, // เชื่อมโยงกับ Reservation
-		}
-		// ตรวจสอบว่ามี RentFee ที่มี ReservationID นี้อยู่แล้วหรือไม่
-		db.Where("reservation_id = ?", reservation.ID).FirstOrCreate(&rentFee)
+	var reservations []entity.Reservation
+	db.Preload("Dorm").Find(&reservations) // ใช้ Preload เพื่อดึงข้อมูล Dorm ด้วย
+	if reservation.Dorm.Type == "" {
+		fmt.Println("Dorm type is empty or invalid.")
+	} else {
+		fmt.Println("Dorm type:", reservation.Dorm.Type)
+	}
+	
+	// ดึงข้อมูล Dorm โดยใช้ ID
+	var dorm entity.Dorm
+	result := db.First(&dorm, reservation.DormID) // ค้นหาจาก ID ของ Dorm
+	if result.Error != nil {
+		fmt.Println("Error retrieving dorm:", result.Error)
+	} else {
+		fmt.Println("Dorm retrieved:", dorm)
 	}
 
-	// ตรวจสอบว่ามี record นี้อยู่แล้วหรือไม่ ถ้าไม่มีให้สร้างใหม่
-	result := db.Where("amount = ?", electricityFee.Amount).FirstOrCreate(&electricityFee)
-
-	// หากพบ record อยู่แล้ว สามารถอัพเดตข้อมูลเพิ่มเติมได้ที่นี่
-	if result.RowsAffected > 0 {
-		// อัพเดตข้อมูลที่มีอยู่
-		db.Model(&electricityFee).Updates(entity.ElectricityFee{Amount: 150.00})
-	}
-
-	// Seed ข้อมูล Expense (รวม RentFee, WaterFee, ElectricityFee)
-	totalAmount := float64(rentFee.Amount) + float64(waterFee.Amount) + float64(electricityFee.Amount)
+	// Seed ข้อมูล Expense (รวม Dorm, WaterFee, ElectricityFee)
+	totalAmount := float64(dorm.Amount) + float64(waterFee.Amount) + float64(electricityFee.Amount)
 	
 	expense := entity.Expense{
-		Date:           time.Now(),
-		Status:           "กำลังดำเนินการ",
-		RentFeeID:        reservation.DormID,        // เชื่อมโยง RentFee
-		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
-		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
+		ID:					1,
+		Date:           	time.Now(),
+		Status:           	"กำลังดำเนินการ",
+		DormID:        		dorm.ID,        
+		WaterFeeID:       	waterFee.ID,       // เชื่อมโยง WaterFee
+		ElectricityFeeID: 	electricityFee.ID, // เชื่อมโยง ElectricityFee
 		TotalAmount: 		totalAmount,
-		StudentID:			reservation.StudentID,
-		AdminID:        1,
+		ReservationID:    	reservation.ID,
+		AdminID:        	1,
 	
 	}
-	db.FirstOrCreate(&expense, entity.Expense{Status:"กำลังดำเนินการ"})
-	
 
+		result1 := db.FirstOrCreate(&expense, entity.Expense{ID:1})
+	if result1.Error != nil {
+		fmt.Println("Error creating expense:", result1.Error)
+	} else {
+		fmt.Println("Expense created successfully:", expense)
+	}
+
+	// ดึงข้อมูล Expense พร้อมข้อมูลที่เกี่ยวข้อง
 	var expense1 entity.Expense
-	db.Preload("RentFee").Preload("WaterFee").Preload("ElectricityFee").First(&expense1, expense.ID)
+	db.Preload("Dorm").Preload("WaterFee").Preload("ElectricityFee").First(&expense1, expense.ID)
 
 	// Seed ข้อมูล Slip 
 	slip := entity.Slip{
 		Path:           "1667801636944.jpg",
-		AdminID:        1,       
-		//ExpenseID:      expense.ID,      
+		AdminID:        1,            
 	}
 	db.FirstOrCreate(&slip, entity.Slip{Path:"รูปสลิป"})
-}
+	}
+
 	
 func seedFamilyStatuses() {
 	familyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}

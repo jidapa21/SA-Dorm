@@ -14,7 +14,6 @@ func CreateExpense(c *gin.Context) {
     var sid entity.Students
 	var dorm entity.Dorm
 	var reservation entity.Reservation
-	var rentfee entity.RentFee
 	var waterfee entity.WaterFee
 	var electricityfee entity.ElectricityFee
 
@@ -51,9 +50,9 @@ func CreateExpense(c *gin.Context) {
 	// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
 	switch dorm.Type {
 	case "หอพักชาย 1", "หอพักหญิง 3":
-		rentfee.Amount = 6500.00 // ราคา 6500 สำหรับหอพักชาย 1 และหอพักหญิง 3
+		dorm.Amount = 6500.00 // ราคา 6500 สำหรับหอพักชาย 1 และหอพักหญิง 3
 	case "หอพักชาย 2", "หอพักหญิง 4":
-		rentfee.Amount = 2900.00 // ราคา 2900 สำหรับหอพักชาย 2 และหอพักหญิง 4
+		dorm.Amount = 2900.00 // ราคา 2900 สำหรับหอพักชาย 2 และหอพักหญิง 4
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dorm type"})
 		return
@@ -81,19 +80,21 @@ func CreateExpense(c *gin.Context) {
 	}
 
 	// คำนวณยอดรวมทั้งหมด (ใช้ dormRate สำหรับค่าหอพัก)
-	totalAmount := rentfee.Amount + waterfee.Amount + electricityfee.Amount
+	totalAmount := dorm.Amount + waterfee.Amount + electricityfee.Amount
 	
 
 	rp := entity.Expense{
-		Date:        expense.Date,
-        Status:            expense.Status,
-        RentFeeID:         rentfee.ID,
-        RentFee:          &rentfee,
-        WaterFeeID:        waterfee.ID,
-        WaterFee:         &waterfee,
-        ElectricityFeeID: electricityfee.ID,
-        ElectricityFee:  &electricityfee,
-		TotalAmount:       totalAmount,
+		Date:        		expense.Date,
+        Status:            	expense.Status,
+        DormID:         	dorm.ID,
+        Dorm:				&dorm,
+        WaterFeeID:        	waterfee.ID,
+        WaterFee:         	&waterfee,
+        ElectricityFeeID: 	electricityfee.ID,
+        ElectricityFee:  	&electricityfee,
+		TotalAmount:       	totalAmount,
+		ReservationID:    reservation.ID,
+		Reservation:      reservation,
     }
     // ส่งข้อมูลออกไป
 	c.JSON(http.StatusCreated, gin.H{
@@ -131,7 +132,7 @@ func ListExpense(c *gin.Context) {
 	// ดึงรายการค่าใช้จ่าย
 	var expenses []entity.Expense
 	db := config.DB()
-	if err := db.Preload("RentFee").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
+	if err := db.Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
 	  c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
 	  return
 	}

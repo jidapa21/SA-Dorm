@@ -392,14 +392,14 @@ async function fetchExpenses(): Promise<ExpenseInterface[]> {
 
 //-----------------------------Rentfee-------------------------------------
 
-async function ListRentFees() {
+async function ListDormFees() {
   const requestOptions = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   };
-  let res = await fetch(`/list-rentfees`, requestOptions)
+  let res = await fetch(`/list-dorms`, requestOptions)
     .then((res) => {
       if (res.status == 200) {
         return res.json();
@@ -411,21 +411,21 @@ async function ListRentFees() {
   }
         
   
-  async function  CreateRentFee(data: RentInterface) {
+  async function  CreateDormFee(data: RentInterface) {
     return await axios
-    .post(`/create-rentfee`, data, requestOptions)
+    .post(`/create-dormfee`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
   }
   
-  async function GetRentFee() {
+  async function GetDormFee() {
     const requestOptions = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
     };
-    let res = await fetch(`/get-rentfee/:id`, requestOptions)
+    let res = await fetch(`/get-dorm/:id`, requestOptions)
       .then((res) => {
         if (res.status == 200) {
           return res.json();
@@ -597,9 +597,9 @@ export {
   ListWaterFees,
   CreateWaterFee,
   GetWaterFee,
-  //---------------------------Rentfee---------------
-  ListRentFees,
-  CreateRentFee,
-  GetRentFee,
+  //---------------------------Dorm---------------
+  ListDormFees,
+  CreateDormFee,
+  GetDormFee,
 
 };
