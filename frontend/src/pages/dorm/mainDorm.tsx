@@ -118,7 +118,7 @@ const MainDorm: React.FC = () => {
     };
 
     fetchAllRooms(); 
-    fetchStudentReservations(); // เรียกฟังก์ชันดึงการจองห้องของนักศึกษา
+    fetchStudentReservations(); 
   }, [dorm]); 
 
   const updateReservationsCount = async () => {
@@ -135,6 +135,10 @@ const MainDorm: React.FC = () => {
       }))
     );
   };
+
+  useEffect(() => {
+    console.log("Student Reservations: ", studentReservations);
+  }, [studentReservations]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -169,10 +173,13 @@ const MainDorm: React.FC = () => {
             {rooms.map((room, index) => {
               const currentCount = count[index];
               const isFull = currentCount >= 3; 
-              const isReserved = studentReservations.some(res => res.ID === room.ID); // เช็คว่ามีการจองห้องนี้ไหม
+              const isReserved = studentReservations.some(res => res.ID === room.ID);
+              
+              // ตรวจสอบค่าที่ถูกต้อง
+              console.log(`Room ID: ${room.ID}, Is Reserved: ${isReserved}, Current Count: ${currentCount}`);
 
               const roomStyle = isFull ? { ...style, backgroundColor: 'red', color: 'white' } : 
-                isReserved ? { ...style, backgroundColor: 'green', color: 'white' } : style; // เปลี่ยนสีเป็นเขียวหากจองไว้
+                            isReserved ? { ...style, backgroundColor: 'green', color: 'white' } : style;
 
               return (
                 <div key={room.ID} style={roomStyle} onClick={() => showModal(room)}>

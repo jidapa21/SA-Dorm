@@ -107,6 +107,7 @@ func GetReservationsByRoomID(c *gin.Context) {
 	c.JSON(http.StatusOK, reservations)
 }
 
+
 func GetReservationsByStudentID(c *gin.Context) {
 	studentID := c.Param("studentID") // รับ studentID จาก URL
 	db := config.DB()

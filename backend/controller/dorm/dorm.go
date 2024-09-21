@@ -67,3 +67,27 @@ func UpdateDorm(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
 }
+
+func GetDormByRoomID(c *gin.Context) {
+    roomID := c.Param("room_id")
+
+    var reservations []entity.Reservation
+    var dorms []entity.Dorm
+
+    db := config.DB()
+    // ดึงข้อมูลการจองจากฐานข้อมูล
+    if err := db.Where("room_id = ?", roomID).Preload("Dorm").Find(&reservations).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลการจอง"})
+        return
+    }
+
+    // สร้าง slice ของหอพักจากการจอง
+    for _, reservation := range reservations {
+        var dorm entity.Dorm
+        if err := db.Where("id = ?", reservation.DormID).First(&dorm).Error; err == nil {
+            dorms = append(dorms, dorm)
+        }
+    }
+
+    c.JSON(http.StatusOK, dorms)
+}

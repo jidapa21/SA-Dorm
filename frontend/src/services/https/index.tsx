@@ -375,6 +375,29 @@ async function UpdateDorm(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+/*async function GetAmountByID(id: number) {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const res = await fetch(`${apiUrl}/dormsAmount/${id}`, requestOptions)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        console.error("Error fetching amount:", response.statusText);
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.error("Fetch error:", error);
+      return false;
+    });
+  return res;
+}*/
+
 
 //------------Room------------//
 async function GetRoom(id: number) {
@@ -501,6 +524,18 @@ async function GetStudentsByRoomID(roomID: number) {
   }
 }
 
+async function GetDormByRoomID(roomID : number) {
+  try {
+      const response = await axios.get(`${apiUrl}/reservations/${roomID}/dorm`, requestOptions);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          return { error: error.response ? error.response.data : "An error occurred" };
+      }
+      return { error: "An unknown error occurred" };
+  }
+}
+
 async function GetUserRoom(userID: number) {
   try {
     const response = await axios.get(`${apiUrl}/check-user-room/${userID}`, requestOptions);
@@ -580,6 +615,7 @@ export {
   GetDorm,
   ListDorms,
   UpdateDorm,
+  //GetAmountByID,
   //------------Room------------//
   GetRoom,
   ListRoom,
@@ -592,5 +628,6 @@ export {
   GetReservationsByRoomID,
   GetUserRoom,
   getStudentGender,
-  GetReservationsByStudentID
+  GetReservationsByStudentID,
+  GetDormByRoomID
 };

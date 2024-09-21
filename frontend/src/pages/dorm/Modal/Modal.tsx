@@ -1,66 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Row, Col, Divider, Table, Button, message } from "antd"; 
-import type { TableProps } from "antd"; 
-import { CreateReservation, GetReservationsByRoomID, 
-        GetStudentsByRoomID, GetReservationsByStudentID } from "../../../services/https";
+import { Modal, Row, Col, Divider, Table, Button, message } from "antd";
+import type { TableProps } from "antd";
+import {
+  CreateReservation,
+  GetReservationsByRoomID,
+  GetStudentsByRoomID,
+  GetReservationsByStudentID,
+} from "../../../services/https";
 import { ReservationInterface } from "../../../interfaces/Reservation";
-import { RoomInterface } from "../../../interfaces/Room"; 
+import { RoomInterface } from "../../../interfaces/Room";
 import axios from "axios";
 import "./Bsub.css";
 
-interface ReviewModelProps {
-  isVisible: boolean;  
+interface ReviewModalProps {
+  isVisible: boolean;
   handleCancel: () => void;
-  room: RoomInterface | null;  
-  dorm_id: number; 
-  room_id?: number; 
-  updateReservationsCount: () => Promise<void>; 
-  amount?: number;
+  room: RoomInterface | null;
+  dorm_id: number;
+  room_id?: number;
+  updateReservationsCount: () => Promise<void>;
+  amount: number;
 }
 
-const ModalTest: React.FC<ReviewModelProps> = ({
+const ModalTest: React.FC<ReviewModalProps> = ({
   isVisible,
   handleCancel,
   room,
-  dorm_id, 
+  dorm_id,
   room_id,
-  updateReservationsCount 
+  updateReservationsCount,
 }) => {
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set()); 
+  const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set());
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState<boolean>(true);
-  const [studentID] = useState<number>(6); // ID นักเรียนตัวอย่าง
+  const [studentID] = useState<number>(4); // ID นักเรียนตัวอย่าง
+  //const [roomPrice, setRoomPrice] = useState<number | null>(null); // เพิ่ม state สำหรับราคาห้อง
+
 
   const columns: TableProps<any>["columns"] = [
     { title: "รหัสนักศึกษา", dataIndex: "StudentID", key: "StudentID" },
     { title: "ชื่อ - นามสกุล", dataIndex: "name", key: "name" },
     { title: "สำนัก", dataIndex: "major", key: "major" },
     { title: "ชั้นปี", dataIndex: "year", key: "year" },
-    { title: "ค่าห้อง", dataIndex: "amount", key: "amount" }
+    { title: "ค่าห้อง", dataIndex: "amount", key: "amount" },
   ];
 
+  
   const fetchStudents = async () => {
     setLoading(true);
     setStudents([]);
     setReservedStudentIDs(new Set());
-
+  
     if (room && room.ID) {
       try {
         const result = await GetStudentsByRoomID(room.ID);
+        console.log(`Fetching dorm with amount: ${room.Dorm.amount}`);
+        console.log(`Fetching dorm with room_id: ${room.ID}`);
+
         if (Array.isArray(result)) {
-          const formattedStudents = result.map(student => ({
+          const formattedStudents = result.map((student) => ({
             StudentID: student.student_id || "ไม่ระบุ",
             name: `${student.first_name || "ไม่ระบุ"} ${student.last_name || "ไม่ระบุ"}`,
             major: student.major || "ไม่ระบุ",
             year: student.year || "ไม่ระบุ",
-            amount: "2,900" || 'ไม่ระบุ', 
-          }));
-
+            amount: room.Dorm.amount || "ไม่ระบุ",
+          }));          
           setStudents(formattedStudents);
-          const reservedIDs = new Set(result.map(student => student.StudentID));
+          const reservedIDs = new Set(result.map((student) => student.StudentID));
           setReservedStudentIDs(reservedIDs);
           setIsConfirmButtonDisabled(reservedIDs.has(studentID));
+        } else {
+          setIsConfirmButtonDisabled(false);
         }
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -71,7 +82,8 @@ const ModalTest: React.FC<ReviewModelProps> = ({
     } else {
       setLoading(false);
     }
-  };
+  };   
+
 
   useEffect(() => {
     if (isVisible) {
@@ -84,7 +96,7 @@ const ModalTest: React.FC<ReviewModelProps> = ({
       message.error("Room information is missing.");
       return;
     }
-  
+
     // ตรวจสอบว่าผู้เรียนได้จองห้องไว้หรือไม่
     try {
       const studentReservations = await GetReservationsByStudentID(studentID);
@@ -92,7 +104,7 @@ const ModalTest: React.FC<ReviewModelProps> = ({
         message.warning("นักเรียนได้จองห้องแล้ว กรุณายกเลิกการจองห้องก่อนจองห้องใหม่");
         return;
       }
-  
+
       const reservations = await GetReservationsByRoomID(room.ID);
       if (reservations.length >= 3) {
         message.error("Room is already fully booked.");
@@ -103,21 +115,21 @@ const ModalTest: React.FC<ReviewModelProps> = ({
       message.error("ไม่สามารถตรวจสอบจำนวนการจองได้");
       return;
     }
-  
+
     const reservationData: ReservationInterface = {
       ID: undefined,
       reservation_date: new Date(),
-      student_id: studentID, 
+      student_id: studentID,
       dorm_id: dorm_id,
-      room_id: room_id
+      room_id: room_id,
     };
-  
+
     try {
       await CreateReservation(reservationData);
       message.success("จองห้องสำเร็จ!");
-      await updateReservationsCount(); 
-  
-      setTimeout(() => handleCancel(), 1000); 
+      await updateReservationsCount();
+
+      setTimeout(() => handleCancel(), 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         message.error(error.response?.data.message || "An error occurred.");
@@ -125,17 +137,17 @@ const ModalTest: React.FC<ReviewModelProps> = ({
         message.error("An unexpected error occurred.");
       }
     }
-  };  
+  };
 
   const handleModalClose = async () => {
-    handleCancel(); 
+    handleCancel();
   };
 
   return (
     <Modal
       title={`ห้อง ${room ? room.room_number : "Loading..."}`}
-      visible={isVisible}
-      onCancel={handleModalClose} 
+      open={isVisible}
+      onCancel={handleModalClose}
       footer={null}
       centered
     >
@@ -147,25 +159,20 @@ const ModalTest: React.FC<ReviewModelProps> = ({
             </Col>
           </Row>
           <Divider />
-          
+
           {loading ? (
-            <p>กำลังโหลดข้อมูล...</p> 
+            <p>กำลังโหลดข้อมูล...</p>
           ) : students.length === 0 ? (
-            <p>ยังไม่มีผู้จอง</p> 
+            <p>ยังไม่มีผู้จอง</p>
           ) : (
-            <Table 
-              columns={columns} 
-              dataSource={students} 
-              pagination={false} 
-              loading={loading} 
-            />
+            <Table columns={columns} dataSource={students} pagination={false} loading={loading} />
           )}
 
           <div className="flex-right">
-            <Button 
-              type="primary" 
-              onClick={handleConfirm} 
-              disabled={isConfirmButtonDisabled}
+            <Button
+              type="primary"
+              onClick={handleConfirm}
+              disabled={isConfirmButtonDisabled} // ปิดการใช้งานปุ่มตามเงื่อนไข
             >
               ยืนยัน
             </Button>
