@@ -194,6 +194,7 @@ const MainDorm: React.FC = () => {
         dorm_id={dorm}
         room_id={selectedRoom ? selectedRoom.ID : 0}
         updateReservationsCount={updateReservationsCount}
+        amount={dorm}
       />
     </>
   );

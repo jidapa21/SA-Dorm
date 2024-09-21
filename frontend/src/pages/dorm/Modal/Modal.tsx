@@ -15,6 +15,7 @@ interface ReviewModelProps {
   dorm_id: number; 
   room_id?: number; 
   updateReservationsCount: () => Promise<void>; 
+  amount?: number;
 }
 
 const ModalTest: React.FC<ReviewModelProps> = ({
@@ -53,7 +54,7 @@ const ModalTest: React.FC<ReviewModelProps> = ({
             name: `${student.first_name || "ไม่ระบุ"} ${student.last_name || "ไม่ระบุ"}`,
             major: student.major || "ไม่ระบุ",
             year: student.year || "ไม่ระบุ",
-            roomRate: "2,900" 
+            amount: "2,900" || 'ไม่ระบุ', 
           }));
 
           setStudents(formattedStudents);
