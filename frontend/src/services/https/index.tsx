@@ -438,21 +438,9 @@ async function UpdateRoom(id: number) {
     .catch((e) => e.response);
 }
 //------------Reservation------------//
-/*export const CreateReservation = async (data: ReservationInterface) => {
+async function CreateReservation(data: ReservationInterface) {
   try {
-      const response = await axios.post(`${apiUrl}/CreateReservation`, data);
-      return response.data;
-  } catch (error) {
-      if (axios.isAxiosError(error)) {
-          throw new Error(error.response?.data.message || "Error creating reservation");
-      }
-      throw new Error("Error creating reservation");
-  }
-};*/
-
-export const CreateReservation = async (data: ReservationInterface) => {
-  try {
-    const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+    const response = await axios.post(`${apiUrl}/CreateReservation`, data, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -469,6 +457,12 @@ export const CreateReservation = async (data: ReservationInterface) => {
     }
   }
 };
+/*async function CreateReservation(data: ReservationInterface) {
+  return await axios
+    .post(`${apiUrl}/CreateReservation`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}*/
 
 
 
@@ -487,7 +481,7 @@ async function GetReservationsByRoomID(roomID: number) {
 // ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
 async function GetReservationsByStudentID(studentID: number): Promise<any> {
   try {
-    const response = await axios.get(`${apiUrl}/reservations/student/${studentID}`);
+    const response = await axios.get(`${apiUrl}/reservations/student/${studentID}`, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -629,5 +623,6 @@ export {
   GetUserRoom,
   getStudentGender,
   GetReservationsByStudentID,
-  GetDormByRoomID
+  GetDormByRoomID,
+  CreateReservation
 };

@@ -16,7 +16,7 @@ import { RoomInterface } from "./../../interfaces/Room";
   };
 }*/
 
-const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1, dormId = 1 }) => {
+/*const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1, dormId = 1 }) => {
   const [rooms, setRooms] = useState<RoomInterface[]>([]); // Change to an array of Room
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1
             <p><strong>Floor:</strong> {room.Floor}</p>
             <p><strong>Dorm Name:</strong> {room.Dorm.dorm_name}</p>
             <p><strong>Gender:</strong> {room.Dorm.Gender.Gender}</p>
-            <hr /> {/* Add a separator between rooms */}
+            <hr />
           </div>
         ))
       ) : (
@@ -76,4 +76,5 @@ const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1
   );
 };
 
-export default RoomDetail;
+
+export default RoomDetail;*/

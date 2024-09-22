@@ -18,7 +18,7 @@ const Listpages: React.FC = () => {
   const [dormName, setDormName] = useState<string | null>(null);
 
   useEffect(() => {
-    const userID = 7;
+    const userID = 1;
 
     const fetchUserRoom = async () => {
       try {

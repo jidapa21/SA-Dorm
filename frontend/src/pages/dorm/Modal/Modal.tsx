@@ -34,8 +34,8 @@ const ModalTest: React.FC<ReviewModalProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set());
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState<boolean>(true);
-  const [studentID] = useState<number>(6); // ID นักเรียนตัวอย่าง
-  //const [roomPrice, setRoomPrice] = useState<number | null>(null); // เพิ่ม state สำหรับราคาห้อง
+  const SID = localStorage.getItem("id"); // เรียก ID นักศึกษา (string)
+  const studentID = SID ? parseInt(SID, 10) : null; // แปลงเป็น number หรือ null
 
 
   const columns: TableProps<any>["columns"] = [
@@ -93,51 +93,54 @@ const ModalTest: React.FC<ReviewModalProps> = ({
 
   const handleConfirm = async () => {
     if (!room) {
-      message.error("Room information is missing.");
+      message.error("ข้อมูลห้องไม่ถูกต้อง");
       return;
     }
-
-    // ตรวจสอบว่าผู้เรียนได้จองห้องไว้หรือไม่
+  
+    if (studentID === null) {
+      message.error("ID นักเรียนไม่พบ");
+      return;
+    }
+  
     try {
+      // Check if the student has any existing reservations
       const studentReservations = await GetReservationsByStudentID(studentID);
       if (studentReservations.length > 0) {
         message.warning("นักเรียนได้จองห้องแล้ว กรุณายกเลิกการจองห้องก่อนจองห้องใหม่");
         return;
       }
-
+  
+      // Check if the room is already fully booked
       const reservations = await GetReservationsByRoomID(room.ID);
       if (reservations.length >= 3) {
-        message.error("Room is already fully booked.");
+        message.error("ห้องนี้ถูกจองเต็มแล้ว");
         return;
       }
-    } catch (error) {
-      console.error("Error fetching reservations count:", error);
-      message.error("ไม่สามารถตรวจสอบจำนวนการจองได้");
-      return;
-    }
-
-    const reservationData: ReservationInterface = {
-      ID: undefined,
-      reservation_date: new Date(),
-      student_id: studentID,
-      dorm_id: dorm_id,
-      room_id: room_id,
-    };
-
-    try {
+  
+      // Proceed to create a new reservation
+      const reservationData: ReservationInterface = {
+        ID: undefined,
+        reservation_date: new Date(),
+        student_id: studentID,
+        dorm_id: dorm_id,
+        room_id: room_id,
+      };
+  
       await CreateReservation(reservationData);
       message.success("จองห้องสำเร็จ!");
       await updateReservationsCount();
-
+  
+      // Close the modal after a short delay
       setTimeout(() => handleCancel(), 1000);
     } catch (error) {
+      console.error("Error during reservation:", error);
       if (axios.isAxiosError(error)) {
-        message.error(error.response?.data.message || "An error occurred.");
+        message.error(error.response?.data.message || "เกิดข้อผิดพลาดในการจองห้อง");
       } else {
-        message.error("An unexpected error occurred.");
+        message.error("เกิดข้อผิดพลาดที่ไม่คาดคิด");
       }
     }
-  };
+  };  
 
   const handleModalClose = async () => {
     handleCancel();
