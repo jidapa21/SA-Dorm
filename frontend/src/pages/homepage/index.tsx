@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './index.css';
+//import './index.css';
 import { Layout, List, Card, Typography, message } from 'antd';
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { GetLatestAnnouncements } from '../../services/https';
@@ -14,7 +14,7 @@ const { Title, Text } = Typography;
 
 const App: React.FC = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementInterface[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
