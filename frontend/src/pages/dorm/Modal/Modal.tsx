@@ -34,7 +34,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set());
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState<boolean>(true);
-  const [studentID] = useState<number>(4); // ID นักเรียนตัวอย่าง
+  const [studentID] = useState<number>(6); // ID นักเรียนตัวอย่าง
   //const [roomPrice, setRoomPrice] = useState<number | null>(null); // เพิ่ม state สำหรับราคาห้อง
 
 

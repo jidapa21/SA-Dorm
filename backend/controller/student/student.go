@@ -128,15 +128,16 @@ func UpdateStudent(c *gin.Context) {
 }
 
 // GetStudentsByRoomID ดึงข้อมูลนักศึกษาจากห้อง
-func GetStudentsByRoomID(c *gin.Context) {
+/*func GetStudentsByRoomID(c *gin.Context) {
     roomID := c.Param("room_id")
 
     var reservations []entity.Reservation
     var students []entity.Students
+	var dorms []entity.Dorm
 
     db := config.DB()
     // ดึงข้อมูลการจองจากฐานข้อมูล
-    if err := db.Where("room_id = ?", roomID).Preload("Student").Find(&reservations).Error; err != nil {
+    if err := db.Where("room_id = ?", roomID).Preload("Dorm").Preload("Student").Find(&reservations).Error; err != nil {
         c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
         return
     }
@@ -144,9 +145,49 @@ func GetStudentsByRoomID(c *gin.Context) {
     // สร้าง slice ของนักศึกษาจากการจอง
     for _, reservation := range reservations {
         var student entity.Students
+		var dorm entity.Dorm
         // ดึงข้อมูลนักศึกษาโดยใช้ StudentID
-        db.Where("id = ?", reservation.StudentID).First(&student)
+        db.Where("id = ?", reservation.StudentID).First(&student).First(&dorm)
         students = append(students, student)
+		dorms = append(dorms, dorm)
+    }
+
+	c.JSON(http.StatusOK, students)
+    c.JSON(http.StatusOK, dorms)
+}*/
+
+func GetStudentsByRoomID(c *gin.Context) {
+    roomID := c.Param("room_id")
+
+    var reservations []entity.Reservation
+
+    db := config.DB()
+    // ดึงข้อมูลการจองจากฐานข้อมูล
+    if err := db.Where("room_id = ?", roomID).Preload("Dorm").Preload("Student").Find(&reservations).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
+        return
+    }
+
+    // สร้าง slice ของข้อมูลนักศึกษา
+    var students []map[string]interface{} // ใช้ map เพื่อเก็บข้อมูลรวม
+
+    // สร้างข้อมูลนักศึกษาจากการจอง
+    for _, reservation := range reservations {
+        var student entity.Students
+        // ดึงข้อมูลนักศึกษาโดยใช้ StudentID
+        if err := db.Where("id = ?", reservation.StudentID).First(&student).Error; err == nil {
+            // สร้าง map สำหรับข้อมูลนักศึกษา
+            studentData := map[string]interface{}{
+                "student_id": student.StudentID,
+                "first_name": student.FirstName,
+                "last_name":  student.LastName,
+                "major":      student.Major,
+                "year":       student.Year,
+                "amount":     reservation.Dorm.Amount, // ดึงค่าห้องจาก Dorm
+				"room_number":reservation.Room.RoomNumber,
+            }
+            students = append(students, studentData)
+        }
     }
 
     c.JSON(http.StatusOK, students)

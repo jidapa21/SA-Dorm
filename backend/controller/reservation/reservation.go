@@ -121,12 +121,12 @@ func GetReservationsByStudentID(c *gin.Context) {
 	c.JSON(http.StatusOK, reservations)
 }
 
-func CheckUserRoom(c *gin.Context) {
+func GetUserRoom(c *gin.Context) {
 	userID := c.Param("userID") // รับ userID จาก URL
 	db := config.DB()
 
 	var reservations []entity.Reservation
-	if err := db.Where("student_id = ?", userID).Preload("Room").Find(&reservations).Error; err != nil {
+	if err := db.Where("student_id = ?", userID).Preload("Room").Preload("Dorm").Find(&reservations).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
 		return
 	}
@@ -138,6 +138,7 @@ func CheckUserRoom(c *gin.Context) {
 			"room_id": reservation.RoomID,
 			"room_number": reservation.Room.RoomNumber,
 			"dorm_id": reservation.DormID,
+			"dorm_name": reservation.Dorm.DormName,
 		})
 	}
 
