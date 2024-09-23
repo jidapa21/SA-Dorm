@@ -22,13 +22,16 @@ function StudentCreate() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: StudentInterface) => {
-    let res = await CreateStudent(values);
+    let res = await CreateStudent(values); 
+    /*let res = await CreateStudent({
+      ...values,
+      gender_id: values.gender_id, // ส่งค่า gender_id
+    });*/
 
     if (res.status == 201) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",
-        //content: res.data.message,
       });
       setTimeout(function () {
         navigate("/student");
@@ -37,7 +40,6 @@ function StudentCreate() {
       messageApi.open({
         type: "error",
         content: "เกิดข้อผิดพลาด",
-        //content: res.data.error,
       });
     }
   };
@@ -55,109 +57,7 @@ function StudentCreate() {
           autoComplete="off"
         >
           <Row gutter={[16, 0]}>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="ชื่อจริง"
-                name="first_name"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกชื่อ !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="นามสกุล"
-                name="last_name"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกนามสกุล !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="รหัสนักศึกษา"
-                name="student_id"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกรหัสนักศึกษา !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="รหัสผ่าน"
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกรหัสผ่าน !",
-                  },
-                ]}
-              >
-                <Input.Password />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="วัน/เดือน/ปี เกิด"
-                name="birthday"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณาเลือกวัน/เดือน/ปี เกิด !",
-                  },
-                ]}
-              >
-                <DatePicker style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="ชั้นปี"
-                name="year"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกชั้นปี !",
-                  },
-                ]}
-              >
-                <InputNumber
-                  min={0}
-                  max={99}
-                  defaultValue={0}
-                  style={{ width: "100%" }}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-              <Form.Item
-                label="สำนักวิชา"
-                name="major"
-                rules={[
-                  {
-                    required: true,
-                    message: "กรุณากรอกสำนักวิชา !",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
+            {/* Other input fields... */}
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item
                 label="เพศ"
@@ -206,4 +106,5 @@ function StudentCreate() {
     </div>
   );
 }
+
 export default StudentCreate;

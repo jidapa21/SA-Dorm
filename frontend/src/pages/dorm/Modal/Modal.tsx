@@ -99,7 +99,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
     }
 
     if (studentID === null) {
-      message.error("ID นักเรียนไม่พบ");
+      message.error("ไม่พบ ID นักศึกษา");
       return;
     }
 
@@ -114,7 +114,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
       // ตรวจสอบว่าห้องเต็มหรือไม่
       const reservations = await GetReservationsByRoomID(room.ID);
       if (reservations.length >= 3) {
-        message.error("ห้องนี้ถูกจองเต็มแล้ว");
+        message.error("ห้องนี้จองเต็มแล้ว");
         return;
       }
       const today = new Date();
