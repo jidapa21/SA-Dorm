@@ -128,7 +128,7 @@ func SetupDatabase() {
 	*/
 
 	// Seed ข้อมูล student
-	studentHashedPassword, _ := HashPassword("1234567890123")
+	studentHashedPassword, _ := HashPassword("123")
 	Birthday, _ := time.Parse("2006-01-02", "1988-11-12")
 	User := &entity.Students{
 		FirstName: "Nicha",
@@ -213,16 +213,16 @@ func SetupDatabase() {
     reservation := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
-        DormID:          1,
-        RoomID:          1,
+        DormID:          4,
+        RoomID:          120,
     }
-	reservation2 := &entity.Reservation{
+	/*reservation2 := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
         DormID:          1,
         RoomID:          2,
     }
-	/*reservation3 := &entity.Reservation{
+	reservation3 := &entity.Reservation{
         ReservationDate: ReservationDate,
         StudentID:       User.ID,
         DormID:          1,
@@ -241,9 +241,9 @@ func SetupDatabase() {
         RoomID:          5,
     }*/
 
-    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 1, RoomID: 1})
-	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
-	/*db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
+    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 120})
+	/*db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
+	db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
 	db.FirstOrCreate(reservation4, &entity.Reservation{StudentID: User4.ID, DormID: 1, RoomID: 4})
 	db.FirstOrCreate(reservation5, &entity.Reservation{StudentID: User5.ID, DormID: 1, RoomID: 5})*/
 	

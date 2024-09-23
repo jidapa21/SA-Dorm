@@ -6,6 +6,7 @@ import {
   GetReservationsByRoomID,
   GetStudentsByRoomID,
   GetReservationsByStudentID,
+  UpdateRoom,
 } from "../../../services/https";
 import { ReservationInterface } from "../../../interfaces/Reservation";
 import { RoomInterface } from "../../../interfaces/Room";
@@ -17,7 +18,7 @@ interface ReviewModalProps {
   handleCancel: () => void;
   room: RoomInterface | null;
   dorm_id: number;
-  room_id?: number;
+  room_id: number;
   updateReservationsCount: () => Promise<void>;
   amount: number;
 }
@@ -46,12 +47,12 @@ const ModalTest: React.FC<ReviewModalProps> = ({
     { title: "ค่าห้อง", dataIndex: "amount", key: "amount" },
   ];
 
-  
+
   const fetchStudents = async () => {
     setLoading(true);
     setStudents([]);
     setReservedStudentIDs(new Set());
-  
+
     if (room && room.ID) {
       try {
         const result = await GetStudentsByRoomID(room.ID);
@@ -65,7 +66,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
             major: student.major || "ไม่ระบุ",
             year: student.year || "ไม่ระบุ",
             amount: room.Dorm.amount || "ไม่ระบุ",
-          }));          
+          }));
           setStudents(formattedStudents);
           const reservedIDs = new Set(result.map((student) => student.StudentID));
           setReservedStudentIDs(reservedIDs);
@@ -82,7 +83,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
     } else {
       setLoading(false);
     }
-  };   
+  };
 
 
   useEffect(() => {
@@ -96,40 +97,51 @@ const ModalTest: React.FC<ReviewModalProps> = ({
       message.error("ข้อมูลห้องไม่ถูกต้อง");
       return;
     }
-  
+
     if (studentID === null) {
       message.error("ID นักเรียนไม่พบ");
       return;
     }
-  
+
     try {
-      // Check if the student has any existing reservations
+      // ตรวจสอบว่านักเรียนมีการจองอยู่แล้วหรือไม่
       const studentReservations = await GetReservationsByStudentID(studentID);
       if (studentReservations.length > 0) {
-        message.warning("นักเรียนได้จองห้องแล้ว กรุณายกเลิกการจองห้องก่อนจองห้องใหม่");
+        message.warning("นักศึกษาได้จองห้องพักแล้ว");
         return;
       }
-  
-      // Check if the room is already fully booked
+
+      // ตรวจสอบว่าห้องเต็มหรือไม่
       const reservations = await GetReservationsByRoomID(room.ID);
       if (reservations.length >= 3) {
         message.error("ห้องนี้ถูกจองเต็มแล้ว");
         return;
       }
-  
-      // Proceed to create a new reservation
+      const today = new Date();
+      const reservationDate = new Date(today.setHours(today.getHours() + 7)); // เพิ่ม 7 ชั่วโมง
+
+      // เตรียมข้อมูลสำหรับการจองใหม่
       const reservationData: ReservationInterface = {
         ID: undefined,
-        reservation_date: new Date(),
+        reservation_date: reservationDate, // ใช้เป็น Date
         student_id: studentID,
         dorm_id: dorm_id,
         room_id: room_id,
       };
-  
+
+
       await CreateReservation(reservationData);
+
+      // เตรียมข้อมูลสำหรับการอัปเดตห้อง
+      const roomData: RoomInterface = {
+        ...room,
+        dorm_status: room.dorm_status, // อัปเดตตามความจำเป็น
+      };
+
+      await UpdateRoom(room_id, roomData); // ส่งทั้งสองอาร์กิวเมนต์
       message.success("จองห้องสำเร็จ!");
       await updateReservationsCount();
-  
+
       // Close the modal after a short delay
       setTimeout(() => handleCancel(), 1000);
     } catch (error) {
@@ -140,7 +152,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
         message.error("เกิดข้อผิดพลาดที่ไม่คาดคิด");
       }
     }
-  };  
+  };
 
   const handleModalClose = async () => {
     handleCancel();

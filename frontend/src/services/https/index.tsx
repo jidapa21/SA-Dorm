@@ -431,9 +431,9 @@ async function DeleteRoom(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-async function UpdateRoom(id: number) {
+async function UpdateRoom(id: number, data: RoomInterface) {
   return await axios
-    .put(`${apiUrl}/UpdateRoom/${id}`, requestOptions)
+    .put(`${apiUrl}/UpdateRoom/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }

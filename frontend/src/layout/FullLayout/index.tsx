@@ -36,6 +36,7 @@ const FullLayout: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
   
+  const GenderStudent = localStorage.getItem("gender_id"); // เรียก Gender นักศึกษา (string)
 
   const setCurrentPage = (val: string) => {
     localStorage.setItem("page", val);

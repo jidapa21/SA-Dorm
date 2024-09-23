@@ -90,6 +90,21 @@ func UpdateRoom(c *gin.Context) {
 		return
 	}
 
+	// เช็คว่า Available มีค่ามากกว่า 0 หรือไม่
+	if room.Available > 0 {
+		room.Available -= 1 // ลดค่า Available ลง 1
+
+		// เช็คสถานะของห้อง
+		if room.Available == 0 {
+			room.DormStatus = "ห้องเต็ม"
+		} else {
+			room.DormStatus = "ห้องว่าง"
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot reduce available rooms below zero"})
+		return
+	}
+
 	// บันทึกการเปลี่ยนแปลงของ room
 	result = db.Save(&room)
 	if result.Error != nil {

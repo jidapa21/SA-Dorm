@@ -14,21 +14,24 @@ interface StudentsData {
 const Listpages: React.FC = () => {
   const [students, setStudents] = useState<StudentsData[]>([]);
   const [roomID, setRoomID] = useState<number | null>(null);
-  const [roomNumber, setRoomNumber] = useState<number | null>(null); // เพิ่ม state สำหรับ room_number
+  const [roomNumber, setRoomNumber] = useState<number | null>(null);
   const [dormName, setDormName] = useState<string | null>(null);
 
   useEffect(() => {
-    const userID = 1;
+    const SID = localStorage.getItem("id");
+    const studentID = SID ? parseInt(SID, 10) : null;
 
     const fetchUserRoom = async () => {
+      if (studentID === null) return;
+
       try {
-        const roomData = await GetUserRoom(userID);
+        const roomData = await GetUserRoom(studentID);
         console.log(roomData);
 
         if (Array.isArray(roomData) && roomData.length > 0) {
-          const { room_id, room_number, dorm_name} = roomData[0];
+          const { room_id, room_number, dorm_name } = roomData[0];
           setRoomID(room_id);
-          setRoomNumber(room_number); // เก็บ room_number จากข้อมูลห้อง
+          setRoomNumber(room_number);
           setDormName(dorm_name);
         } else {
           console.error("ไม่พบข้อมูลห้องสำหรับผู้ใช้");
@@ -69,7 +72,7 @@ const Listpages: React.FC = () => {
     };
 
     fetchStudents();
-  }, [roomID, roomNumber]); // เพิ่ม roomNumber ใน dependencies
+  }, [roomID]);
 
   const columns = [
     {
@@ -102,7 +105,7 @@ const Listpages: React.FC = () => {
 
   return (
     <div>
-      <h2>{dormName !== null ? dormName : ""} ห้องพัก {roomNumber !== null ? roomNumber : ""}</h2>
+      <h2>{dormName ? dormName : ""} ห้องพัก {roomNumber ? roomNumber : ""}</h2>
       <Table
         columns={columns}
         dataSource={students}
