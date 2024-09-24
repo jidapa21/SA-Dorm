@@ -36,7 +36,7 @@ type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 export default function RepairCreate() {
   interface StudentInfoRecord extends StudentInterface, DormInterface {
     key: string | null; // Allow null
-    DormID: number | string;
+    dorm_name: string;
     StudentID: string;
     FirstName: string;
     LastName: string;
@@ -157,7 +157,7 @@ export default function RepairCreate() {
           // ถ้ามีหอและห้องพักแล้ว
           if (dataDorm && dataDorm.reservation) {
             const dormData = {
-              DormID: dataDorm.reservation.Dorm.ID || "ไม่มีหอ",
+              dorm_name: dataDorm.reservation.Dorm.dorm_name || "ไม่มีหอ",
               room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
             };
 
@@ -166,7 +166,7 @@ export default function RepairCreate() {
 
             // ถ้าไม่มีหอและห้องพัก
           } else {
-            const dormData = { DormID: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
+            const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
           }
@@ -211,6 +211,7 @@ export default function RepairCreate() {
                 <Col>
                   <Space direction="vertical">
                     <Text>
+                      ผู้รับบริการ{" "}
                       {student.length > 0
                         ? student[0].StudentID
                         : "ไม่พบข้อมูล"}{" "}
@@ -220,9 +221,11 @@ export default function RepairCreate() {
                       {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
                     </Text>
                     <Text>
-                      หอพัก{" "}
-                      {student.length > 0 ? student[0].DormID : "ไม่พบข้อมูล"}{" "}
-                      ห้องพัก{" "}
+                      อาคาร:{" "}
+                      {student.length > 0
+                        ? student[0].dorm_name
+                        : "ไม่พบข้อมูล"}{" "}
+                      ห้อง:{" "}
                       {student.length > 0
                         ? student[0].room_number
                         : "ไม่พบข้อมูล"}
