@@ -1,16 +1,15 @@
 export interface DelayedPaymentFormInterface {
-    status: string;
+    reservation: any;
     ID?:                number;
-    Title?:             string;
-    title?: string;
-    type?: string;
-    date_submission?: Date;
-    Dorm_Payment?:      number;
-    Electricly_Bill?:   number;
-    Water_Bill?:        number;
-    Because_Of?:        string;
-    Due_Date?:          Date;
-    Status?:            string;
+    title?:             string;
+    type?:              string;
+    date_submission?:   Date;
+    dorm_payment?:      number;
+    electricly_bill?:   number;
+    water_bill?:        number;
+    because_of?:        string;
+    due_date?:          Date;
+    status?:            string;
     AdminID?:           string;
     ReservationID?:     string;
 }

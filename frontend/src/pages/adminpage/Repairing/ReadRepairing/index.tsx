@@ -5,7 +5,7 @@ import { RepairInterface } from "../../../../interfaces/repairing";
 
 const { Option } = Select;
 
-const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
+const ReadRepairing: React.FC<{ ID: number }> = ({ ID }) => {
   const [formValues, setFormValues] = useState<RepairInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +16,7 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
       setLoading(true);
       try {
         // ดึงข้อมูลจาก API
-        const response = await GetRepair(Number(repairId));
+        const response = await GetRepair(ID);
         if (response) {
           console.log('Fetched data:', response); // Debug ข้อมูลที่ดึงมา
           setFormValues(response);
@@ -33,18 +33,18 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
     };
 
     fetchRepair();
-  }, [repairId, form]);
+  }, [ID, form]);
 
   const handleStatusChange = async (value: string) => {
     try {
-      await UpdateRepair(repairId, { Status: value });
+      await UpdateRepair(String (ID), { status: value });
       form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
     } catch (error) {
       console.error('Error updating status:', error);
     }
   };
 
-  const imageUrl = formValues?.Image || 'https://via.placeholder.com/600x400';
+  const imageUrl = formValues?.image || 'https://via.placeholder.com/600x400';
 
   return (
     <div className="container" style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
@@ -65,6 +65,8 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
               <Col>
                 <div style={{ marginBottom: '16px', color: '#666' }}>
                 </div>
+                <p>ผู้รับบริการ: {formValues?.reservation?.student?.student_id} {formValues?.reservation?.student?.first_name} {formValues?.reservation?.student?.last_name}</p>
+                <p>อาคาร: {formValues?.reservation?.Dorm?.dorm_name} ห้อง: {formValues?.reservation?.Room?.room_number}</p>
               </Col>
               <Col>
                 <Form.Item
@@ -76,9 +78,9 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
                     style={{ width: '150px' }}
                     onChange={handleStatusChange}
                   >
-                    <Option value="pending" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
-                    <Option value="inProgress" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
-                    <Option value="completed" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                    <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
+                    <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
+                    <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
                   </Select>
                 </Form.Item>
               </Col>

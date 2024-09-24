@@ -35,7 +35,7 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
 
   const handleStatusChange = async (value: string) => {
     try {
-      await UpdateResigningForm( ID, { Status: value });
+      await UpdateResigningForm( ID, { status: value });
       form.setFieldsValue({ Status: value }); // Update form when status changes
     } catch (error) {
       console.error('Error updating status:', error);
@@ -62,8 +62,9 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
             <Row justify="space-between" align="top">
               <Col>
                 <div style={{ marginBottom: '16px', color: '#666' }}>
-                  ผู้ทำเรื่อง: B191563 มนัสเต สวัสดิกะ
                 </div>
+                <p>ผู้รับบริการ: {formValues?.reservation?.student?.student_id} {formValues?.reservation?.student?.first_name} {formValues?.reservation?.student?.last_name}</p>
+                <p>อาคาร: {formValues?.reservation?.Dorm?.dorm_name} ห้อง: {formValues?.reservation?.Room?.room_number}</p>
               </Col>
               <Col>
                 <Form.Item
@@ -75,9 +76,9 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
                     style={{ width: '150px' }}
                     onChange={handleStatusChange}
                   >
-                    <Option value="pending" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
-                    <Option value="inProgress" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
-                    <Option value="completed" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                    <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
+                    <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
+                    <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
                   </Select>
                 </Form.Item>
               </Col>

@@ -1,22 +1,42 @@
-// AdminLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Routes, Route } from 'react-router-dom';
-import { Layout, Menu, Button } from 'antd';
+import { Layout, Menu, Button, Typography } from 'antd';
+import {
+  BellOutlined,
+  ToolOutlined,
+  FormOutlined,
+  CheckCircleOutlined,
+  UsergroupAddOutlined,
+  UserOutlined
+} from '@ant-design/icons'; // นำเข้าไอคอนจาก Ant Design
 import './index.css';
-import userImage from '../../assets/profile.jfif';
 import Logo from '../../assets/logo.png';
-import AdminRoutes from '../../routes/AdminRoutes'; 
+import AdminRoutes from '../../routes/AdminRoutes';
+import { GetAdminByID } from '../../services/https'; // นำเข้าฟังก์ชัน GetAdminByID
 
 const { Sider, Content } = Layout;
+const { Title } = Typography;
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['1']);
+  const [adminName, setAdminName] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const isLoggedInAdmin = true;
 
   useEffect(() => {
+    const adminID = localStorage.getItem('id');
+    if (adminID) {
+      GetAdminByID(Number(adminID))
+        .then(data => {
+          const { first_name, last_name } = data;
+          setAdminName(`${first_name} ${last_name}`);
+        })
+        .catch(() => {
+          setAdminName('Admin');
+        });
+    }
+
     const path = location.pathname;
     switch (path) {
       case '/Announcement':
@@ -37,8 +57,11 @@ const AdminLayout: React.FC = () => {
       case '/PaymentConfirmation':
         setSelectedKeys(['paymentConfirmation']);
         break;
-      case '/AdminManagement': // New menu item
+      case '/AdminManagement':
         setSelectedKeys(['adminManagement']);
+        break;
+      case '/ManageStudents':
+        setSelectedKeys(['manageStudents']);
         break;
       default:
         setSelectedKeys([]);
@@ -46,10 +69,10 @@ const AdminLayout: React.FC = () => {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    // ลบค่าการล็อกอินจาก localStorage
+    localStorage.removeItem('adminID');
     localStorage.removeItem('isLoginAdmin');
     localStorage.removeItem('isLoginStudent');
-    // เปลี่ยนเส้นทางไปยังหน้า Login
+    localStorage.removeItem('adminName'); // ลบชื่อแอดมินออกจาก localStorage
     navigate('/login');
   };
 
@@ -69,36 +92,41 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider 
-        trigger={null} 
-        collapsible 
-        collapsed={collapsed} 
-        onCollapse={setCollapsed} 
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
         className="custom-sider"
       >
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60px', margin: '16px auto' }}>
-          <img src={Logo} alt="Logo" style={{ width: '40%' }} />
+        <div style={{ textAlign: 'center', padding: '16px' }}>
+          <img src={Logo} alt="Logo" style={{ width: collapsed ? '40%' : '60%' }} />
+          {!collapsed && (
+            <div style={{ marginTop: '16px' }}>
+              <Title level={4} className="admin-name" style={{ color: 'white', margin: 0 }}>
+                {adminName || 'Admin'}
+              </Title>
+            </div>
+          )}
         </div>
-        <div className="user-info-container">
-          <img src={userImage} alt="User" />
-          <div className="id">12345</div>
-          <div className="name">John Doe</div>
-        </div>
-        <Menu className='custom-menu' mode="inline" selectedKeys={selectedKeys}>
-          <Menu.Item key="1">
+        <Menu className="custom-menu" mode="inline" selectedKeys={selectedKeys}>
+          <Menu.Item key="1" icon={<BellOutlined />}>
             <Link to="/Announcement">แจ้งข่าวสาร</Link>
           </Menu.Item>
-          <Menu.Item key="2">
+          <Menu.Item key="2" icon={<ToolOutlined />}>
             <Link to="/Repairing">แจ้งซ่อม</Link>
           </Menu.Item>
-          <Menu.SubMenu key="dropdown" title="แบบฟอร์ม">
+          <Menu.SubMenu key="dropdown" title="แบบฟอร์ม" icon={<FormOutlined />}>
             {dropdownMenu}
           </Menu.SubMenu>
-          <Menu.Item key="paymentConfirmation">
+          <Menu.Item key="paymentConfirmation" icon={<CheckCircleOutlined />}>
             <Link to="/PaymentConfirmation">ยืนยันการชำระ</Link>
           </Menu.Item>
-          <Menu.Item key="adminManagement"> {/* New menu item */}
+          <Menu.Item key="adminManagement" icon={<UserOutlined />}>
             <Link to="/AdminManagement">จัดการแอดมิน</Link>
+          </Menu.Item>
+          <Menu.Item key="manageStudents" icon={<UsergroupAddOutlined />}>
+            <Link to="/ManageStudents">จัดการนักศึกษา</Link>
           </Menu.Item>
         </Menu>
         <div className="logout-container">
@@ -110,7 +138,7 @@ const AdminLayout: React.FC = () => {
       <Layout>
         <Content className="custom-content" style={{ padding: 24 }}>
           <Routes>
-            {AdminRoutes(isLoggedInAdmin)[0].children?.map((route) => (
+            {AdminRoutes(true)[0].children?.map((route) => (
               <Route key={route.path} path={route.path} element={route.element} />
             ))}
           </Routes>

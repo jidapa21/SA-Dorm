@@ -4,5 +4,5 @@ export interface SlipInterface {
   date?:         Date;
   totalamount?:   number
   admin_id?:       string;
-  ex_id?:     string;
+  reservation_id?:     number;
 }

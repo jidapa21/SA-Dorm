@@ -46,6 +46,18 @@ async function SignInAdmin(data: SignInAdminInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+async function GetAdminByID(id: number) {
+  try {
+    const response = await axios.get(`${apiUrl}/admin/${id}`, { headers: {
+      "Content-Type": "application/json",
+      Authorization: `${Bearer} ${Authorization}`, // ตรวจสอบว่า Authorization header ถูกต้อง
+    } });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching admin data', error);
+    throw new Error('Error fetching admin data');
+  }
+}
 //Student
 async function ListStudents() {
   return await axios
@@ -709,12 +721,13 @@ async function fetchExpenses(): Promise<ExpenseInterface[]> {
     return []; // คืนค่าเป็นอาร์เรย์เปล่าหากเกิดข้อผิดพลาด
   }
 }
-async function Updateexpense(id: number, data: Partial<ExpenseInterface>) {
+async function Updateexpense(reservationId: number, data: Partial<ExpenseInterface>) {
   return await axios
-    .put(`${apiUrl}/update-expense/${id}`, data, requestOptions) // ใช้ URL ใหม่
+    .put(`${apiUrl}/update-expense/${reservationId}`, data, requestOptions) // เปลี่ยนเป็น reservationId
     .then((res) => res)
     .catch((e) => e.response);
-  }
+}
+
 //-----------------------------Rentfee-------------------------------------
 
 async function ListDormFees() {
@@ -1063,6 +1076,7 @@ async function getStudentGender(studentId: string): Promise<string> {
 
 export {
   SignInStudent,
+  GetAdminByID,
   SignInAdmin,
   ListStudents,
   GetStudentsById,

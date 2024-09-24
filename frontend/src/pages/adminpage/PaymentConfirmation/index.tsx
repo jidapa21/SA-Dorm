@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, message } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FileImageOutlined } from '@ant-design/icons';
-import { Getslipcompleted, Updateexpense ,} from '../../../services/https';
+import { Getslipcompleted, Updateexpense } from '../../../services/https';
 import { SlipInterface } from "../../../interfaces/slip";
 import dayjs from 'dayjs';
 
@@ -10,56 +10,58 @@ interface PaymentData {
   key: string;
   time: string;
   amount: number;
-  slip: string; // This should be a base64 string or a valid URL
+  slip: string; // นี่ควรเป็น base64 string หรือ URL ที่ถูกต้อง
   confirmed?: boolean;
   expenseId: number;
+  reservationId: number; // เพิ่มฟิลด์สำหรับ reservation_id
 }
 
 const PaymentConfirmation: React.FC = () => {
   const [visible, setVisible] = useState<boolean>(false);
-  const [confirmModalVisible, setConfirmModalVisible] = useState<boolean>(false); // สำหรับ modal ยืนยัน
+  const [confirmModalVisible, setConfirmModalVisible] = useState<boolean>(false);
   const [currentImage, setCurrentImage] = useState<string>('');
-  const [currentRecord, setCurrentRecord] = useState<PaymentData | null>(null); // เก็บข้อมูลรายการปัจจุบัน
+  const [currentRecord, setCurrentRecord] = useState<PaymentData | null>(null);
   const [paymentData, setPaymentData] = useState<PaymentData[]>([]);
 
-  // Fetch slips from API when component mounts
+  // ดึงข้อมูลสลิปจาก API เมื่อคอมโพเนนต์โหลด
   useEffect(() => {
     const fetchSlips = async () => {
       try {
         const slips = await Getslipcompleted();
-        if (slips) {
-          // กรองข้อมูลที่มีสถานะเป็น 'complet' ออก
-          const formattedData = slips
-            .filter((slip: any) => slip.status !== 'complet') // ทำการกรองที่มีสถานะ 'complet'
-            .map((slip: any) => ({
-              key: slip.ID,
-              time: slip.date,
-              amount: slip.totalamount,
-              slip: slip.path, // This should be a valid base64 string or URL
-              expenseId: slip.ex_id,
-              confirmed: slip.confirmed, // เพิ่ม field confirmed ใน data
-            }));
+        if (slips && slips.length > 0) {
+          // ตรวจสอบโครงสร้างข้อมูลก่อน
+          const formattedData = slips.map((slip: any) => ({
+            key: slip.ID,
+            time: dayjs(slip.CreatedAt).format('DD/MM/YYYY HH:mm:ss'), // ฟอร์แมตวันที่
+            amount: slip.Expense.totalamount, // ใช้ slip.Expense.totalamount แทน
+            slip: slip.Slip.path, // ใช้ slip.Slip.path แทน
+            reservationId: slip.Slip.reservation_id,
+            confirmed: slip.Slip.confirmed,
+        }));
           setPaymentData(formattedData);
         } else {
-          message.error('ไม่สามารถดึงข้อมูลสลิปได้');
+          message.error('ไม่มีข้อมูลสลิปที่พร้อมใช้งาน');
         }
       } catch (error) {
         message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
       }
     };
+    
+
     fetchSlips();
-    const intervalId = setInterval(fetchSlips, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    const intervalId = setInterval(fetchSlips, 3000); // รีเฟรชข้อมูลทุก 3 วินาที
     return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
-  
+
   const handleViewSlip = (url: string) => {
     if (url) {
       setCurrentImage(url);
+      console.log("Current Image URL:", url); // ตรวจสอบ URL
       setVisible(true);
     } else {
       console.error('URL ของสลิปไม่ถูกต้อง');
     }
-  };
+};
 
   const handleCancel = () => {
     setVisible(false);
@@ -67,25 +69,37 @@ const PaymentConfirmation: React.FC = () => {
   };
 
   const handleConfirmClick = (record: PaymentData) => {
-    setCurrentRecord(record); // เก็บข้อมูลรายการที่ต้องการยืนยัน
-    setConfirmModalVisible(true); // แสดง modal เพื่อยืนยัน
-  };
+    console.log('Current Record for Confirmation:', record); // ตรวจสอบ record
+    setCurrentRecord(record);
+    setConfirmModalVisible(true);
+};
+
 
   const handleConfirm = async () => {
     if (!currentRecord) return;
 
     try {
-      await Updateexpense(currentRecord.expenseId, { status: 'complet' }); // เปลี่ยนสถานะเป็น 'complet'
-      
-      const updatedData = paymentData.filter((item) => item.key !== currentRecord.key); // ลบรายการออกจากตาราง
-      setPaymentData(updatedData);
-      
-      message.success(`ยืนยันการชำระเงินสำหรับรายการ ${currentRecord.key} สำเร็จ`);
-      setConfirmModalVisible(false); // ปิด modal หลังจากยืนยัน
+        // ตรวจสอบค่า reservationId ที่ส่งไป
+        console.log('Updating expense with reservationId:', currentRecord.reservationId);
+
+        // ตรวจสอบว่าค่า reservationId ไม่ว่าง
+        if (!currentRecord.reservationId) {
+            message.error('ไม่พบ reservationId ที่ถูกต้อง');
+            return;
+        }
+
+        await Updateexpense(currentRecord.reservationId, { status: 'ชำระแล้ว' });
+
+        const updatedData = paymentData.filter((item) => item.key !== currentRecord.key);
+        setPaymentData(updatedData);
+        
+        message.success(`ยืนยันการชำระเงินสำหรับรายการ ${currentRecord.key} สำเร็จ`);
+        setConfirmModalVisible(false);
     } catch (error) {
-      message.error('เกิดข้อผิดพลาดในการยืนยัน');
+        message.error('เกิดข้อผิดพลาดในการยืนยัน');
     }
-  };
+};
+
 
   const columns: ColumnsType<PaymentData> = [
     {
@@ -127,7 +141,7 @@ const PaymentConfirmation: React.FC = () => {
           <Button
             type="primary"
             disabled={record.confirmed}
-            onClick={() => handleConfirmClick(record)} // เรียกใช้ modal ยืนยัน
+            onClick={() => handleConfirmClick(record)}
           >
             {record.confirmed ? 'ยืนยันแล้ว' : 'ยืนยัน'}
           </Button>
@@ -190,8 +204,8 @@ const PaymentConfirmation: React.FC = () => {
       {/* Modal สำหรับยืนยันการชำระเงิน */}
       <Modal
         visible={confirmModalVisible}
-        onOk={handleConfirm} // ถ้าผู้ใช้กดยืนยัน
-        onCancel={() => setConfirmModalVisible(false)} // ถ้าผู้ใช้ยกเลิก
+        onOk={handleConfirm}
+        onCancel={() => setConfirmModalVisible(false)}
         title="ยืนยันการดำเนินการ"
         okText="ยืนยัน"
         cancelText="ยกเลิก"

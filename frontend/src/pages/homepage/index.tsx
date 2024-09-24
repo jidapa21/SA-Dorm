@@ -24,7 +24,7 @@ const App: React.FC = () => {
         if (response && Array.isArray(response)) {
           setAnnouncements(response);
         } else {
-          message.error('Error fetching announcements');
+          message.error('ยังไม่มีประกาศ');
         }
       } catch (error) {
         console.error('Fetch error:', error);

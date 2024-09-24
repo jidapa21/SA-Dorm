@@ -1,12 +1,12 @@
 export interface ResigningFormInterface {
-  status: string;
+  reservation: any;
   ID?: number;
   title?: string;
   type?: string;
   date_submission?: Date;
-  Because_Of?: string;
-  Accommodation?: string;
-  Status?: string;
+  because_of?: string;
+  accommodation?: string;
+  status?: string;
   AdminID?: string;
   ReservationID?: string;
 }

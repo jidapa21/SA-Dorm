@@ -8,29 +8,29 @@ import (
 
 type Reservation struct {
 	gorm.Model
-	
-	ReservationDate  	time.Time
-	
-	StudentID uint      `json:"student_id"`
-	Student   Students `gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
-	DormID 	uint
-	Dorm	Dorm  `gorm:"foreignKey:DormID"`
+	ReservationDate time.Time
 
-	RoomID 	uint
-	Room	Room  `gorm:"foreignKey:RoomID"`
-/*
-	RentFeeID uint      `json:"rent_id"`
-	RentFee   Students `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
+	StudentID string   `json:"student_id"`
+	Student   Students `gorm:"foreignKey: student_id;references:StudentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
-	WaterFeeID uint      `json:"water_id"`
-	WaterFee   Students `gorm:"foreignKey: water_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
+	DormID uint
+	Dorm   Dorm `gorm:"foreignKey:DormID"`
 
-	ElectricityFeeID uint      `json:"elec_id"`
-	ElectricityFee   Students `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
-*/
-	Repairings  			[]Repairing `gorm:"foreignKey:ReservationID"`
-	DelayedPaymentForms  	[]DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
-	En_ExitingForms  		[]En_ExitingForm `gorm:"foreignKey:ReservationID"`
-	ResigningForms  		[]ResigningForm `gorm:"foreignKey:ReservationID"`
+	RoomID uint
+	Room   Room `gorm:"foreignKey:RoomID"`
+	/*
+		RentFeeID uint      `json:"rent_id"`
+		RentFee   Students `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
+
+		WaterFeeID uint      `json:"water_id"`
+		WaterFee   Students `gorm:"foreignKey: water_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
+
+		ElectricityFeeID uint      `json:"elec_id"`
+		ElectricityFee   Students `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
+	*/
+	Repairings          []Repairing          `gorm:"foreignKey:ReservationID"`
+	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
+	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:ReservationID"`
+	ResigningForms      []ResigningForm      `gorm:"foreignKey:ReservationID"`
 }

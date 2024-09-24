@@ -112,7 +112,7 @@ const Repairing: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadRepairing repairId={selectedKey} />
+          <ReadRepairing ID={Number(selectedKey)} />
         </div>
       ) : (
         <div style={{ display: 'flex', justifyContent: 'center' }}>

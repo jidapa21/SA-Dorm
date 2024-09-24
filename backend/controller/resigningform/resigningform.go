@@ -63,7 +63,7 @@ func GetResigningForm(c *gin.Context) {
 	var ResigningForm entity.ResigningForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").First(&ResigningForm, ID).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Room").Preload("Reservation.Student").Preload("Reservation.Dorm").First(&ResigningForm, ID).Error; err != nil{
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

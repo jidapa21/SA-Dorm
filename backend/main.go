@@ -128,25 +128,23 @@ func main() {
 		router.POST("/create-slip", slip.CreateSlip)
 		router.PATCH("/slip/:id", slip.UpdateSlip)
 		router.GET("/list-slip", slip.GetListSlips)
-		router.PUT("/update-expense/:id", expense.UpDateExpense)
 		router.GET("/get-slipcomplete", slip.GetSlipsWithUncompletedStatus)
 
 		//Slip expense
 		router.POST("/create-expense", expense.CreateExpense)
 		router.GET("/get-expense/:id", expense.GetExpense)
 		router.GET("/list-expense", expense.ListExpense)
+		router.PUT("/update-expense/:reservationId", expense.UpDateExpense)
 
 		// RentFee Route
 		router.POST("/create-rentfee", rentfee.CreateRentFee)
 		router.GET("/get-rentfee/:id", rentfee.GetRentFee)
 		router.GET("/list-rentfees", rentfee.ListRentFees)
-		
 
 		//waterFee Route
 		router.POST("/create-waterfee", waterfee.CreateWaterFee)
 		router.GET("/get-waterfee/:id", waterfee.GetWaterFee)
 		router.GET("/list-waterfees", waterfee.ListWaterFees)
-	
 
 		//elecFee Route
 		router.POST("/create-electricityfee", electricityfee.CreateElectricityFee)
@@ -163,7 +161,7 @@ func main() {
 		router.GET("/ListRoom", room.ListRoom)
 		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
 		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
-		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor) 
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor)
 
 		// Reservation
 		router.POST("/CreateReservation", reservation.CreateReservation)

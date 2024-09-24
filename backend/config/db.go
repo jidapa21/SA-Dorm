@@ -102,15 +102,14 @@ func SetupDatabase() {
 			room := entity.Room{
 				RoomNumber: uint(roomNumber),
 				DormID:     dormID, // DormID จะเป็น 1, 2, 3 หรือ 4 ตาม RoomNumber
-				Available:	3,
+				Available:  3,
 				DormStatus: "ห้องว่าง",
-				Floor:		floor,
+				Floor:      floor,
 			}
 
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
-
 
 	// Seed ข้อมูล student
 	studentHashedPassword, _ := HashPassword("1234567890123")
@@ -130,20 +129,20 @@ func SetupDatabase() {
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 		ReservationDate: ReservationDate,
-		StudentID:       User.ID,
+		StudentID:       User.StudentID,
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.StudentID, DormID: 4, RoomID: 100})
 
 	ReservationDate2, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation2 := &entity.Reservation{
 		ReservationDate: ReservationDate2,
-		StudentID:       2,
+		StudentID:       "B6510002",
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: 2, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: "B6510002", DormID: 4, RoomID: 100})
 
 	// Seed ข้อมูล admin
 	adminHashedPassword1, err := HashPassword("Ad01")
@@ -301,14 +300,7 @@ func SetupDatabase() {
 	var expense1 entity.Expense
 	db.Preload("Dorm").Preload("WaterFee").Preload("ElectricityFee").First(&expense1, expense.ID)
 
-	// Seed ข้อมูล Slip
-	slip := entity.Slip{
-		Path:    "1667801636944.jpg",
-		AdminID: 1,
-	}
-	db.FirstOrCreate(&slip, entity.Slip{Path: "รูปสลิป"})
 }
-
 func seedFamilyStatuses() {
 	familyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}
 	familyStatusSeparated := entity.FamilyStatuses{FamilyStatus: "แยกกันอยู่"}
@@ -344,15 +336,13 @@ func seedStudents() {
 	//studentHashedPassword, _ := HashPassword("1234567890123")
 	//birthday, _ := time.Parse("2006-01-02", "2003-11-12")
 	// สร้างข้อมูลนักศึกษา
-	students := []entity.Students{
-		{FirstName: "Nicha", LastName: "Wandee", StudentID: "B6510001", Password: HashPasswordOrPanic("B6510001"), Birthday: parseDate("2003-11-12"), Year: 3, Major: "วิศวกรรมศาสตร์", GenderID: 2},
-		{FirstName: "Somchai", LastName: "Sukprasert", StudentID: "B6510002", Password: HashPasswordOrPanic("B6510002"), Birthday: parseDate("2004-06-25"), Year: 2, Major: "วิทยาศาสตร์", GenderID: 1},
+	user := []entity.Students{
 		{FirstName: "Anan", LastName: "Yutthapong", StudentID: "B6510003", Password: HashPasswordOrPanic("B6510003"), Birthday: parseDate("2005-01-15"), Year: 1, Major: "แพทยศาสตร์", GenderID: 1},
 		{FirstName: "Siriwan", LastName: "Petchsri", StudentID: "B6510004", Password: HashPasswordOrPanic("B6510004"), Birthday: parseDate("2001-07-18"), Year: 4, Major: "สาธารณสุขศาสตร์", GenderID: 2},
 		{FirstName: "Patchara", LastName: "Tantawan", StudentID: "B6510005", Password: HashPasswordOrPanic("B6510005"), Birthday: parseDate("2005-09-20"), Year: 1, Major: "ทันตแพทยศาสตร์", GenderID: 1},
 	}
 	// บันทึก Students ก่อน
-	for _, student := range students {
+	for _, student := range user {
 		db.FirstOrCreate(&student, entity.Students{StudentID: student.StudentID})
 	}
 }

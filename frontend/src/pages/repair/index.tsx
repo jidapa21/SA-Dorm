@@ -90,7 +90,7 @@ export default function RepairCreate() {
   };
 
   const onFinish = async (values: RepairInterface) => {
-    values.Image = fileList[0]?.thumbUrl || "";
+    values.image = fileList[0]?.thumbUrl || "";
 
     const studentId = localStorage.getItem("id");
     if (studentId) {

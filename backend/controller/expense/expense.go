@@ -156,34 +156,41 @@ func ListExpense(c *gin.Context) {
 }*/
 
 func UpDateExpense(c *gin.Context) {
-	id := c.Param("id")
-	var payload struct {
-		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
-	}
+    reservationID := c.Param("reservationId") // รับค่า reservationId จากพารามิเตอร์ URL
+    var payload struct {
+        Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+    }
 
-	db := config.DB()
+    db := config.DB()
 
-	// Find the existing Expense record
-	var existingExpense entity.Expense
-	result := db.First(&existingExpense, id)
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "ID not found"})
-		return
-	}
+    // ค้นหา Expense record ที่มี reservation_id ตรงกัน
+    var existingExpense entity.Expense
+    result := db.Where("reservation_id = ?", reservationID).First(&existingExpense)
+    if result.Error != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Reservation ID not found"})
+        return
+    }
 
-	// Bind the JSON payload to the `payload` object
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
-		return
-	}
+    // Bind JSON payload เข้าสู่ object `payload`
+    if err := c.ShouldBindJSON(&payload); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+        return
+    }
 
-	// Update only the 'Status' field
-	if err := db.Model(&existingExpense).Updates(map[string]interface{}{
-		"Status": payload.Status,
-	}).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
-		return
-	}
+    // ตรวจสอบว่า status ไม่ว่างเปล่า
+    if payload.Status == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Status cannot be empty"})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+    // อัปเดตเฉพาะฟิลด์ 'Status'
+    if err := db.Model(&existingExpense).Updates(map[string]interface{}{
+        "Status": payload.Status,
+    }).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status", "details": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
 }
+
