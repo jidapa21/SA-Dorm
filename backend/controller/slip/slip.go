@@ -11,23 +11,27 @@ import (
 
 // POST /users
 func CreateSlip(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
-		id = "1" // ตั้งค่าเริ่มต้นเป็น 1 หากไม่มีการระบุ id
-	}
 	var slip entity.Slip
-	var expense entity.Expense
+	var sid entity.Students
+	//var expense entity.Expense
+	var reservation entity.Reservation
 
-	// ตรวจสอบ ex_id ใน context
-	expenseID, ok := c.Get("ex_id")
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ex_id is missing from context"})
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
 		return
 	}
 
-	expenseIDStr, ok := expenseID.(string)
-	if !ok || expenseIDStr == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "ex_id is not a valid string"})
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return
 	}
 
@@ -35,28 +39,30 @@ func CreateSlip(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db := config.DB()
-
-	// ค้นหา expense ด้วย ExpenseID
-	result := db.First(&expense, slip.ExpenseID)
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "ex_id not found"})
-		return
-	}
 
 	rp := entity.Slip{
-		Path:      slip.Path,
-		Date:      slip.Date,
-		ExpenseID: expense.ID,
-		Expense:   &expense,
+		Path: slip.Path,
+		//ExpenseID:   expense.ID,
+		//Expense:     &expense,
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusCreated, gin.H{"message": "Created successfully", "data": rp})
+}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
+// GET /Slip
+func GetListSlips(c *gin.Context) {
+	var slips []entity.Slip
+
+	db := config.DB()
+	if err := db.Preload("Expense").Find(&slips).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, slips)
 }
 
 // GET /Slip/:id
@@ -70,18 +76,6 @@ func GetSlip(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, slip)
-}
-
-// GET /Slip
-func GetListSlips(c *gin.Context) {
-	var slips []entity.Slip
-
-	db := config.DB()
-	if err := db.Preload("Expense").Find(&slips).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, slips)
 }
 
 // PATCH /slip

@@ -80,5 +80,28 @@ func GetExpense(c *gin.Context) {
 		})
 	*/
 }
+func ListExpense(c *gin.Context) {
+	// ตรวจสอบโทเค็นการเข้าถึง
+	token := c.GetHeader("Authorization")
+	if token == "" {
+	  c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	  return
+	}
+  
+	// ประมวลผลโทเค็นการเข้าถึงและตรวจสอบ
+	// (โค้ดสำหรับการตรวจสอบโทเค็น)
+  
+	// ดึงรายการค่าใช้จ่าย
+	var expenses []entity.Expense
+	db := config.DB()
+	if err := db.Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
+	  c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
+	  return
+	}
+  
+	c.JSON(http.StatusOK, gin.H{"data": expenses})
+
+  }
+  
 
 

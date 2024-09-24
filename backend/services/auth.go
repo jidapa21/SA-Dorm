@@ -19,7 +19,6 @@ type JwtClaim struct {
 	StudentID string
 	AdminID   string // ใช้ AdminID แทน
 	Username  string // ใช้ Username แทน
-	ExID      string
 	jwt.StandardClaims
 }
 
@@ -29,7 +28,6 @@ func (j *JwtWrapper) GenerateToken(studentID string, username string, adminID st
 		StudentID: studentID,
 		AdminID:   adminID,
 		Username:  username,
-		ExID:      exID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(j.ExpirationHours)).Unix(),
 			Issuer:    j.Issuer,

@@ -28,7 +28,7 @@ func CreateResigningForm(c *gin.Context) {
 		return
 	}
 
-	db.Where("student_id = ?", sid.ID).First(&reservation)
+	db.Where("student_id = ?", studentID).First(&reservation)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return

@@ -8,6 +8,7 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
+	"dormitory.com/dormitory/controller/dorm"
 	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/expense"
 	"dormitory.com/dormitory/controller/family"
@@ -22,6 +23,7 @@ import (
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/controller/resigningform"
+	"dormitory.com/dormitory/controller/room"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/middlewares"
@@ -105,13 +107,29 @@ func main() {
 		router.POST("/create-admin", admin.CreateAdmin)
 		router.DELETE("/admin/:id", admin.DeleteAdmin)
 		router.GET("/admin/:id", admin.GetAdminByID)
-
+		// Dorm
+		router.GET("/GetDorm/:id", dorm.GetDorm)
+		router.GET("/ListDorms", dorm.ListDorms)
+		router.PUT("/UpdateDorm/:id", dorm.UpdateDorm)
+		// Room
+		router.GET("/GetRoom/:id", room.GetRoom)
+		router.GET("/ListRoom", room.ListRoom)
+		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
+		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
 		//Slip Routes
 		router.POST("/create-slip", slip.CreateSlip)
 		router.PATCH("/slip/:id", slip.UpdateSlip)
 		router.GET("/list-slip", slip.GetListSlips)
 		router.PUT("/update-expense/:id", expense.UpDateExpense)
 		router.GET("/get-slipcomplete", slip.GetSlipsWithUncompletedStatus)
+		router.GET("/list-expense", expense.ListExpense)
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor)
+		// Reservation
+		router.POST("/CreateReservation", reservation.CreateReservation)
+		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
+		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
+		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
+		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
 	}
 
 	r.GET("/genders", genders.GetAll)

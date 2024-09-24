@@ -1,4 +1,5 @@
 export interface RepairInterface {
+    reservation: any;
     status:             string;
     repairId:           string;
     ID?:                number;

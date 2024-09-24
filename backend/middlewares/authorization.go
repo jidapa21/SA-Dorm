@@ -41,9 +41,8 @@ func Authorizes() gin.HandlerFunc {
 		studentID := claims.StudentID
 		adminID := claims.AdminID
 		username := claims.Username
-		exID := claims.ExID
 
-		if studentID == "" && adminID == "" && username == ""&& exID == "" {
+		if studentID == "" && adminID == "" && username == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
 			return
 		}
@@ -58,10 +57,6 @@ func Authorizes() gin.HandlerFunc {
 		if username != "" {
 			c.Set("username", username)
 		}
-		if exID != "" {
-			c.Set("ex_id", exID)
-		}
-
 		c.Next()
 	}
 }

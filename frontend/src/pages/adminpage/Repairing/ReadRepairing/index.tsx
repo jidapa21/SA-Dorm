@@ -65,6 +65,8 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
               <Col>
                 <div style={{ marginBottom: '16px', color: '#666' }}>
                 </div>
+                <p>ผู้รับบริการ: {formValues.reservation.student.student_id} {formValues.reservation.student.first_name} {formValues.reservation.student.last_name}</p>
+            <p>อาคาร: {formValues.reservation.dorm.type} ห้อง: {formValues.reservation.room.room_number}</p>
               </Col>
               <Col>
                 <Form.Item
