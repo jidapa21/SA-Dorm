@@ -1,5 +1,5 @@
 // Layout ของหอพักนักศึกษา กำหนด Routes เส้นทางที่นี่
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import "../../App.css";
 import {
@@ -10,13 +10,13 @@ import {
   SolutionOutlined,
   TeamOutlined,
   ToolOutlined,
-  FormOutlined,UserOutlined,DownOutlined
+  FormOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme, Button, message , Avatar,MenuProps, Dropdown, Space, } from "antd";
+import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
+import logo from "../../assets/logo.png";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
 import MainDorm from "../../pages/dorm/mainDorm";
-import Booking from "../../pages/dorm/Booking";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -25,24 +25,24 @@ import EnExitingpages from "../../pages/form/EnExitingForm";
 import Resigningpages from "../../pages/form/ResigningForm";
 import Statusgpages from "../../pages/status";
 import PersonalCreate from "../../pages/personal/create";
-import PersonalChange from "../../pages/personal/edit";
-import { GetStudentsById } from "../../services/https";
+
 const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout: React.FC = () => {
   const page = localStorage.getItem("page");
   const [messageApi, contextHolder] = message.useMessage();
   const [collapsed, setCollapsed] = useState(false);
-  const [studentId, setStudentId] = useState<string | null>(null);
-  const [studentName, setStudentName] = useState<string | null>(null);
-
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+  
+  const GenderStudent = localStorage.getItem("gender_id"); // เรียก Gender นักศึกษา (string)
+  console.log(`GenderStudent: ${GenderStudent}`); // ตรวจสอบค่าของ GenderStudent
 
   const setCurrentPage = (val: string) => {
     localStorage.setItem("page", val);
   };
+
   const Logout = () => {
     localStorage.clear();
     messageApi.success("ออกจากระบบสำเร็จ");
@@ -50,53 +50,7 @@ const FullLayout: React.FC = () => {
       location.href = "/";
     }, 2000);
   };
-  
-  const getStudentData = async (id: string) => {
-    try {
-      const studentRes = await GetStudentsById(id);
-      if (studentRes.status === 200) {
-        setStudentId(studentRes.data.student_id);
-        setStudentName(`${studentRes.data.first_name} ${studentRes.data.last_name}`);
-      }
-    } catch (error) {
-      console.error("Error fetching student data", error);
-    }
-  };
-  useEffect(() => {
-    const studentIdFromStorage = localStorage.getItem("id");
-    if (studentIdFromStorage) {
-      getStudentData(studentIdFromStorage);
-    }
-  }, []);
-  const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <span>
-          <UserOutlined style={{ marginRight: 8 }} /> {/* เพิ่มไอคอนผู้ใช้ */}
-          My Account
-        </span>
-      ),
-      disabled: true,
-    },
-    {
-      type: 'divider',
-    },
-    {
-      key: '2',
-      label: (
-        <Link to="/personal">
-          ข้อมูลส่วนตัว
-        </Link>
-      ), 
-    },
-    {
-      key: '3',
-      label: 'ออกจากระบบ',
-      onClick: Logout, // เรียกใช้ฟังก์ชัน Logout เมื่อคลิก
-    },
-    
-  ];
+
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
@@ -104,6 +58,9 @@ const FullLayout: React.FC = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        style={{
+          backgroundColor: "#0c1327",
+        }}
       >
         <div
           style={{
@@ -122,45 +79,21 @@ const FullLayout: React.FC = () => {
                 marginBottom: 20,
               }}
             >
-            </div>
-            <div
-              style={{
-                textAlign: "center",
-                fontSize: "16px",
-                marginTop: "10px",
-                fontWeight: "bold",
-              }}
-            >
-            </div>
-            <div className="student-container">
-          <Avatar
-            size={64}
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#FFCC99" }} // Avatar background color
-          />
-          <div className="student-details">
-            <div className="student-id">{studentId}</div>
-            <div className="student-name">{studentName}</div>
-          </div>
+              <img src={logo} alt="Logo" style={{ width: "80%" }} />
             </div>
             <Menu
               theme="dark"
+              style={{ backgroundColor: "#0c1327" }}
               defaultSelectedKeys={[page ? page : "homepage"]}
               mode="inline"
             >
-              <Menu.Item
-                key="homepage"
-                onClick={() => setCurrentPage("homepage")}
-              >
+              <Menu.Item key="homepage" onClick={() => setCurrentPage("homepage")}>
                 <Link to="/">
                   <HomeOutlined />
                   <span>หน้าหลัก</span>
                 </Link>
               </Menu.Item>
-              <Menu.Item
-                key="personal"
-                onClick={() => setCurrentPage("personal")}
-              >
+              <Menu.Item key="personal" onClick={() => setCurrentPage("personal")}>
                 <Link to="/personal">
                   <SolutionOutlined />
                   <span>ข้อมูลส่วนตัว</span>
@@ -176,28 +109,35 @@ const FullLayout: React.FC = () => {
                   </span>
                 }
               >
-                {/*optimize code*/}
-                <Menu.Item key="mainDorm1">
-                  <Link to="/dorm-booking/mainDorm?dorm=1&NameDorm=หอพักชาย">
-                    <span>หอพักชาย 1</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm2">
-                  <Link to="/dorm-booking/mainDorm?dorm=2&NameDorm=หอพักชาย">
-                    <span>หอพักชาย 2</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm3">
-                  <Link to="/dorm-booking/mainDorm?dorm=3&NameDorm=หอพักหญิง">
-                    <span>หอพักหญิง 3</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm4">
-                  <Link to="/dorm-booking/mainDorm?dorm=4&NameDorm=หอพักหญิง">
-                    <span>หอพักหญิง 4</span>
-                  </Link>
-                </Menu.Item>
+                {GenderStudent === "Male" ? (
+                  <>
+                    <Menu.Item key="mainDorm1">
+                      <Link to="/dorm-booking/mainDorm?dorm=1&NameDorm=หอพักชาย">
+                        <span>หอพักชาย 1</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="mainDorm2">
+                      <Link to="/dorm-booking/mainDorm?dorm=2&NameDorm=หอพักชาย">
+                        <span>หอพักชาย 2</span>
+                      </Link>
+                    </Menu.Item>
+                  </>
+                ) : (
+                  <>
+                    <Menu.Item key="mainDorm3">
+                      <Link to="/dorm-booking/mainDorm?dorm=3&NameDorm=หอพักหญิง">
+                        <span>หอพักหญิง 3</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="mainDorm4">
+                      <Link to="/dorm-booking/mainDorm?dorm=4&NameDorm=หอพักหญิง">
+                        <span>หอพักหญิง 4</span>
+                      </Link>
+                    </Menu.Item>
+                  </>
+                )}
               </Menu.SubMenu>
+
 
               <Menu.Item key="list" onClick={() => setCurrentPage("list")}>
                 <Link to="/list">
@@ -205,10 +145,7 @@ const FullLayout: React.FC = () => {
                   <span>รายชื่อผู้พัก</span>
                 </Link>
               </Menu.Item>
-              <Menu.Item
-                key="payment"
-                onClick={() => setCurrentPage("payment")}
-              >
+              <Menu.Item key="payment" onClick={() => setCurrentPage("payment")}>
                 <Link to="/payment">
                   <WalletOutlined />
                   <span>แจ้งยอดชำระ</span>
@@ -259,23 +196,7 @@ const FullLayout: React.FC = () => {
         </div>
       </Sider>
       <Layout>
-      <Header style={{ background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
-  
-  {/* ส่วนอื่นของ Header */}
-
-  <div style={{ marginLeft: 'auto', marginRight: '16px' }}>
-    <Dropdown menu={{ items }}>
-      <a onClick={(e) => e.preventDefault()}>
-        <Space>
-          My Options
-          <DownOutlined />
-        </Space>
-      </a>
-    </Dropdown>
-  </div>
-  
-</Header>
-
+        <Header style={{ padding: 0, background: colorBgContainer }} />
         <Content style={{ margin: "0 16px" }}>
           <Breadcrumb style={{ margin: "16px 0" }} />
           <div
@@ -289,15 +210,11 @@ const FullLayout: React.FC = () => {
               <Route path="/" element={<Homepages />} />
               <Route path="/personal" element={<Personal />} />
               <Route path="/personal/create" element={<PersonalCreate />} />
-              <Route path="/personal/edit/:id" element={<PersonalChange />} />
               <Route path="/payment" element={<Paymentpages />} />
               <Route path="/dorm-booking/mainDorm" element={<MainDorm />} />
               <Route path="/list" element={<Listpages />} />
               <Route path="/repair" element={<Repairpages />} />
-              <Route
-                path="/form/DelayedPayment"
-                element={<DelayedPaymentpages />}
-              />
+              <Route path="/form/DelayedPayment" element={<DelayedPaymentpages />} />
               <Route path="/form/EnExiting" element={<EnExitingpages />} />
               <Route path="/form/Resigning" element={<Resigningpages />} />
               <Route path="/status" element={<Statusgpages />} />
@@ -309,4 +226,5 @@ const FullLayout: React.FC = () => {
     </Layout>
   );
 };
+
 export default FullLayout;

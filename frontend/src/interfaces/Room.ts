@@ -5,7 +5,9 @@ export interface RoomInterface {
     dorm_status:       string;
     floor:             number;
     Dorm: {
+        dorm_id:    number;
         dorm_name:  string;
+        amount:     number;
         Gender: {
             Gender: string;
         };

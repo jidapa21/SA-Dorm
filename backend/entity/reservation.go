@@ -14,11 +14,12 @@ type Reservation struct {
 	StudentID string   `json:"student_id"`
 	Student   Students `gorm:"foreignKey: student_id;references:StudentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
-	DormID uint
-	Dorm   Dorm `gorm:"foreignKey:DormID"`
 
-	RoomID uint
-	Room   Room `gorm:"foreignKey:RoomID"`
+	DormID 		uint	`json:"dorm_id"`
+	Dorm		Dorm  	`gorm:"foreignKey:DormID"`
+	RoomID 		uint	`json:"room_id"`
+	Room		Room  	`gorm:"foreignKey:RoomID"`
+
 	/*
 		RentFeeID uint      `json:"rent_id"`
 		RentFee   Students `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`

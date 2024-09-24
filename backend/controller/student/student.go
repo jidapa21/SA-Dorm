@@ -248,7 +248,7 @@ func GetStudentsByRoomID(c *gin.Context) {
 	for _, reservation := range reservations {
 		var student entity.Students
 		// ดึงข้อมูลนักศึกษาโดยใช้ StudentID
-		db.Where("id = ?", reservation.StudentID).First(&student)
+		db.Where("student_id = ?", reservation.StudentID).First(&student)
 		students = append(students, student)
 	}
 

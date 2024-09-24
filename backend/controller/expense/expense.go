@@ -11,12 +11,11 @@ import (
 
 func CreateExpense(c *gin.Context) {
 	var expense entity.Expense
-    var sid entity.Students
+	var sid entity.Students
 	var dorm entity.Dorm
 	var reservation entity.Reservation
 	var waterfee entity.WaterFee
 	var electricityfee entity.ElectricityFee
-
 
 	db := config.DB()
 	studentID := c.MustGet("student_id").(string)
@@ -46,7 +45,6 @@ func CreateExpense(c *gin.Context) {
 		return
 	}
 
-
 	// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
 	switch dorm.Type {
 	case "หอพักชาย 1", "หอพักหญิง 3":
@@ -56,8 +54,7 @@ func CreateExpense(c *gin.Context) {
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dorm type"})
 		return
-		}
-	
+	}
 
 	// ค้นหาค่าน้ำ
 	db.Where("reservation_id = ?", reservation.ID).First(&waterfee)
@@ -81,26 +78,25 @@ func CreateExpense(c *gin.Context) {
 
 	// คำนวณยอดรวมทั้งหมด (ใช้ dormRate สำหรับค่าหอพัก)
 	totalAmount := dorm.Amount + waterfee.Amount + electricityfee.Amount
-	
 
 	rp := entity.Expense{
-		Date:        		expense.Date,
-        Status:            	expense.Status,
-        DormID:         	dorm.ID,
-        Dorm:				&dorm,
-        WaterFeeID:        	waterfee.ID,
-        WaterFee:         	&waterfee,
-        ElectricityFeeID: 	electricityfee.ID,
-        ElectricityFee:  	&electricityfee,
-		TotalAmount:       	totalAmount,
+		Date:             expense.Date,
+		Status:           expense.Status,
+		DormID:           dorm.ID,
+		Dorm:             &dorm,
+		WaterFeeID:       waterfee.ID,
+		WaterFee:         &waterfee,
+		ElectricityFeeID: electricityfee.ID,
+		ElectricityFee:   &electricityfee,
+		TotalAmount:      totalAmount,
 		ReservationID:    reservation.ID,
 		Reservation:      reservation,
-    }
-    // ส่งข้อมูลออกไป
+	}
+	// ส่งข้อมูลออกไป
 	c.JSON(http.StatusCreated, gin.H{
-		"message":    "Created success",
-		"data":       rp,
-		"totalAmount": totalAmount,  // ส่งยอดรวมทั้งหมดกลับไปด้วย
+		"message":     "Created success",
+		"data":        rp,
+		"totalAmount": totalAmount, // ส่งยอดรวมทั้งหมดกลับไปด้วย
 	})
 }
 
@@ -122,25 +118,25 @@ func ListExpense(c *gin.Context) {
 	// ตรวจสอบโทเค็นการเข้าถึง
 	token := c.GetHeader("Authorization")
 	if token == "" {
-	  c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-	  return
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
 	}
-  
+
 	// ประมวลผลโทเค็นการเข้าถึงและตรวจสอบ
 	// (โค้ดสำหรับการตรวจสอบโทเค็น)
-  
+
 	// ดึงรายการค่าใช้จ่าย
 	var expenses []entity.Expense
 	db := config.DB()
 	if err := db.Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
-	  c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
-	  return
+		c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
+		return
 	}
-  
+
 	c.JSON(http.StatusOK, gin.H{"data": expenses})
 
-  }
-  
+}
+
 /*
 // ListExpense - ดึงรายการค่าใช้จ่ายทั้งหมด
 func ListExpense(c *gin.Context) {
@@ -156,41 +152,40 @@ func ListExpense(c *gin.Context) {
 }*/
 
 func UpDateExpense(c *gin.Context) {
-    reservationID := c.Param("reservationId") // รับค่า reservationId จากพารามิเตอร์ URL
-    var payload struct {
-        Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
-    }
+	reservationID := c.Param("reservationId") // รับค่า reservationId จากพารามิเตอร์ URL
+	var payload struct {
+		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+	}
 
-    db := config.DB()
+	db := config.DB()
 
-    // ค้นหา Expense record ที่มี reservation_id ตรงกัน
-    var existingExpense entity.Expense
-    result := db.Where("reservation_id = ?", reservationID).First(&existingExpense)
-    if result.Error != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Reservation ID not found"})
-        return
-    }
+	// ค้นหา Expense record ที่มี reservation_id ตรงกัน
+	var existingExpense entity.Expense
+	result := db.Where("reservation_id = ?", reservationID).First(&existingExpense)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation ID not found"})
+		return
+	}
 
-    // Bind JSON payload เข้าสู่ object `payload`
-    if err := c.ShouldBindJSON(&payload); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
-        return
-    }
+	// Bind JSON payload เข้าสู่ object `payload`
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
+		return
+	}
 
-    // ตรวจสอบว่า status ไม่ว่างเปล่า
-    if payload.Status == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Status cannot be empty"})
-        return
-    }
+	// ตรวจสอบว่า status ไม่ว่างเปล่า
+	if payload.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Status cannot be empty"})
+		return
+	}
 
-    // อัปเดตเฉพาะฟิลด์ 'Status'
-    if err := db.Model(&existingExpense).Updates(map[string]interface{}{
-        "Status": payload.Status,
-    }).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status", "details": err.Error()})
-        return
-    }
+	// อัปเดตเฉพาะฟิลด์ 'Status'
+	if err := db.Model(&existingExpense).Updates(map[string]interface{}{
+		"Status": payload.Status,
+	}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status", "details": err.Error()})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully"})
 }
-

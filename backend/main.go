@@ -8,7 +8,6 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
-	"dormitory.com/dormitory/controller/dorm"
 	"dormitory.com/dormitory/controller/electricityfee"
 	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/expense"
@@ -22,13 +21,14 @@ import (
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
 	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
-	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/controller/resigningform"
-	"dormitory.com/dormitory/controller/room"
 	"dormitory.com/dormitory/controller/slip"
 	"dormitory.com/dormitory/controller/status"
 	"dormitory.com/dormitory/controller/student"
 	"dormitory.com/dormitory/controller/waterfee"
+	"dormitory.com/dormitory/controller/dorm"
+	"dormitory.com/dormitory/controller/room"
+	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/middlewares"
 	"github.com/gin-gonic/gin"
 )
@@ -161,8 +161,7 @@ func main() {
 		router.GET("/ListRoom", room.ListRoom)
 		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
 		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
-		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor)
-
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor) 
 		// Reservation
 		router.POST("/CreateReservation", reservation.CreateReservation)
 		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
@@ -170,6 +169,7 @@ func main() {
 		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
 		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
 		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
+		router.GET("/reservations/:room_id/dorm", dorm.GetDormByRoomID)
 		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID)
 
 	}

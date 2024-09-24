@@ -58,7 +58,7 @@ func SignInStudent(c *gin.Context) {
 	}
 
 	// Return the response with token and student ID
-	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": student.ID})
+	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": student.ID, "gender_id" : student.GenderID, "student_id": student.StudentID})
 }
 func GetStudentDetails(c *gin.Context) {
 	var studentID string

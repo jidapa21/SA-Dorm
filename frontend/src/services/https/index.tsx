@@ -895,6 +895,29 @@ async function UpdateDorm(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+/*async function GetAmountByID(id: number) {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+  const res = await fetch(`${apiUrl}/dormsAmount/${id}`, requestOptions)
+    .then((response) => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        console.error("Error fetching amount:", response.statusText);
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.error("Fetch error:", error);
+      return false;
+    });
+  return res;
+}*/
+
 
 //------------Room------------//
 async function GetRoom(id: number) {
@@ -906,18 +929,13 @@ async function GetRoom(id: number) {
 
 async function GetRoomsByFloorAndDorm(floorId: number, dormId: number) {
   try {
-    const response = await axios.get(
-      `${apiUrl}/rooms/floor/${floorId}/dorm/${dormId}`,
-      requestOptions
-    );
+    const response = await axios.get(`${apiUrl}/rooms/floor/${floorId}/dorm/${dormId}`, requestOptions);
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return {
-        error: error.response ? error.response.data : "An error occurred",
-      };
+    if (axios.isAxiosError(error)) { 
+      return { error: error.response ? error.response.data : "An error occurred" };
     }
-    return { error: "An unknown error occurred" };
+    return { error: "An unknown error occurred" }; 
   }
 }
 
@@ -933,9 +951,9 @@ async function DeleteRoom(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-async function UpdateRoom(id: number) {
+async function UpdateRoom(id: number, data: RoomInterface) {
   return await axios
-    .put(`${apiUrl}/UpdateRoom/${id}`, requestOptions)
+    .put(`${apiUrl}/UpdateRoom/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
@@ -952,9 +970,9 @@ async function UpdateRoom(id: number) {
   }
 };*/
 
-export const CreateReservation = async (data: ReservationInterface) => {
+async function CreateReservation(data: ReservationInterface) {
   try {
-    const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+    const response = await axios.post(`${apiUrl}/CreateReservation`, data, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -962,8 +980,7 @@ export const CreateReservation = async (data: ReservationInterface) => {
       console.error("รายละเอียดข้อผิดพลาดจาก Axios:", error.response?.data);
       // เพิ่มข้อมูลสถานะ HTTP ถ้ามี
       const statusCode = error.response?.status;
-      const errorMessage =
-        error.response?.data?.message || "ข้อผิดพลาดในการสร้างการจอง";
+      const errorMessage = error.response?.data?.message || "ข้อผิดพลาดในการสร้างการจอง";
       throw new Error(`HTTP ${statusCode}: ${errorMessage}`);
     } else {
       // ตรวจสอบข้อผิดพลาดที่ไม่ใช่ Axios
@@ -972,41 +989,31 @@ export const CreateReservation = async (data: ReservationInterface) => {
     }
   }
 };
-
 async function GetReservationsByRoomID(roomID: number) {
   try {
-    const response = await axios.get(
-      `${apiUrl}/reservations/room/${roomID}`,
-      requestOptions
-    );
+    const response = await axios.get(`${apiUrl}/reservations/room/${roomID}`, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      return {
-        error: error.response ? error.response.data : "An error occurred",
-      };
+      return { error: error.response ? error.response.data : "An error occurred" };
     }
     return { error: "An unknown error occurred" };
   }
 }
+
 
 // ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
-async function GetReservationsByStudentID(studentID: number): Promise<any> {
+async function GetReservationsByStudentID(studentID: string): Promise<any> {
   try {
-    const response = await axios.get(
-      `${apiUrl}/reservations/student/${studentID}`
-    );
+    const response = await axios.get(`${apiUrl}/reservations/student/${studentID}`, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      return {
-        error: error.response ? error.response.data : "An error occurred",
-      };
+      return { error: error.response ? error.response.data : "An error occurred" };
     }
     return { error: "An unknown error occurred" };
   }
 }
-
 async function DeleteReservation(id: number) {
   return await axios
     .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
@@ -1020,24 +1027,30 @@ async function UpdateReservation(id: number) {
     .catch((e) => e.response);
 }
 
+
 async function GetStudentsByRoomID(roomID: number) {
   try {
-    const response = await axios.get(
-      `${apiUrl}/reservations/${roomID}/students`,
-      requestOptions
-    );
+    const response = await axios.get(`${apiUrl}/reservations/${roomID}/students`, requestOptions);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      return {
-        error: error.response ? error.response.data : "An error occurred",
-      };
+      return { error: error.response ? error.response.data : "An error occurred" };
     }
     return { error: "An unknown error occurred" };
   }
 }
-
-async function GetUserRoom(userID: number) {
+async function GetDormByRoomID(roomID : number) {
+  try {
+      const response = await axios.get(`${apiUrl}/reservations/${roomID}/dorm`, requestOptions);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          return { error: error.response ? error.response.data : "An error occurred" };
+      }
+      return { error: "An unknown error occurred" };
+  }
+}
+async function GetUserRoom(userID: string) {
   try {
     const response = await axios.get(
       `${apiUrl}/check-user-room/${userID}`,
@@ -1149,16 +1162,17 @@ export {
   ListWaterFees,
   CreateWaterFee,
   GetWaterFee,
-  //------------Dorm------------//
-  GetDorm,
-  ListDorms,
-  UpdateDorm,
-  //------------Room------------//
-  GetRoom,
-  ListRoom,
-  DeleteRoom,
-  UpdateRoom,
-  GetRoomsByFloorAndDorm,
+//------------Dorm------------//
+GetDorm,
+ListDorms,
+UpdateDorm,
+//GetAmountByID,
+//------------Room------------//
+GetRoom,
+ListRoom,
+DeleteRoom,
+UpdateRoom,
+GetRoomsByFloorAndDorm,
   //------------Reservation------------//
   DeleteReservation,
   UpdateReservation,
@@ -1166,4 +1180,6 @@ export {
   GetUserRoom,
   getStudentGender,
   GetReservationsByStudentID,
+  CreateReservation,
+  GetDormByRoomID
 };

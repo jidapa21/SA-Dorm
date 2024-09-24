@@ -1,22 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import { GetStudentsByRoomID, GetUserRoom } from '../../services/https'; 
+import { GetStudentsByRoomID, GetUserRoom } from '../../services/https';
+
+interface StudentsData {
+  student_id: string;
+  first_name: string;
+  last_name: string;
+  major: string;
+  year: number;
+  amount: number;
+}
 
 const Listpages: React.FC = () => {
-  const [students, setStudents] = useState<any[]>([]);
-  const [roomID, setRoomID] = useState<number | null>(null); // State สำหรับ roomID
+  const [students, setStudents] = useState<StudentsData[]>([]);
+  const [roomID, setRoomID] = useState<number | null>(null);
+  const [roomNumber, setRoomNumber] = useState<number | null>(null);
+  const [dormName, setDormName] = useState<string | null>(null);
 
   useEffect(() => {
-    const userID = 1; // กำหนด userID ที่ต้องการตรวจสอบ
+    const studentID = localStorage.getItem("student_id");
 
     const fetchUserRoom = async () => {
+      if (studentID === null) return;
+
       try {
-        const roomData = await GetUserRoom(userID);
-        console.log(roomData); // ตรวจสอบข้อมูลที่ได้รับ
+        const roomData = await GetUserRoom(studentID);
+        console.log(roomData);
 
         if (Array.isArray(roomData) && roomData.length > 0) {
-          const { room_id } = roomData[0]; // ดึง room_id จากข้อมูล
-          setRoomID(room_id); // ตั้งค่า roomID
+          const { room_id, room_number, dorm_name } = roomData[0];
+          setRoomID(room_id);
+          setRoomNumber(room_number);
+          setDormName(dorm_name);
         } else {
           console.error("ไม่พบข้อมูลห้องสำหรับผู้ใช้");
         }
@@ -28,46 +43,47 @@ const Listpages: React.FC = () => {
     fetchUserRoom();
   }, []);
 
-
   useEffect(() => {
-    if (roomID !== null) {
-      const fetchStudents = async () => {
+    const fetchStudents = async () => {
+      if (roomID !== null) {
         try {
           const result = await GetStudentsByRoomID(roomID);
-          console.log(result); // ตรวจสอบข้อมูลนักศึกษา
+          console.log("API Response:", result);
 
-          if (Array.isArray(result)) {
-            const formattedStudents = result.map(student => ({
-              StudentID: student.student_id || 'ไม่ระบุ',
-              name: `${student.first_name || 'ไม่ระบุ'} ${student.last_name || 'ไม่ระบุ'}`, 
-              major: student.major || 'ไม่ระบุ',
-              year: student.year || 'ไม่ระบุ',
-              roomRate: "2,900" || 'ไม่ระบุ', 
+          if (result && Array.isArray(result) && result.length > 0) {
+            const CombinedData: StudentsData[] = result.map((data) => ({
+              student_id: data.student_id || 'ไม่ระบุ',
+              first_name: data.first_name || 'ไม่ระบุ',
+              last_name: data.last_name || 'ไม่ระบุ',
+              major: data.major || 'ไม่ระบุ',
+              year: Number(data.year) || 0,
+              amount: Number(data.amount) || 0,
             }));
-            setStudents(formattedStudents); 
+
+            setStudents(CombinedData);
           } else {
-            console.error(result.error || "เกิดข้อผิดพลาดในการดึงข้อมูลนักศึกษา");
+            console.error("ข้อมูลที่ได้รับไม่ถูกต้อง", result);
           }
         } catch (error) {
           console.error("เกิดข้อผิดพลาดในการเรียก API:", error);
         }
-      };
+      }
+    };
 
-      fetchStudents();
-    }
+    fetchStudents();
   }, [roomID]);
 
-  
   const columns = [
     {
       title: 'รหัสนักศึกษา',
-      dataIndex: 'StudentID',
-      key: 'StudentID',
+      dataIndex: 'student_id',
+      key: 'student_id',
     },
     {
       title: 'ชื่อ - นามสกุล',
       dataIndex: 'name',
       key: 'name',
+      render: (text: string, record: StudentsData) => `${record.first_name} ${record.last_name}`,
     },
     {
       title: 'สำนัก',
@@ -81,18 +97,21 @@ const Listpages: React.FC = () => {
     },
     {
       title: 'ค่าห้อง',
-      dataIndex: 'roomRate',
-      key: 'roomRate',
+      dataIndex: 'amount',
+      key: 'amount',
     },
   ];
 
   return (
-    <Table 
-      columns={columns} 
-      dataSource={students} 
-      pagination={false} 
-      rowKey="StudentID" 
-    />
+    <div>
+      <h2>{dormName ? dormName : ""} ห้องพัก {roomNumber ? roomNumber : ""}</h2>
+      <Table
+        columns={columns}
+        dataSource={students}
+        pagination={false}
+        rowKey="student_id"
+      />
+    </div>
   );
 };
 

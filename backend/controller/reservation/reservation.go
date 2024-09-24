@@ -21,34 +21,34 @@ func CreateReservation(c *gin.Context) {
 
 	db := config.DB()
 
-// ฟังก์ชันช่วยเพื่อตรวจสอบการมีอยู่ของ Dorm, Room, และ Student
-checkExists := func(table string, column string, value interface{}) error {
-	var count int64
-	if err := db.Table(table).Where(fmt.Sprintf("%s = ?", column), value).Count(&count).Error; err != nil {
-		return err
+	// ฟังก์ชันช่วยเพื่อตรวจสอบการมีอยู่ของ Dorm, Room, และ Student
+	checkExists := func(table string, column string, value interface{}) error {
+		var count int64
+		if err := db.Table(table).Where(fmt.Sprintf("%s = ?", column), value).Count(&count).Error; err != nil {
+			return err
+		}
+		if count == 0 {
+			return fmt.Errorf("%s not found", table)
+		}
+		return nil
 	}
-	if count == 0 {
-		return fmt.Errorf("%s not found", table)
+
+	// ตรวจสอบ Dorm, Room และ Student
+	if err := checkExists("dorms", "id", reservation.DormID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
-	return nil
-}
 
-// ตรวจสอบ Dorm, Room และ Student
-if err := checkExists("dorms", "id", reservation.DormID); err != nil {
-	c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-	return
-}
+	if err := checkExists("rooms", "id", reservation.RoomID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
 
-if err := checkExists("rooms", "id", reservation.RoomID); err != nil {
-	c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-	return
-}
-
-// ตรวจสอบ Student โดยใช้ student_id ที่เป็น string
-if err := checkExists("students", "student_id", reservation.StudentID); err != nil {
-	c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-	return
-}
+	// ตรวจสอบ Student โดยใช้ student_id ที่เป็น string
+	if err := checkExists("students", "student_id", reservation.StudentID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
 
 	// สร้างการจอง
 	if err := db.Create(&reservation).Error; err != nil {
@@ -58,7 +58,6 @@ if err := checkExists("students", "student_id", reservation.StudentID); err != n
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Reservation created successfully", "data": reservation})
 }
-
 
 
 

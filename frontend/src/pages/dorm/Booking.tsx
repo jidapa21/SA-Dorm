@@ -16,7 +16,7 @@ import { RoomInterface } from "./../../interfaces/Room";
   };
 }*/
 
-const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1, dormId = 1 }) => {
+/*const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1, dormId = 1 }) => {
   const [rooms, setRooms] = useState<RoomInterface[]>([]); // Change to an array of Room
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,7 @@ const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1
         if (response && !response.error) {
           const roomData = response.map((room: RoomInterface) => ({
             ...room,
-            Floor: Number(room.floor) // Ensure Floor is a number
+            Floor: Number(room.Floor) // Ensure Floor is a number
           }));
 
           setRooms(roomData); // Store the room data
@@ -59,14 +59,14 @@ const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1
       <h2>Room Details</h2>
       {rooms.length > 0 ? (
         rooms.map((room) => (
-          <div key={room.room_number}>
-            <p><strong>Room Number:</strong> {room.room_number}</p>
-            <p><strong>Status:</strong> {room.dorm_status}</p>
-            <p><strong>Available:</strong> {room.available ? 'Yes' : 'No'}</p>
-            <p><strong>Floor:</strong> {room.floor}</p>
+          <div key={room.RoomNumber}>
+            <p><strong>Room Number:</strong> {room.RoomNumber}</p>
+            <p><strong>Status:</strong> {room.DormStatus}</p>
+            <p><strong>Available:</strong> {room.Available ? 'Yes' : 'No'}</p>
+            <p><strong>Floor:</strong> {room.Floor}</p>
             <p><strong>Dorm Name:</strong> {room.Dorm.dorm_name}</p>
             <p><strong>Gender:</strong> {room.Dorm.Gender.Gender}</p>
-            <hr /> {/* Add a separator between rooms */}
+            <hr />
           </div>
         ))
       ) : (
@@ -76,4 +76,5 @@ const RoomDetail: React.FC<{ floorId: number; dormId: number }> = ({ floorId = 1
   );
 };
 
-export default RoomDetail;
+
+export default RoomDetail;*/
