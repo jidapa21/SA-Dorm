@@ -184,7 +184,7 @@ const Index: React.FC = () => {
     imgWindow?.document.write(path.outerHTML);
   };
 
-  const onFinish = async (values: SlipInterface) => {
+  const onFinish = async (values: SlipInterface & ExpenseInterface) => {
     values.path = fileList[0]?.thumbUrl || "";
 
     const studentId = localStorage.getItem("id");
@@ -198,8 +198,11 @@ const Index: React.FC = () => {
     }
 
     let res = await CreateSlip(values);
-    console.log(res);
-    if (res) {
+    console.log("CreateSlip: ", res);
+
+    let resExpense = await CreateExpense(values);
+    console.log("CreateExpense: ", resExpense);
+    if (res && resExpense) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",
@@ -236,7 +239,7 @@ const Index: React.FC = () => {
 
       <Divider />
       <div className='text-container'></div>
-      <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.ID }))} 
+      <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.StudentID }))} 
         pagination={false}/>
         
       <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
