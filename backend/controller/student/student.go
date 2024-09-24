@@ -232,25 +232,25 @@ func GetListFormDorm(c *gin.Context) {
 
 // GetStudentsByRoomID ดึงข้อมูลนักศึกษาจากห้อง
 func GetStudentsByRoomID(c *gin.Context) {
-    roomID := c.Param("room_id")
+	roomID := c.Param("room_id")
 
-    var reservations []entity.Reservation
-    var students []entity.Students
+	var reservations []entity.Reservation
+	var students []entity.Students
 
-    db := config.DB()
-    // ดึงข้อมูลการจองจากฐานข้อมูล
-    if err := db.Where("room_id = ?", roomID).Preload("Student").Find(&reservations).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
-        return
-    }
+	db := config.DB()
+	// ดึงข้อมูลการจองจากฐานข้อมูล
+	if err := db.Where("room_id = ?", roomID).Preload("Student").Find(&reservations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
+		return
+	}
 
-    // สร้าง slice ของนักศึกษาจากการจอง
-    for _, reservation := range reservations {
-        var student entity.Students
-        // ดึงข้อมูลนักศึกษาโดยใช้ StudentID
-        db.Where("id = ?", reservation.StudentID).First(&student)
-        students = append(students, student)
-    }
+	// สร้าง slice ของนักศึกษาจากการจอง
+	for _, reservation := range reservations {
+		var student entity.Students
+		// ดึงข้อมูลนักศึกษาโดยใช้ StudentID
+		db.Where("id = ?", reservation.StudentID).First(&student)
+		students = append(students, student)
+	}
 
-    c.JSON(http.StatusOK, students)
+	c.JSON(http.StatusOK, students)
 }

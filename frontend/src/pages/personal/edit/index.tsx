@@ -2,7 +2,7 @@ import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicke
 import { EditOutlined } from "@ant-design/icons";
 //import { PersonalDetailInterface } from "../../../interfaces/PersonalDetails";
 import { useNavigate, Link ,useParams} from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { PersonalInterface } from "../../../interfaces/Personal";
 import { AddressInterface } from "../../../interfaces/Address";
 import { FamilyInterface } from "../../../interfaces/Family";
@@ -21,7 +21,10 @@ function PersonalChange() {
 	const [messageApi, contextHolder] = message.useMessage();
   const { id } = useParams<{ id: any }>();
   const [form] = Form.useForm();
+	
 
+  
+	
 	const getStudentData = async (id: string) => {
 		try {
 			// เรียก API หลายตัวพร้อมกัน
@@ -117,6 +120,7 @@ function PersonalChange() {
 			});
 		}
 	};
+
 	const onFinish = async (values: CombinedData) => {
 		
 		let studentPayload ={

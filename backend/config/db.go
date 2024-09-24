@@ -56,7 +56,7 @@ func SetupDatabase() {
 	)
 
 	// Seed ข้อมูลประเภท
-	seedStudents()
+
 	seedFamilyStatuses()
 	seedGuardians()
 	seedLicenses()
@@ -110,30 +110,44 @@ func SetupDatabase() {
 			db.FirstOrCreate(&room, &entity.Room{RoomNumber: uint(roomNumber)})
 		}
 	}
-
-	// Seed ข้อมูล student
-	studentHashedPassword, _ := HashPassword("1234567890123")
-	Birthday, _ := time.Parse("2006-01-02", "1988-11-12")
-	User := &entity.Students{
+	// Seed ข้อมูล student คนแรก
+	studentHashedPassword1, _ := HashPassword("B6510001")
+	Birthday1, _ := time.Parse("2006-01-02", "1988-11-12")
+	User1 := &entity.Students{
 		FirstName: "Nicha",
 		LastName:  "Wandee",
 		StudentID: "B6510001",
-		Password:  studentHashedPassword,
-		Birthday:  Birthday,
+		Password:  studentHashedPassword1,
+		Birthday:  Birthday1,
 		Year:      3,
 		Major:     "วิศวกรรมศาสตร์",
 		GenderID:  2,
 	}
-	db.FirstOrCreate(User, &entity.Students{StudentID: "B6510001"})
+	db.FirstOrCreate(User1, &entity.Students{StudentID: "B6510001"})
+
+	// Seed ข้อมูล student คนที่สอง
+	studentHashedPassword2, _ := HashPassword("B6510002")
+	Birthday2, _ := time.Parse("2006-01-02", "1990-05-25")
+	User2 := &entity.Students{
+		FirstName: "Anucha",
+		LastName:  "Phanphet",
+		StudentID: "B6510002",
+		Password:  studentHashedPassword2,
+		Birthday:  Birthday2,
+		Year:      4,
+		Major:     "คอมพิวเตอร์",
+		GenderID:  1,
+	}
+	db.FirstOrCreate(User2, &entity.Students{StudentID: "B6510002"})
 
 	ReservationDate, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation := &entity.Reservation{
 		ReservationDate: ReservationDate,
-		StudentID:       User.StudentID,
+		StudentID:       User1.StudentID,
 		DormID:          4,
 		RoomID:          100,
 	}
-	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.StudentID, DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User1.StudentID, DormID: 4, RoomID: 100})
 
 	ReservationDate2, _ := time.Parse("02-01-2006", "21-05-1997")
 	reservation2 := &entity.Reservation{
@@ -300,6 +314,7 @@ func SetupDatabase() {
 	var expense1 entity.Expense
 	db.Preload("Dorm").Preload("WaterFee").Preload("ElectricityFee").First(&expense1, expense.ID)
 
+	seedStudents()
 }
 func seedFamilyStatuses() {
 	familyStatusTogether := entity.FamilyStatuses{FamilyStatus: "อยู่ด้วยกัน"}

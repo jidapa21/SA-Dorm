@@ -89,6 +89,7 @@ async function CreateStudent(data: StudentInterface) {
     .then((res) => res)
     .catch((e) => e.response);
 }
+
 //PersonalDetails-----------------------------
 
 async function CreatePersonalDetail(data: PersonalDetailInterface) {

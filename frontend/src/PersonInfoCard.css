@@ -22,6 +22,30 @@
     font-weight: normal; /* ตั้งค่าความเข้มตัวหนังสือให้เป็นปกติ */
   }
   
+  .student-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*background-color: #5b9bd5; /* Background color similar to your image */
+    padding: 10px;
+    /*border-radius: 15px;
+    /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  }
   
+  .student-details {
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .student-id {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .student-name {
+    font-size: 16px;
+    color: white;
+  }
   
   
