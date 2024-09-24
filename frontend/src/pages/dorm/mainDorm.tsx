@@ -189,9 +189,11 @@ const MainDorm: React.FC = () => {
               // ตรวจสอบค่าที่ถูกต้อง
               console.log(`Room ID: ${room.ID}, Is Reserved: ${isReserved}, Current Count: ${currentCount}`);
 
-              const roomStyle = isFull
+              const roomStyle = isFull && !isReserved
                 ? { ...style, backgroundColor: '#ff0000', color: '#ffffff' }  // สีแดงเมื่อห้องเต็ม
-                : isReserved
+                : isReserved && isFull
+                ? { ...style, backgroundColor: '#00ff18', color: '#ffffff' }  // สีเขียวเมื่อห้องถูกจอง
+                : isReserved && !isFull
                 ? { ...style, backgroundColor: '#00ff18', color: '#ffffff' }  // สีเขียวเมื่อห้องถูกจอง
                 : style;
 
