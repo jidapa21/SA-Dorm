@@ -27,8 +27,9 @@ func CreateDelayedPaymentForm(c *gin.Context) {
 		return
 	}
 
-	db.Where("id = ?", sid.ID).First(&reservation)
-	if reservation.ID == 0 {
+
+	db.Where("student_id = ?", sid.StudentID).First(&reservation)
+	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}

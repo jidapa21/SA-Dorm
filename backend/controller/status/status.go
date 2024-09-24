@@ -29,14 +29,10 @@ func GetListStatus(c *gin.Context) {
 		return
 	}
 
-	
-
-	// ดึงข้อมูล reservation จากฐานข้อมูล โดยค้นหาจากฟิลด์ student_id ที่ตรงกับค่า sid.ID
-	db.Where("id = ?", sid.ID).First(&reservation)
-	// ตรวจสอบค่า reservationID
+	db.Where("student_id = ?", sid.StudentID).First(&reservation)
 	fmt.Println("Reservation ID:", reservation.ID)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+	if reservation.StudentID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}
 
