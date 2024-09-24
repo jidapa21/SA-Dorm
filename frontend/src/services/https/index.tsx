@@ -491,8 +491,6 @@ async function GetReservationsByStudentID(studentID: number): Promise<any> {
   }
 }
 
-
-
 async function DeleteReservation(id: number) {
   return await axios
     .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
