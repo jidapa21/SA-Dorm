@@ -22,9 +22,9 @@ func CreateReservation(c *gin.Context) {
 	db := config.DB()
 
 	// ฟังก์ชันช่วยเพื่อตรวจสอบการมีอยู่ของ Dorm, Room, และ Student
-	checkExists := func(table string, id uint) error {
+	checkExists := func(table string, column string, value interface{}) error {
 		var count int64
-		if err := db.Table(table).Where("id = ?", id).Count(&count).Error; err != nil {
+		if err := db.Table(table).Where(fmt.Sprintf("%s = ?", column), value).Count(&count).Error; err != nil {
 			return err
 		}
 		if count == 0 {
@@ -34,17 +34,18 @@ func CreateReservation(c *gin.Context) {
 	}
 
 	// ตรวจสอบ Dorm, Room และ Student
-	if err := checkExists("dorms", reservation.DormID); err != nil {
+	if err := checkExists("dorms", "id", reservation.DormID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := checkExists("rooms", reservation.RoomID); err != nil {
+	if err := checkExists("rooms", "id", reservation.RoomID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := checkExists("students", reservation.StudentID); err != nil {
+	// ตรวจสอบ Student โดยใช้ student_id ที่เป็น string
+	if err := checkExists("students", "student_id", reservation.StudentID); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -57,9 +58,6 @@ func CreateReservation(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Reservation created successfully", "data": reservation})
 }
-
-
-
 
 // DELETE /delete-student/:id
 func DeleteReservation(c *gin.Context) {
@@ -107,9 +105,8 @@ func GetReservationsByRoomID(c *gin.Context) {
 	c.JSON(http.StatusOK, reservations)
 }
 
-
 func GetReservationsByStudentID(c *gin.Context) {
-	studentID := c.Param("studentID") // รับ studentID จาก URL
+	studentID := c.Param("studentID")   // รับ studentID จาก URL
 	fmt.Println("studentID", studentID) // 2
 	db := config.DB()
 
@@ -136,10 +133,10 @@ func GetUserRoom(c *gin.Context) {
 	var result []gin.H
 	for _, reservation := range reservations {
 		result = append(result, gin.H{
-			"room_id": reservation.RoomID,
+			"room_id":     reservation.RoomID,
 			"room_number": reservation.Room.RoomNumber,
-			"dorm_id": reservation.DormID,
-			"dorm_name": reservation.Dorm.DormName,
+			"dorm_id":     reservation.DormID,
+			"dorm_name":   reservation.Dorm.DormName,
 		})
 	}
 

@@ -212,7 +212,7 @@ func SetupDatabase() {
 	ReservationDate := time.Now()
     reservation := &entity.Reservation{
         ReservationDate: ReservationDate,
-        StudentID:       User.ID,
+        StudentID:       User.StudentID,
         DormID:          4,
         RoomID:          120,
     }
@@ -241,7 +241,7 @@ func SetupDatabase() {
         RoomID:          5,
     }*/
 
-    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.ID, DormID: 4, RoomID: 120})
+    db.FirstOrCreate(reservation, &entity.Reservation{StudentID: User.StudentID, DormID: 4, RoomID: 120})
 	/*db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: User2.ID, DormID: 1, RoomID: 2})
 	db.FirstOrCreate(reservation3, &entity.Reservation{StudentID: User3.ID, DormID: 1, RoomID: 3})
 	db.FirstOrCreate(reservation4, &entity.Reservation{StudentID: User4.ID, DormID: 1, RoomID: 4})

@@ -175,7 +175,7 @@ func GetStudentsByRoomID(c *gin.Context) {
     for _, reservation := range reservations {
         var student entity.Students
         // ดึงข้อมูลนักศึกษาโดยใช้ StudentID
-        if err := db.Where("id = ?", reservation.StudentID).First(&student).Error; err == nil {
+        if err := db.Where("student_id = ?", reservation.StudentID).First(&student).Error; err == nil {
             // สร้าง map สำหรับข้อมูลนักศึกษา
             studentData := map[string]interface{}{
                 "student_id": student.StudentID,

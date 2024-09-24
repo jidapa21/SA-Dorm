@@ -35,8 +35,8 @@ const ModalTest: React.FC<ReviewModalProps> = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set());
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState<boolean>(true);
-  const SID = localStorage.getItem("id"); // เรียก ID นักศึกษา (string)
-  const studentID = SID ? parseInt(SID, 10) : null; // แปลงเป็น number หรือ null
+  const studentID = localStorage.getItem("student_id"); // เรียก ID นักศึกษา (string)
+  //const studentID = SID ? parseInt(SID, 10) : null; // แปลงเป็น number หรือ null
 
 
   const columns: TableProps<any>["columns"] = [
@@ -70,7 +70,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
           setStudents(formattedStudents);
           const reservedIDs = new Set(result.map((student) => student.StudentID));
           setReservedStudentIDs(reservedIDs);
-          setIsConfirmButtonDisabled(reservedIDs.has(studentID));
+          setIsConfirmButtonDisabled(reservedIDs.has(studentID)); // ใช้ studentID ที่เป็นสตริง
         } else {
           setIsConfirmButtonDisabled(false);
         }
@@ -105,7 +105,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
 
     try {
       // ตรวจสอบว่านักเรียนมีการจองอยู่แล้วหรือไม่
-      const studentReservations = await GetReservationsByStudentID(studentID);
+      const studentReservations = await GetReservationsByStudentID(String(studentID));
       if (studentReservations.length > 0) {
         message.warning("นักศึกษาได้จองห้องพักแล้ว");
         return;
@@ -170,7 +170,7 @@ const ModalTest: React.FC<ReviewModalProps> = ({
         <>
           <Row>
             <Col>
-              <h2>รายชื่อผู้ร่วมจอง</h2>
+              <h2>รายชื่อผู้ร่วมห้อง</h2>
             </Col>
           </Row>
           <Divider />

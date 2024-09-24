@@ -479,7 +479,7 @@ async function GetReservationsByRoomID(roomID: number) {
 }
 
 // ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
-async function GetReservationsByStudentID(studentID: number): Promise<any> {
+async function GetReservationsByStudentID(studentID: string): Promise<any> {
   try {
     const response = await axios.get(`${apiUrl}/reservations/student/${studentID}`, requestOptions);
     return response.data;
@@ -528,7 +528,7 @@ async function GetDormByRoomID(roomID : number) {
   }
 }
 
-async function GetUserRoom(userID: number) {
+async function GetUserRoom(userID: string) {
   try {
     const response = await axios.get(`${apiUrl}/check-user-room/${userID}`, requestOptions);
     return response.data;

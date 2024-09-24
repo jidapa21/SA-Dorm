@@ -9,8 +9,8 @@ type Reservation struct {
 	gorm.Model
 	ReservationDate	time.Time	`json:"reservation_date"`
 	
-	StudentID	uint      	`json:"student_id"`
-	Student   	Students	`gorm:"foreignKey: student_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
+	StudentID	string      	`json:"student_id"`
+	Student   	Students	`gorm:"foreignKey: student_id;references:StudentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"student"`
 
 	DormID 		uint	`json:"dorm_id"`
 	Dorm		Dorm  	`gorm:"foreignKey:DormID"`

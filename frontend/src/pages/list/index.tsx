@@ -18,8 +18,7 @@ const Listpages: React.FC = () => {
   const [dormName, setDormName] = useState<string | null>(null);
 
   useEffect(() => {
-    const SID = localStorage.getItem("id");
-    const studentID = SID ? parseInt(SID, 10) : null;
+    const studentID = localStorage.getItem("student_id");
 
     const fetchUserRoom = async () => {
       if (studentID === null) return;

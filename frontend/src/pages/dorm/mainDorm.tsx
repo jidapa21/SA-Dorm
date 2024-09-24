@@ -88,9 +88,9 @@ const MainDorm: React.FC = () => {
   };
 
   const fetchStudentReservations = async () => {
-    const SID = localStorage.getItem("id");
-    if (SID) {
-      const reservations: RoomInterface[] = await GetReservationsByStudentID(Number(SID));
+    const studentID = localStorage.getItem("studentID");
+    if (studentID) {
+      const reservations: RoomInterface[] = await GetReservationsByStudentID(studentID);
       setStudentReservations(reservations);
       console.log("Reservations fetched: ", reservations);
       console.log("Student Reserved Room IDs: ", reservations.map((res: RoomInterface) => res.ID)); // กำหนดประเภทให้กับ res

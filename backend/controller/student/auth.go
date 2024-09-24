@@ -56,7 +56,7 @@ func SignInStudent(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": student.ID, "gender_id" : student.GenderID})
+	c.JSON(http.StatusOK, gin.H{"token_type": "Bearer", "token": signedToken, "id": student.ID, "gender_id" : student.GenderID, "student_id": student.StudentID})
 }
 
 func GetStudentDetails(c *gin.Context) {
