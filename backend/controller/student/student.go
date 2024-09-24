@@ -2,6 +2,7 @@ package student
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"dormitory.com/dormitory/config"
@@ -191,7 +192,7 @@ func GetListFormStudent(c *gin.Context) {
 
 func GetListFormDorm(c *gin.Context) {
 	var reservation entity.Reservation
-	var sid entity.Students
+	//var sid entity.Students
 
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
@@ -200,27 +201,17 @@ func GetListFormDorm(c *gin.Context) {
 	}
 
 	db := config.DB()
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
 
 	// เช็ค reservation ว่ามีข้อมูลหรือไม่
-	db.Where("student_id = ?", sid.ID).First(&reservation)
+	db.Where("student_id = ?", studentID).First(&reservation)
+	fmt.Println("student_id = ",studentID)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return
 	}
 
-	// ใช้ ID ของ Student จาก Reservation เพื่อค้นหา Student
-	if err := db.Where("id = ?", sid.ID).Preload("Students").Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found " + err.Error()})
-		return
-	}
-
 	// ค้นหา Reservation และ Preload ความสัมพันธ์
-	db.Where("student_id = ?", sid.ID).
+	db.Where("student_id = ?", studentID).
 		Preload("Dorm").
 		Preload("Room").
 		First(&reservation)
