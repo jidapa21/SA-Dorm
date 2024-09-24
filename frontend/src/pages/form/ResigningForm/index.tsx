@@ -147,6 +147,10 @@ export default function Index() {
             const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
+            openNotification(
+              "error",
+              "กรุณาจองห้องพัก !!!"
+            );
           }
         } else {
           setErrorMessage("ไม่พบข้อมูลนักศึกษา");
