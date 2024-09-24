@@ -1,10 +1,9 @@
 // Layout ของหอพักนักศึกษา กำหนด Routes เส้นทางที่นี่
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import "../../App.css";
-import { HistoryOutlined, HomeOutlined,WalletOutlined,SolutionOutlined,TeamOutlined ,ToolOutlined,FormOutlined} from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme, Button, message } from "antd";
-import logo from "../../assets/logo.png";
+import { HistoryOutlined, HomeOutlined,WalletOutlined,SolutionOutlined,TeamOutlined ,ToolOutlined,FormOutlined,UserOutlined, DownOutlined, FacebookOutlined,} from "@ant-design/icons";
+import { Breadcrumb, Layout, Menu, theme, Button, message, Avatar,MenuProps, Dropdown, Space,Flex, Tag } from "antd";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
 import MainDorm1 from "../../pages/dorm/mainDorm1";
@@ -21,13 +20,15 @@ import Resigningpages from "../../pages/form/ResigningForm";
 import Statusgpages from "../../pages/status";
 import PersonalCreate from "../../pages/personal/create";
 import PersonalChange from "../../pages/personal/edit";
-
+import { GetStudentsById } from "../../services/https";
 const { Header, Content, Footer, Sider } = Layout;
 
 
 const FullLayout: React.FC = () => {
   const page = localStorage.getItem("page");
   const [messageApi, contextHolder] = message.useMessage();
+  const [studentId, setStudentId] = useState<string | null>(null);
+  const [studentName, setStudentName] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -43,6 +44,55 @@ const FullLayout: React.FC = () => {
       location.href = "/";
     }, 2000);
   };
+  
+  const getStudentData = async (id: string) => {
+    try {
+      const studentRes = await GetStudentsById(id);
+      if (studentRes.status === 200) {
+        setStudentId(studentRes.data.student_id);
+        setStudentName(`${studentRes.data.first_name} ${studentRes.data.last_name}`);
+      }
+    } catch (error) {
+      console.error("Error fetching student data", error);
+    }
+  };
+  useEffect(() => {
+    const studentIdFromStorage = localStorage.getItem("id");
+    if (studentIdFromStorage) {
+      getStudentData(studentIdFromStorage);
+    }
+  }, []);
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <span>
+          <UserOutlined style={{ marginRight: 8 }} /> {/* เพิ่มไอคอนผู้ใช้ */}
+          My Account
+        </span>
+      ),
+      disabled: true,
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: '2',
+      label: (
+        <Link to="/personal">
+          ข้อมูลส่วนตัว
+        </Link>
+      ), 
+    },
+    {
+      key: '3',
+      label: 'ออกจากระบบ',
+      onClick: Logout, // เรียกใช้ฟังก์ชัน Logout เมื่อคลิก
+    },
+    
+  ];
+  
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
@@ -50,7 +100,6 @@ const FullLayout: React.FC = () => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        
       >
         <div
           style={{
@@ -69,12 +118,27 @@ const FullLayout: React.FC = () => {
                 marginBottom: 20,
               }}
             >
-              <img
-                src={logo}
-                alt="Logo"
-                style={{ width: "80%" }}
-              />
             </div>
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "16px",
+                marginTop: "10px",
+                fontWeight: "bold",
+              }}
+            >
+            </div>
+            <div className="student-container">
+          <Avatar
+            size={64}
+            icon={<UserOutlined />}
+            style={{ backgroundColor: "#FFCC99" }} // Avatar background color
+          />
+          <div className="student-details">
+            <div className="student-id">{studentId}</div>
+            <div className="student-name">{studentName}</div>
+          </div>
+        </div>
             <Menu
               theme="dark"
               defaultSelectedKeys={[page ? page : "homepage"]}
@@ -199,16 +263,35 @@ const FullLayout: React.FC = () => {
           </Button>
         </div>
       </Sider>
-      <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }} />
-        <Content style={{ margin: "0 16px" }}>
-          <Breadcrumb style={{ margin: "16px 0" }} />
-          <div
-            style={{
-              padding: 24,
-              minHeight: "100%",
-              background: colorBgContainer,
-            }}
+      <Layout style={{ minHeight: '100vh' }}>
+      <Header style={{ background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+      {/* ส่วนสำหรับแท็กโซเชียลมีเดีย */}
+      <Flex gap="4px 0" wrap>
+      <a href="https://www.facebook.com/SUTdorm" target="_blank" rel="noopener noreferrer">
+        <Tag icon={<FacebookOutlined />} color="#3b5999">
+          Facebook
+        </Tag>
+      </a>
+      {/* คุณสามารถเพิ่มแท็กอื่น ๆ ได้ที่นี่ */}
+    </Flex>
+      <Dropdown menu={{ items }}>
+        <a onClick={(e) => e.preventDefault()}>
+          <Space>
+          My Options
+            <DownOutlined />
+          </Space>
+        </a>
+      </Dropdown>
+      
+    </Header>
+    <Content style={{ margin: '0 16px' }}>
+      <Breadcrumb style={{ margin: '16px 0' }} />
+      <div
+        style={{
+          padding: 24,
+          minHeight: '100%',
+          background: colorBgContainer,
+        }}
           >
             <Routes>
               <Route path="/" element={<Homepages />} />

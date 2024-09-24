@@ -211,7 +211,8 @@ func SetupDatabase() {
 	waterFee1 = entity.WaterFee{Amount: 100.00}
 	db.FirstOrCreate(&waterFee1, &entity.WaterFee{Amount: 100.00})
 
-	// Seed ข้อมูล ElectricityFee
+	// Seed ข้อมูล ElectricityFeeo
+
 	var electricityFee1 entity.ElectricityFee
 	electricityFee1 = entity.ElectricityFee{Amount: 150.00}
 

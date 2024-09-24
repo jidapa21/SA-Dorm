@@ -15,10 +15,20 @@ func GetFamily(c *gin.Context) {
 	//results := db.Preload("Gender").First(&student, ID)
 	db := config.DB()
 	results := db.Preload("FamilyStatus").Preload("Guardian").First(&family, ID)
+	/*
+		// ถ้าไม่มีข้อมูล จะไม่แสดง error แต่จะแสดงวัตถุว่างเปล่า
+		if results.Error != nil || family.ID == 0 {
+			c.JSON(http.StatusOK, family)
+			return
+		}
+	*/
 
-	// ถ้าไม่มีข้อมูล จะไม่แสดง error แต่จะแสดงวัตถุว่างเปล่า
-	if results.Error != nil || family.ID == 0 {
-		c.JSON(http.StatusOK, family)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	if family.ID == 0 {
+		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	}
 	c.JSON(http.StatusOK, family)

@@ -15,9 +15,19 @@ func GetAddress(c *gin.Context) {
 
 	db := config.DB()
 	results := db.First(&address, ID)
+	/*
+		if results.Error != nil || address.ID == 0 {
+			c.JSON(http.StatusOK, address)
+			return
+		}
+	*/
 
-	if results.Error != nil || address.ID == 0 {
-		c.JSON(http.StatusOK, address)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	if address.ID == 0 {
+		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	}
 	c.JSON(http.StatusOK, address)

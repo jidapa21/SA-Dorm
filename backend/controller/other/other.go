@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 // GET /get-other/:id
 func GetOther(c *gin.Context) {
 	ID := c.Param("id")
@@ -17,10 +16,19 @@ func GetOther(c *gin.Context) {
 	db := config.DB()
 	// ค้นหาข้อมูลที่มี id ตรงกับที่ได้รับมา
 	results := db.Preload("License").First(&other, ID)
-
-	// ถ้าไม่มีข้อมูล จะไม่แสดง error แต่จะแสดงวัตถุว่างเปล่า
-	if results.Error != nil || other.ID == 0 {
-		c.JSON(http.StatusOK, other)
+	/*
+		// ถ้าไม่มีข้อมูล จะไม่แสดง error แต่จะแสดงวัตถุว่างเปล่า
+		if results.Error != nil || other.ID == 0 {
+			c.JSON(http.StatusOK, other)
+			return
+		}
+	*/
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": results.Error.Error()})
+		return
+	}
+	if other.ID == 0 {
+		c.JSON(http.StatusNoContent, gin.H{})
 		return
 	}
 	c.JSON(http.StatusOK, other)
