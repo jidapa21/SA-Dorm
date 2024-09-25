@@ -729,49 +729,6 @@ async function Updateexpense(reservationId: number, data: Partial<ExpenseInterfa
     .catch((e) => e.response);
 }
 
-//-----------------------------Rentfee-------------------------------------
-
-async function ListDormFees() {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  let res = await fetch(`/list-dorms`, requestOptions).then((res) => {
-    if (res.status == 200) {
-      return res.json();
-    } else {
-      return false;
-    }
-  });
-  return res;
-}
-
-async function CreateDormFee(data: RentInterface) {
-  return await axios
-    .post(`/create-dormfee`, data, requestOptions)
-    .then((res) => res)
-    .catch((e) => e.response);
-}
-
-async function GetDormFee() {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  let res = await fetch(`/get-dorm/:id`, requestOptions).then((res) => {
-    if (res.status == 200) {
-      return res.json();
-    } else {
-      return false;
-    }
-  });
-  return res;
-}
-
 //----------------------------------------------Electricity-------------------------------------
 async function ListElectricityFees() {
   const requestOptions = {

@@ -22,6 +22,10 @@ const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
       element: isLoggedInAdmin ? <AdminLayout /> : <LoginAdmin />,
       children: [
         {
+          path: '/',
+          element: <Announcement />,
+        },
+        {
           path: 'Announcement',
           element: <Announcement />,
         },
