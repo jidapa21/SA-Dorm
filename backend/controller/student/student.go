@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+
 // POST /student-create
 func CreateStudent(c *gin.Context) {
 	var student entity.Students

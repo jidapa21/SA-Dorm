@@ -2,7 +2,7 @@ import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicke
 import { EditOutlined } from "@ant-design/icons";
 //import { PersonalDetailInterface } from "../../../interfaces/PersonalDetails";
 import { useNavigate, Link ,useParams} from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { PersonalInterface } from "../../../interfaces/Personal";
 import { AddressInterface } from "../../../interfaces/Address";
 import { FamilyInterface } from "../../../interfaces/Family";
