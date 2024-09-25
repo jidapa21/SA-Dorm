@@ -212,25 +212,38 @@ func GetListFormDorm(c *gin.Context) {
 
 // GetStudentsByRoomID ดึงข้อมูลนักศึกษาจากห้อง
 func GetStudentsByRoomID(c *gin.Context) {
-	roomID := c.Param("room_id")
+    roomID := c.Param("room_id")
 
-	var reservations []entity.Reservation
-	var students []entity.Students
+    var reservations []entity.Reservation
 
-	db := config.DB()
-	// ดึงข้อมูลการจองจากฐานข้อมูล
-	if err := db.Where("room_id = ?", roomID).Preload("Student").Find(&reservations).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
-		return
-	}
+    db := config.DB()
+    // ดึงข้อมูลการจองจากฐานข้อมูล
+    if err := db.Where("room_id = ?", roomID).Preload("Dorm").Preload("Student").Find(&reservations).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
+        return
+    }
 
-	// สร้าง slice ของนักศึกษาจากการจอง
-	for _, reservation := range reservations {
-		var student entity.Students
-		// ดึงข้อมูลนักศึกษาโดยใช้ StudentID
-		db.Where("student_id = ?", reservation.StudentID).First(&student)
-		students = append(students, student)
-	}
+    // สร้าง slice ของข้อมูลนักศึกษา
+    var students []map[string]interface{} // ใช้ map เพื่อเก็บข้อมูลรวม
 
-	c.JSON(http.StatusOK, students)
+    // สร้างข้อมูลนักศึกษาจากการจอง
+    for _, reservation := range reservations {
+        var student entity.Students
+        // ดึงข้อมูลนักศึกษาโดยใช้ StudentID
+        if err := db.Where("student_id = ?", reservation.StudentID).First(&student).Error; err == nil {
+            // สร้าง map สำหรับข้อมูลนักศึกษา
+            studentData := map[string]interface{}{
+                "student_id": student.StudentID,
+                "first_name": student.FirstName,
+                "last_name":  student.LastName,
+                "major":      student.Major,
+                "year":       student.Year,
+                "amount":     reservation.Dorm.Amount, // ดึงค่าห้องจาก Dorm
+				"room_number":reservation.Room.RoomNumber,
+            }
+            students = append(students, studentData)
+        }
+    }
+
+    c.JSON(http.StatusOK, students)
 }

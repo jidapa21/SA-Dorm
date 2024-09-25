@@ -186,7 +186,7 @@ export default function EnExitingFormCreate() {
   return (
     <>
       <Card>
-        <h2>แบบฟอร์มขออนุญาติเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืนนอกหอพัก</h2>
+        <h2>แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืนนอกหอพัก</h2>
         <Divider />
         <Form name="StudentDetails" form={form} layout="vertical">
           <Row justify="space-between" align="middle">

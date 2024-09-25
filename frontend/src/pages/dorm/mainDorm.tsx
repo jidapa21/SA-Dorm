@@ -88,7 +88,7 @@ const MainDorm: React.FC = () => {
   };
 
   const fetchStudentReservations = async () => {
-    const studentID = localStorage.getItem("student");
+    const studentID = localStorage.getItem("student_id");
     if (studentID) {
       const reservations: RoomInterface[] = await GetReservationsByStudentID(studentID);
       setStudentReservations(reservations);
