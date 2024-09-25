@@ -1,27 +1,58 @@
 /* สไตล์สำหรับ Sidebar */
 .custom-sider {
-  background: #1b0ba7 !important;
+  background: #0c1327 !important; /* สีพื้นหลังของ Sidebar */
   width: 15vw !important; /* กำหนดความกว้างของ Sidebar */
-  height: 100vh !important; /* เต็มความสูงของหน้าจอ */
+  height: 100vh !important; /* Sidebar เต็มความสูงของหน้าจอ */
   border-right: 3px solid #007bff; /* เส้นขอบขวา */
-  position: fixed !important; /* Fix Sidebar ในตำแหน่งคงที่ */
-  overflow: auto!important;
+  position: fixed !important; /* ตรึง Sidebar ในตำแหน่งคงที่ */
+  top: 0; /* เริ่มที่ด้านบนสุด */
+  left: 0; /* วางที่ด้านซ้าย */
+  overflow-y: auto !important; /* เพิ่ม Scroll ในกรณี Sidebar ยาวเกินหน้าจอ */
+  z-index: 1000; /* คง Sidebar ไว้ด้านบนสุด */
 }
 
 /* สไตล์สำหรับ Content */
 .custom-content {
   background: #feffff !important; /* สีพื้นหลังขาว */
-  margin-left: 27vh !important; /* เว้นระยะห่างจาก Sidebar */ 
-  min-height: 100vh!important; /* ความสูงขั้นต่ำ */
-  width: calc(100vw - 13.2vw)!important; /* ความกว้างเท่ากับความกว้างของหน้าจอลบด้วยความกว้างของ Sidebar */
-  box-sizing: border-box!important; /* นำขนาดของ padding มาใช้ในการคำนวณขนาดรวม */
-  overflow: auto!important;
+  margin-left: 200px !important; /* ระยะห่างจาก Sidebar */
+  padding: 20px; /* เพิ่ม Padding เพื่อไม่ให้ Content ติดขอบ */
+  min-height: 100vh !important; /* ความสูงขั้นต่ำเต็มหน้าจอ */
+  box-sizing: border-box !important; /* นำ Padding มารวมในขนาดขององค์ประกอบ */
+  overflow-y: auto !important; /* เพิ่ม Scroll ในกรณีที่ Content ยาวเกินหน้าจอ */
+}
+
+/* Media Query สำหรับหน้าจอที่เล็กกว่า 768px (มือถือหรือแท็บเล็ต) */
+@media (max-width: 768px) {
+  .custom-sider {
+    width: 50vw !important; /* กำหนดความกว้างของ Sidebar ให้เป็น 50% ของหน้าจอ */
+  }
+
+  .custom-content {
+    margin-left: 50vw !important; /* ปรับระยะห่างของ Content ให้สัมพันธ์กับ Sidebar */
+    width: calc(100vw - 50vw) !important; /* ความกว้างของ Content ปรับตามขนาดใหม่ของ Sidebar */
+  }
+}
+
+/* Media Query สำหรับหน้าจอที่เล็กกว่า 480px (มือถือขนาดเล็ก) */
+@media (max-width: 480px) {
+  .custom-sider {
+    width: 100vw !important; /* Sidebar เต็มความกว้างหน้าจอ */
+    height: auto !important; /* ความสูง Sidebar ปรับตามเนื้อหา */
+    position: relative !important; /* ปรับให้ Sidebar ไม่ตรึงคงที่ */
+    border-right: none !important; /* เอาเส้นขอบขวาออก */
+  }
+
+  .custom-content {
+    margin-left: 0 !important; /* ให้ Content เริ่มต้นที่ 0 ไม่ต้องเว้นระยะจาก Sidebar */
+    width: 100vw !important; /* ความกว้างเต็มหน้าจอ */
+    margin-top: 10px; /* เพิ่มระยะห่างจาก Sidebar */
+  }
 }
 
 
 /* กำหนดพื้นหลังสำหรับ Menu */
 .ant-menu {
-  background: #1b0ba7 !important;
+  background: #0c1327 !important;
 }
 
 /* กำหนดสีของไอเทมใน Menu */
