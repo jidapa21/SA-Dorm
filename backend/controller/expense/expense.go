@@ -126,8 +126,26 @@ func ListExpense(c *gin.Context) {
 	// (โค้ดสำหรับการตรวจสอบโทเค็น)
 
 	// ดึงรายการค่าใช้จ่าย
+	var reservation entity.Reservation
 	var expenses []entity.Expense
+
 	db := config.DB()
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+	// ค้นหาการจองห้อง
+	db.Where("student_id = ?", studentID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+	if err := db.Where("reservation_id = ?", reservation.ID).Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
+		return
+	}
+
 	if err := db.Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
 		return

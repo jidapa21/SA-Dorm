@@ -310,6 +310,25 @@ func SetupDatabase() {
 		fmt.Println("Expense created successfully:", expense)
 	}
 
+	expense2 := entity.Expense{
+		ID:               2,
+		Date:             time.Now(),
+		Status:           "กำลังดำเนินการ",
+		DormID:           dorm.ID,
+		WaterFeeID:       waterFee.ID,       // เชื่อมโยง WaterFee
+		ElectricityFeeID: electricityFee.ID, // เชื่อมโยง ElectricityFee
+		TotalAmount:      totalAmount,
+		ReservationID:    2,
+		AdminID:          1,
+	}
+
+	result2 := db.FirstOrCreate(&expense2, entity.Expense{ID: 2})
+	if result2.Error != nil {
+		fmt.Println("Error creating expense:", result2.Error)
+	} else {
+		fmt.Println("Expense created successfully:", expense2)
+	}
+
 	// ดึงข้อมูล Expense พร้อมข้อมูลที่เกี่ยวข้อง
 	var expense1 entity.Expense
 	db.Preload("Dorm").Preload("WaterFee").Preload("ElectricityFee").First(&expense1, expense.ID)
