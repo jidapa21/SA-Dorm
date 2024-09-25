@@ -355,6 +355,11 @@ func seedStudents() {
 		{FirstName: "Anan", LastName: "Yutthapong", StudentID: "B6510003", Password: HashPasswordOrPanic("B6510003"), Birthday: parseDate("2005-01-15"), Year: 1, Major: "แพทยศาสตร์", GenderID: 1},
 		{FirstName: "Siriwan", LastName: "Petchsri", StudentID: "B6510004", Password: HashPasswordOrPanic("B6510004"), Birthday: parseDate("2001-07-18"), Year: 4, Major: "สาธารณสุขศาสตร์", GenderID: 2},
 		{FirstName: "Patchara", LastName: "Tantawan", StudentID: "B6510005", Password: HashPasswordOrPanic("B6510005"), Birthday: parseDate("2005-09-20"), Year: 1, Major: "ทันตแพทยศาสตร์", GenderID: 1},
+		{FirstName: "Kanya", LastName: "Wongthong", StudentID: "B6510006", Password: HashPasswordOrPanic("B6510006"), Birthday: parseDate("2002-02-28"), Year: 3, Major: "เภสัชศาสตร์", GenderID: 2},
+		{FirstName: "Nattapong", LastName: "Pongprapaporn", StudentID: "B6510007", Password: HashPasswordOrPanic("B6510007"), Birthday: parseDate("2000-05-15"), Year: 4, Major: "วิศวกรรมศาสตร์", GenderID: 1},
+		{FirstName: "Rattana", LastName: "Srikham", StudentID: "B6510008", Password: HashPasswordOrPanic("B6510008"), Birthday: parseDate("2003-08-10"), Year: 2, Major: "การบัญชี", GenderID: 2},
+		{FirstName: "Phawinee", LastName: "Khaokham", StudentID: "B6510009", Password: HashPasswordOrPanic("B6510009"), Birthday: parseDate("2004-12-01"), Year: 1, Major: "การท่องเที่ยว", GenderID: 2},
+		{FirstName: "Kacha", LastName: "Sangthong", StudentID: "B6510010", Password: HashPasswordOrPanic("B6510010"), Birthday: parseDate("2005-03-25"), Year: 1, Major: "นิติศาสตร์", GenderID: 1},
 	}
 	// บันทึก Students ก่อน
 	for _, student := range user {

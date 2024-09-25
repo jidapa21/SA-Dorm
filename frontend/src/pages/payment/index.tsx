@@ -200,9 +200,7 @@ const Index: React.FC = () => {
     let res = await CreateSlip(values);
     console.log("CreateSlip: ", res);
 
-    let resExpense = await CreateExpense(values);
-    console.log("CreateExpense: ", resExpense);
-    if (res && resExpense) {
+    if (res) {
       messageApi.open({
         type: "success",
         content: "บันทึกข้อมูลสำเร็จ",
