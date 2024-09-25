@@ -168,8 +168,8 @@ func main() {
 		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
 		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
 		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
-		router.GET("/check-user-room/:userID", reservation.CheckUserRoom)
 		router.GET("/reservations/:room_id/dorm", dorm.GetDormByRoomID)
+		router.GET("/check-user-room/:userID", reservation.GetUserRoom)
 		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID)
 
 	}
