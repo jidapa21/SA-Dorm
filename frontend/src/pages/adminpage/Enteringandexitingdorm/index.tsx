@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Typography, Card } from 'antd';
+import { Button, Table, Typography, Card, Modal } from 'antd';
 import ReadEnteringAndExitingDorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index';
 import { ListEn_ExitingForm } from '../../../services/https';
-import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm"
+import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm";
 
 const { Title } = Typography;
 
@@ -12,32 +12,33 @@ interface TableEn_ExitingFormInterfaceRecord extends En_ExitingFormInterface {
 }
 
 const EnteringAndExitingDorm: React.FC = () => {
-  const [repairs, setEnteringAndExitingDorm] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
+  const [EnteringAndExitingDorm, setEnteringAndExitingDorm] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEn_ExitingForm = async () => {
       try {
         const data = await ListEn_ExitingForm();
-        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
+        console.log('Data from API:', data);
         if (data) {
-          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'completed')
+          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'completed');
           const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
           }));
-          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
+          console.log('Transformed Data:', transformedData);
           setEnteringAndExitingDorm(transformedData);
         }
       } catch (error) {
         console.error('Error fetching En_ExitingForm:', error);
       }
     };
-  
+
     fetchEn_ExitingForm();
-    const intervalId = setInterval(fetchEn_ExitingForm, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
-    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
-  }, []); 
+    const intervalId = setInterval(fetchEn_ExitingForm, 3000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };
@@ -48,36 +49,57 @@ const EnteringAndExitingDorm: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการฟอร์มผ่อนผัน',
-      children: [
-        {
-            title: 'สภานะ',
-            dataIndex: 'status',
-            key: 'status',
-            render: (text: string) => (
-              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-            ),
-        },
-        {
-          key: 'details',
-          render: (_: any, record: TableEn_ExitingFormInterfaceRecord) => (
-            <div style={{ textAlign: 'center' }}>
-              <Button
-                type="primary"
-                onClick={() => handleDetailsClick(record.key)}
-                style={{ marginTop: '8px' }}
-              >
-                ดูรายละเอียด
-              </Button>
-            </div>
-          ),
-        },
-      ],
+      title: <div style={{ textAlign: 'center' }}>รหัสนักศึกษา</div>,
+      dataIndex: ['reservation', 'student', 'student_id'],
+      key: 'student_id',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>หอ</div>,
+      dataIndex: ['reservation', 'Dorm', 'dorm_name'],
+      key: 'dorm_name',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>ห้อง</div>,
+      dataIndex: ['reservation', 'Room', 'room_number'],
+      key: 'room_number',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>สถานะ</div>,
+      dataIndex: 'status',
+      key: 'status',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>รายละเอียด</div>,
+      key: 'details',
+      render: (_: any, record: TableEn_ExitingFormInterfaceRecord) => (
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            type="primary"
+            onClick={() => handleDetailsClick(record.key)}
+            style={{ marginTop: '8px' }}
+          >
+            ดูรายละเอียด
+          </Button>
+        </div>
+      ),
     },
   ];
+
+
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
-      {/* Header with underline */}
       <div
         style={{
           display: 'flex',
@@ -87,8 +109,7 @@ const EnteringAndExitingDorm: React.FC = () => {
         }}
       >
         <Title level={2} style={{ margin: 0, color: '#333' }}>
-        แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืน
-
+          แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืน
         </Title>
         <div
           style={{
@@ -110,24 +131,17 @@ const EnteringAndExitingDorm: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadEnteringAndExitingDorm ID ={Number(selectedKey)} />
+          <ReadEnteringAndExitingDorm ID={Number(selectedKey)} />
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Card
-            bordered={true}
-            style={{ width: '100%', maxWidth: '1100px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
-          >
             <Table
+              dataSource={EnteringAndExitingDorm}
               columns={columns}
-              dataSource={repairs}
               pagination={false}
               bordered
-              showHeader={false}
-              style={{ backgroundColor: '#FFFFFF' }}
+              style={{ marginBottom: '20px' }}
+              rowClassName={(_record, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
             />
-          </Card>
-        </div>
       )}
     </div>
   );

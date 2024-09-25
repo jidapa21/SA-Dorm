@@ -74,7 +74,7 @@ func ListEn_ExitingForm(c *gin.Context) {
 	var En_ExitingForm []entity.En_ExitingForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&En_ExitingForm).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Dorm").Preload("Reservation.Room").Preload("Reservation.Student").Find(&En_ExitingForm).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
