@@ -77,12 +77,12 @@
 .custom-menu .ant-menu-submenu-title {
   color: #ffffff !important; /* สีของตัวอักษรใน SubMenu */
   font-size: 16px !important; /* ขนาดตัวอักษร */
-  background: #1b0ba7 !important; /* สีพื้นหลังของ SubMenu title */
+  background: #0c1327 !important; /* สีพื้นหลังของ SubMenu title */
 }
 
 /* สไตล์สำหรับ SubMenu */
 .custom-menu-submenu {
-  background: #1b0ba7 !important; /* สีพื้นหลังของ SubMenu */
+  background: #0c1327 !important; /* สีพื้นหลังของ SubMenu */
 }
 
 /* สไตล์สำหรับ SubMenu items */
