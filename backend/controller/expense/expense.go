@@ -11,7 +11,6 @@ import (
 
 func CreateExpense(c *gin.Context) {
 	var expense entity.Expense
-	var sid entity.Students
 	var dorm entity.Dorm
 	var reservation entity.Reservation
 	var waterfee entity.WaterFee
@@ -24,15 +23,8 @@ func CreateExpense(c *gin.Context) {
 		return
 	}
 
-	// ค้นหานักเรียน
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
-
 	// ค้นหาการจองห้อง
-	db.Where("student_id = ?", sid.ID).First(&reservation)
+	db.Where("student_id = ?", studentID).First(&reservation)
 	if reservation.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
 		return
@@ -46,7 +38,7 @@ func CreateExpense(c *gin.Context) {
 	}
 
 	// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
-	switch dorm.Type {
+	switch dorm.DormName {
 	case "หอพักชาย 1", "หอพักหญิง 3":
 		dorm.Amount = 6500.00 // ราคา 6500 สำหรับหอพักชาย 1 และหอพักหญิง 3
 	case "หอพักชาย 2", "หอพักหญิง 4":
@@ -57,14 +49,14 @@ func CreateExpense(c *gin.Context) {
 	}
 
 	// ค้นหาค่าน้ำ
-	db.Where("reservation_id = ?", reservation.ID).First(&waterfee)
+	db.Where("reservation_id = ?", 1).First(&waterfee)
 	if waterfee.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Water fee not found"})
 		return
 	}
 
 	// ค้นหาค่าไฟฟ้า
-	db.Where("reservation_id = ?", reservation.ID).First(&electricityfee)
+	db.Where("reservation_id = ?", 1).First(&electricityfee)
 	if electricityfee.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Electricity fee not found"})
 		return
@@ -81,7 +73,7 @@ func CreateExpense(c *gin.Context) {
 
 	rp := entity.Expense{
 		Date:             expense.Date,
-		Status:           expense.Status,
+		Status:          "กำลังดำเนินการ",
 		DormID:           dorm.ID,
 		Dorm:             &dorm,
 		WaterFeeID:       waterfee.ID,
@@ -91,6 +83,11 @@ func CreateExpense(c *gin.Context) {
 		TotalAmount:      totalAmount,
 		ReservationID:    reservation.ID,
 		Reservation:      reservation,
+	}
+
+	if err := db.Create(&rp).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	// ส่งข้อมูลออกไป
 	c.JSON(http.StatusCreated, gin.H{
@@ -126,9 +123,22 @@ func ListExpense(c *gin.Context) {
 	// (โค้ดสำหรับการตรวจสอบโทเค็น)
 
 	// ดึงรายการค่าใช้จ่าย
+	var reservation entity.Reservation
 	var expenses []entity.Expense
+
 	db := config.DB()
-	if err := db.Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+	// ค้นหาการจองห้อง
+	db.Where("student_id = ?", studentID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+	if err := db.Where("reservation_id = ?", reservation.ID).Preload("Dorm").Preload("ElectricityFee").Preload("WaterFee").Find(&expenses).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
 		return
 	}

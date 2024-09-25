@@ -59,8 +59,6 @@ func CreateReservation(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Reservation created successfully", "data": reservation})
 }
 
-
-
 // DELETE /delete-student/:id
 func DeleteReservation(c *gin.Context) {
 	id := c.Param("id")
@@ -108,7 +106,8 @@ func GetReservationsByRoomID(c *gin.Context) {
 }
 
 func GetReservationsByStudentID(c *gin.Context) {
-	studentID := c.Param("studentID") // รับ studentID จาก URL
+	studentID := c.Param("studentID")   // รับ studentID จาก URL
+	fmt.Println("studentID", studentID) // 2
 	db := config.DB()
 
 	var reservations []entity.Reservation
@@ -120,12 +119,12 @@ func GetReservationsByStudentID(c *gin.Context) {
 	c.JSON(http.StatusOK, reservations)
 }
 
-func CheckUserRoom(c *gin.Context) {
+func GetUserRoom(c *gin.Context) {
 	userID := c.Param("userID") // รับ userID จาก URL
 	db := config.DB()
 
 	var reservations []entity.Reservation
-	if err := db.Where("student_id = ?", userID).Preload("Room").Find(&reservations).Error; err != nil {
+	if err := db.Where("student_id = ?", userID).Preload("Room").Preload("Dorm").Find(&reservations).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
 		return
 	}
@@ -134,9 +133,10 @@ func CheckUserRoom(c *gin.Context) {
 	var result []gin.H
 	for _, reservation := range reservations {
 		result = append(result, gin.H{
-			"room_id": reservation.RoomID,
+			"room_id":     reservation.RoomID,
 			"room_number": reservation.Room.RoomNumber,
-			"dorm_id": reservation.DormID,
+			"dorm_id":     reservation.DormID,
+			"dorm_name":   reservation.Dorm.DormName,
 		})
 	}
 
