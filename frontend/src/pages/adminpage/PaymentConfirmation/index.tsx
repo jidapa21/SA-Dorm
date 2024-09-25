@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, message } from 'antd';
+import { Table, Button, Modal, message, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FileImageOutlined } from '@ant-design/icons';
 import { Getslipcompleted, Updateexpense } from '../../../services/https';
 import { SlipInterface } from "../../../interfaces/slip";
 import dayjs from 'dayjs';
+const { Title } = Typography;
 
 interface PaymentData {
   key: string;
@@ -149,33 +150,14 @@ const PaymentConfirmation: React.FC = () => {
   ];
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div
-        style={{
-          textAlign: 'center',
-          marginBottom: '20px',
-          position: 'relative',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '25px',
-            fontWeight: 'bold',
-            paddingBottom: '10px',
-          }}
-        >
-          การยืนยันการชำระเงิน
-        </span>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderBottom: '3px solid #000',
-          }}
-        />
-      </div>
+    <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
+    {/* Header with underline */}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+      <Title level={2} style={{ margin: 0, color: '#333' }}>
+      การยืนยันการชำระเงิน
+      </Title>
+      <div style={{ width: '100%', maxWidth: '600px', height: '3px', backgroundColor: '#1890ff', marginTop: '5px', borderRadius: '2px' }} />
+    </div>
 
       <Table
         dataSource={paymentData}
