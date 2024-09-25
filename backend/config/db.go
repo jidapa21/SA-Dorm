@@ -48,7 +48,6 @@ func SetupDatabase() {
 		&entity.En_ExitingForm{},
 		&entity.ResigningForm{},
 
-		&entity.RentFee{},
 		&entity.WaterFee{},
 		&entity.ElectricityFee{},
 		&entity.Expense{},
@@ -153,8 +152,8 @@ func SetupDatabase() {
 	reservation2 := &entity.Reservation{
 		ReservationDate: ReservationDate2,
 		StudentID:       "B6510002",
-		DormID:          4,
-		RoomID:          100,
+		DormID:          2,
+		RoomID:          50,
 	}
 	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: "B6510002", DormID: 4, RoomID: 100})
 

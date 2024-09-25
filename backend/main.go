@@ -20,7 +20,6 @@ import (
 	"dormitory.com/dormitory/controller/other"
 	"dormitory.com/dormitory/controller/personal"
 	personaldetails "dormitory.com/dormitory/controller/personalDetails"
-	"dormitory.com/dormitory/controller/rentfee"
 	"dormitory.com/dormitory/controller/repairing"
 	"dormitory.com/dormitory/controller/reservation"
 	"dormitory.com/dormitory/controller/resigningform"
@@ -71,11 +70,6 @@ func main() {
 		// Other Route
 		router.GET("/get-other/:id", other.GetOther)
 		router.PUT("/update-other/:id", other.UpdateOther)
-
-		// RentFee Route
-		router.POST("/create-rent-fee", rentfee.CreateRentFee)
-		router.GET("/get-rent-fee/:id", rentfee.GetRentFee)
-		router.GET("/list-rent-fees", rentfee.ListRentFees)
 
 		// Repair Route
 		router.GET("/get-list-formstudent", student.GetListFormStudent)
@@ -135,11 +129,6 @@ func main() {
 		router.GET("/get-expense/:id", expense.GetExpense)
 		router.GET("/list-expense", expense.ListExpense)
 		router.PUT("/update-expense/:reservationId", expense.UpDateExpense)
-
-		// RentFee Route
-		router.POST("/create-rentfee", rentfee.CreateRentFee)
-		router.GET("/get-rentfee/:id", rentfee.GetRentFee)
-		router.GET("/list-rentfees", rentfee.ListRentFees)
 
 		//waterFee Route
 		router.POST("/create-waterfee", waterfee.CreateWaterFee)
