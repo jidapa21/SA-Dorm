@@ -9,6 +9,7 @@ import {
 } from "../../services/https";
 import { RoomInterface } from "./../../interfaces/Room";
 import { ReservationInterface } from "../../interfaces/Reservation";
+import "./Bmain.css";
 
 const style: React.CSSProperties = {
   padding: "30px 0",
