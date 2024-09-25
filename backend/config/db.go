@@ -387,7 +387,7 @@ func seedStudents() {
 }
 
 func seedPersonals() {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		personal := entity.Personal{
 			StudentID:   uint(i),
 			Nickname:    "",
@@ -403,7 +403,7 @@ func seedPersonals() {
 }
 
 func seedAddresses() {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		address := entity.Address{
 			StudentID:   uint(i),
 			HouseNo:     "",
@@ -421,7 +421,7 @@ func seedAddresses() {
 }
 
 func seedFamilies() {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		family := entity.Family{
 			StudentID:        uint(i),
 			FathersName:      "",
@@ -436,7 +436,7 @@ func seedFamilies() {
 }
 
 func seedOthers() {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		other := entity.Other{
 			StudentID:            uint(i),
 			LatestGraduationFrom: "",
