@@ -82,7 +82,7 @@ func ListDelayedPaymentForms(c *gin.Context) {
 	var delayedpaymentform []entity.DelayedPaymentForm
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&delayedpaymentform).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Dorm").Preload("Reservation.Room").Preload("Reservation.Student").Find(&delayedpaymentform).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

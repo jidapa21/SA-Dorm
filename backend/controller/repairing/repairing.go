@@ -26,7 +26,7 @@ func CreateRepair(c *gin.Context) {
 		return
 	}
 
-	db.Where("student_id = ?", sid.StudentID).First(&reservation)
+	db.Where("student_id ?", sid.StudentID).First(&reservation)
 	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
@@ -77,7 +77,7 @@ func GetListRepairs(c *gin.Context) {
 	var repairings []entity.Repairing
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Dorm").Preload("Reservation.Room").Preload("Reservation.Student").Find(&repairings).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No repairings found or related data error"})
 		return
 	}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Routes, Route } from 'react-router-dom';
-import { Layout, Menu, Button, Typography } from 'antd';
+import { Layout, Menu, Button, Typography, message, Breadcrumb} from 'antd';
 import {
   BellOutlined,
   ToolOutlined,
@@ -14,12 +14,13 @@ import Logo from '../../assets/logo.png';
 import AdminRoutes from '../../routes/AdminRoutes';
 import { GetAdminByID } from '../../services/https'; // นำเข้าฟังก์ชัน GetAdminByID
 
-const { Sider, Content } = Layout;
+const { Content,Sider } = Layout;
 const { Title } = Typography;
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['1']);
+  const [messageApi, contextHolder] = message.useMessage();
   const [adminName, setAdminName] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,6 +74,7 @@ const AdminLayout: React.FC = () => {
     localStorage.removeItem('isLoginAdmin');
     localStorage.removeItem('isLoginStudent');
     localStorage.removeItem('adminName'); // ลบชื่อแอดมินออกจาก localStorage
+    messageApi.success('ออกจากระบบสำเร็จ');
     navigate('/login');
   };
 
@@ -92,6 +94,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
+       {contextHolder}
       <Sider
         trigger={null}
         collapsible
@@ -136,7 +139,8 @@ const AdminLayout: React.FC = () => {
         </div>
       </Sider>
       <Layout>
-        <Content className="custom-content" style={{ padding: 24 }}>
+      <Content className="custom-content" style={{ padding: 24 }}>
+          <Breadcrumb style={{ margin: '5px 0',backgroundColor: '#feffff' }} />
           <Routes>
             {AdminRoutes(true)[0].children?.map((route) => (
               <Route key={route.path} path={route.path} element={route.element} />

@@ -12,7 +12,7 @@ interface TableRequestDelayingPaymentRecord extends DelayedPaymentFormInterface 
 }
 
 const DelayingPayment: React.FC = () => {
-  const [repairs, setDelayingPayment] = useState<TableRequestDelayingPaymentRecord[]>([]);
+  const [DelayingPayment, setDelayingPayment] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,31 +49,51 @@ const DelayingPayment: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการฟอร์มผ่อนผัน',
-      children: [
-        {
-            title: 'สภานะ',
-            dataIndex: 'status',
-            key: 'Status',
-            render: (text: string) => (
-              <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-            ),
-        },
-        {
-          key: 'details',
-          render: (_: any, record: TableRequestDelayingPaymentRecord) => (
-            <div style={{ textAlign: 'center' }}>
-              <Button
-                type="primary"
-                onClick={() => handleDetailsClick(record.key)}
-                style={{ marginTop: '8px' }}
-              >
-                ดูรายละเอียด
-              </Button>
-            </div>
-          ),
-        },
-      ],
+      title: <div style={{ textAlign: 'center' }}>รหัสนักศึกษา</div>,
+      dataIndex: ['reservation', 'student', 'student_id'],
+      key: 'student_id',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>หอ</div>,
+      dataIndex: ['reservation', 'Dorm', 'dorm_name'],
+      key: 'dorm_name',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>ห้อง</div>,
+      dataIndex: ['reservation', 'Room', 'room_number'],
+      key: 'room_number',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>สถานะ</div>,
+      dataIndex: 'status',
+      key: 'status',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>รายละเอียด</div>,
+      key: 'details',
+      render: (_: any, record: TableRequestDelayingPaymentRecord) => (
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            type="primary"
+            onClick={() => handleDetailsClick(record.key)}
+            style={{ marginTop: '8px' }}
+          >
+            ดูรายละเอียด
+          </Button>
+        </div>
+      ),
     },
   ];
   return (
@@ -114,21 +134,14 @@ const DelayingPayment: React.FC = () => {
           <ReadDelayingPayment ID={Number(selectedKey)} />
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Card
-            bordered={true}
-            style={{ width: '100%', maxWidth: '1100px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
-          >
             <Table
               columns={columns}
-              dataSource={repairs}
+              dataSource={DelayingPayment}
               pagination={false}
               bordered
-              showHeader={false}
-              style={{ backgroundColor: '#FFFFFF' }}
+              style={{ marginBottom: '20px' }}
+              rowClassName={(_record, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
             />
-          </Card>
-        </div>
       )}
     </div>
   );

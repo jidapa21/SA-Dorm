@@ -32,12 +32,13 @@ const PaymentConfirmation: React.FC = () => {
           // ตรวจสอบโครงสร้างข้อมูลก่อน
           const formattedData = slips.map((slip: any) => ({
             key: slip.ID,
-            time: dayjs(slip.CreatedAt).format('DD/MM/YYYY HH:mm:ss'), // ฟอร์แมตวันที่
+            time: dayjs(slip.Slip.CreatedAt).format('DD/MM/YYYY HH:mm:ss'), // ฟอร์แมตวันที่
             amount: slip.Expense.totalamount, // ใช้ slip.Expense.totalamount แทน
             slip: slip.Slip.path, // ใช้ slip.Slip.path แทน
             reservationId: slip.Slip.reservation_id,
             confirmed: slip.Slip.confirmed,
         }));
+        console.log(formattedData);
           setPaymentData(formattedData);
         } else {
           message.error('ไม่มีข้อมูลสลิปที่พร้อมใช้งาน');
@@ -106,11 +107,8 @@ const PaymentConfirmation: React.FC = () => {
       title: <div style={{ textAlign: 'center' }}>เวลา</div>,
       dataIndex: 'time',
       key: 'time',
-      render: (record: SlipInterface) => (
-        <div style={{ textAlign: 'center' }}>
-          {dayjs(record.date).format('DD/MM/YYYY HH:mm:ss')}
-        </div>
-      ),
+      align: 'center', // เพิ่มการจัดแนวกลางให้กับคอลัมน์
+      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>, // จัดแนวกลางในแต่ละเซลล์
     },
     {
       title: <div style={{ textAlign: 'center' }}>จำนวนเงิน</div>,
