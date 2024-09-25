@@ -155,7 +155,7 @@ func SetupDatabase() {
 		DormID:          2,
 		RoomID:          50,
 	}
-	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: "B6510002", DormID: 4, RoomID: 100})
+	db.FirstOrCreate(reservation2, &entity.Reservation{StudentID: "B6510002", DormID: 2, RoomID: 50})
 
 	// Seed ข้อมูล admin
 	adminHashedPassword1, err := HashPassword("Ad01")
