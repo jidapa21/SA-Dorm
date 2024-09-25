@@ -198,7 +198,8 @@ const Index: React.FC = () => {
     }
 
     let res = await CreateSlip(values);
-    console.log(res);
+    console.log("CreateSlip: ", res);
+
     if (res) {
       messageApi.open({
         type: "success",
@@ -236,7 +237,7 @@ const Index: React.FC = () => {
 
       <Divider />
       <div className='text-container'></div>
-      <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.ID }))} 
+      <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.StudentID }))} 
         pagination={false}/>
         
       <div style={{ marginTop: '20px', fontWeight: 'bold' }}>

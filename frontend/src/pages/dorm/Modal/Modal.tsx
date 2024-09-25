@@ -7,9 +7,11 @@ import {
   GetStudentsByRoomID,
   GetReservationsByStudentID,
   UpdateRoom,
+  CreateExpense,
 } from "../../../services/https";
 import { ReservationInterface } from "../../../interfaces/Reservation";
 import { RoomInterface } from "../../../interfaces/Room";
+import { ExpenseInterface } from '../../../interfaces/Expense';
 import axios from "axios";
 import "./Bsub.css";
 interface ReviewModalProps {
@@ -131,6 +133,16 @@ const ModalTest: React.FC<ReviewModalProps> = ({
 
       await UpdateRoom(room_id, roomData); // ส่งทั้งสองอาร์กิวเมนต์
       message.success("จองห้องสำเร็จ!");
+
+      // เพิ่มการสร้างค่าใช้จ่ายหลังจากจองห้องสำเร็จ
+      const expenseData: ExpenseInterface = {
+        totalamount: room.Dorm.amount, // ใช้ค่า amount จากข้อมูลหอพักเป็น totalamount
+        date: new Date(), // วันที่การใช้จ่าย
+      };
+    
+
+      await CreateExpense(expenseData); // เรียกฟังก์ชันสร้างค่าใช้จ่าย
+
       await updateReservationsCount();
 
       // Close the modal after a short delay
