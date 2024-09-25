@@ -143,8 +143,6 @@ const ModalTest: React.FC<ReviewModalProps> = ({
 
       await CreateExpense(expenseData); // เรียกฟังก์ชันสร้างค่าใช้จ่าย
 
-      message.success("บันทึกค่าใช้จ่าย!");
-
       await updateReservationsCount();
 
       // Close the modal after a short delay
