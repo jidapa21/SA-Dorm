@@ -32,23 +32,32 @@ interface ExpenseData
 
 const Index: React.FC = () => {
 
+  //State Management
   const [text] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [ExpenseData, setExpenseData] = useState<ExpenseData[]>([]);
-
   const showModal = () => { setIsModalOpen(true); };
   const handleOk = () => { setIsModalOpen(false); };
-
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<UploadFile[]>([]); // เก็บรายการไฟล์ที่ผู้ใช้อัปโหลด
+  const [isSlipUploaded, setIsSlipUploaded] = useState(false); // ตรวจสอบว่าผู้ใช้อัปโหลดสลิปไปแล้วหรือไม่ เพื่อป้องกันการอัปโหลดซ้ำ
+  const [paymentStatus, setPaymentStatus] = useState<string>(''); // สถานะการชำระเงิน
 
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
         const response = await ListExpense();
         console.log("Received data:", response);
+        if (response && response.data) {
+          const expense = response.data;
+
+          // ตั้งค่า paymentStatus ตามข้อมูลสถานะจากเซิร์ฟเวอร์
+          if (expense.some((data: any) => data.status === 'ชำระแล้ว')) {
+            setPaymentStatus('ชำระแล้ว');
+          } else {
+            setPaymentStatus('กำลังดำเนินการ');
+          }
+        }
 
         if (response && response.data) {
           const expense = response.data;
@@ -156,43 +165,61 @@ const Index: React.FC = () => {
     imgWindow?.document.write(path.outerHTML);
   };
 
+  
   const onFinish = async (values: SlipInterface) => {
+    // ตรวจสอบสถานะการชำระเงิน
+    if (paymentStatus === 'ชำระแล้ว') {
+      messageApi.open({
+        type: 'error',
+        content: 'คุณได้ชำระเงินแล้ว ไม่สามารถอัปโหลดสลิปได้อีก!',
+      });
+      return; // ยกเลิกการบันทึก
+    }
+
+    if (isSlipUploaded) {
+      messageApi.open({
+        type: 'error',
+        content: 'คุณได้อัปโหลดสลิปไปแล้ว!',
+      });
+      return; // ยกเลิกการบันทึก
+    }
+
     values.path = fileList[0]?.thumbUrl || "";
 
     const studentId = localStorage.getItem("id");
-    if (studentId) {
-
+    if (!studentId) {
+      messageApi.open({
+        type: "error",
+        content: "Student ID ไม่พบข้อมูล.",
+      });
+      return;
+    }
+      let res = await CreateSlip(values);
+      if (res) {
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
+        setIsSlipUploaded(true); // เมื่ออัปโหลดสลิปเสร็จ ให้ตั้งค่าเป็น true เพื่อป้องกันการอัปโหลดซ้ำ
+        setFileList([]); // ล้างรายการไฟล์ที่อัปโหลด
     } else {
       messageApi.open({
         type: "error",
-        content: "Student ID on finish is not found.",
+        content: "เกิดข้อผิดพลาด",
       });
     }
-
-    let res = await CreateSlip(values);
-    console.log("CreateSlip: ", res);
-
-    if (res) {
-      messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
-      });
-      form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-      setFileList([]); // รีเซ็ตไฟล์อัปโหลด
-      setTimeout(() => {
-        // ตรวจสอบ URL ให้ถูกต้อง
-      }, 2000);
-    } else {
-      messageApi.open({
-        type: "error",
-        content: "เกิดข้อผิดพลาด!",
-      });
-    }
-
   };
 
   const beforeUpload: UploadProps['beforeUpload'] = (file) => {
-    // Prevent automatic upload
+    // ตรวจสอบสถานะการชำระเงินก่อนอัปโหลดไฟล์
+    if (paymentStatus === 'ชำระแล้ว') {
+      messageApi.open({
+        type: 'error',
+        content: 'คุณได้ชำระเงินแล้ว ไม่สามารถอัปโหลดสลิปได้อีก!',
+      });
+      return Upload.LIST_IGNORE; // ป้องกันการอัปโหลดไฟล์
+    }
+
     setFileList([...fileList, file]);
     return false;
   };
@@ -252,13 +279,14 @@ const Index: React.FC = () => {
             autoComplete="off"
           >
             <Form.Item>
-              <Space style={{ display: 'flex', justifyContent: '', marginTop: '20px' }}>
+              <Space style={{ display: 'flex',justifyContent: '', marginTop: '20px' }}>
                 <Form.Item
                   name="path"
-                  label="อัพโหลดไฟล์ที่นี่"
+                  label="อัพโหลดเพียงครั้งเดียวเท่านั้น"
                   valuePropName="fileList"
                   getValueFromEvent={(e) => e.fileList}
                   rules={[{ required: true, message: 'กรุณาอัพโหลดไฟล์ก่อน!' }]}
+                  
                 >
                   <Upload
                     fileList={fileList}
