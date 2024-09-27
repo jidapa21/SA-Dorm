@@ -1,22 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Tag, Table, Typography, message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Tag, Table } from "antd";
 import { SortOrder } from "antd/es/table/interface"; // Import SortOrder
-
 import { GetListStatus } from "./../../services/https";
 import { RepairInterface } from "./../../interfaces/repairing";
 import { DelayedPaymentFormInterface } from "./../../interfaces/delayedpaymentform";
 import { En_ExitingFormInterface } from "./../../interfaces/En_ExitingForm";
 import { ResigningFormInterface } from "./../../interfaces/ResigningForm";
 
-const { Title } = Typography;
-
 export default function StatusCreate() {
-  interface TableStatusRecord
-    extends RepairInterface,
-      DelayedPaymentFormInterface,
-      En_ExitingFormInterface,
-      ResigningFormInterface {
+  interface TableStatusRecord {
     key: string;
     title: string;
     date_submission: Date;
@@ -24,17 +16,7 @@ export default function StatusCreate() {
     status: string;
   }
 
-  const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
   const [repairs, setRepairs] = useState<TableStatusRecord[]>([]);
-  const [delayedpaymentforms, setDelayedPaymentForms] = useState<
-    TableStatusRecord[]
-  >([]);
-  const [en_exitingforms, setEn_ExitingForms] = useState<TableStatusRecord[]>(
-    []
-  );
-  const [resigningforms, setResigningForms] = useState<TableStatusRecord[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formatDate = (dateString?: Date): string => {
     if (!dateString) return ""; // Handle undefined or null dates
@@ -65,18 +47,18 @@ export default function StatusCreate() {
     },
     {
       title: "หัวข้อ",
-      dataIndex: "Title", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      dataIndex: "Title",
       key: "Title",
     },
     {
       title: "ประเภท",
-      dataIndex: "Type", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      dataIndex: "Type", 
       key: "Type",
     },
     {
       title: "สถานะ",
       key: "Status",
-      dataIndex: "Status", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      dataIndex: "Status", 
       render: (Status: string[]) => (
         <>
           {Status.map((status: string) => {
@@ -88,7 +70,6 @@ export default function StatusCreate() {
               case "กำลังดำเนินการ":
                 color = "#1677ff";
                 break;
-              case "อนุมัติ":
               case "เสร็จสิ้น":
                 color = "#52c41a";
                 break;
@@ -165,12 +146,9 @@ export default function StatusCreate() {
           });
 
           setRepairs(sortedData);
-        } else {
-          setErrorMessage("Received data is missing expected fields");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setErrorMessage("Failed to fetch data");
       }
     };
 
@@ -179,7 +157,6 @@ export default function StatusCreate() {
 
   return (
     <>
-      {contextHolder}
       {/*
       <div className="text-container">
         <div className="text-1">ติดตามสถานะของปัญหา</div>
@@ -190,7 +167,7 @@ export default function StatusCreate() {
       <Table
         columns={columns}
         dataSource={repairs}
-        pagination={{ pageSize: 6 }} // Set the number of rows per page
+        pagination={{ pageSize: 6 }} // เซตจำนวนแถวต่อหน้า
       />
     </>
   );

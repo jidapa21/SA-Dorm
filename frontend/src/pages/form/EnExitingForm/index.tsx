@@ -1,36 +1,13 @@
-import {
-  Button,
-  Space,
-  Form,
-  Input,
-  Radio,
-  Row,
-  Col,
-  notification,
-  DatePicker,
-  Card,
-  Divider,
-  Typography,
-  message,
-} from "antd";
+import { Button, Space, Form, Input, Row, Col, DatePicker, Card, Divider, Radio, Typography, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import React, { useState, useEffect, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-const { Text } = Typography;
-import "../../repair/index.css";
-
+import { useState, useEffect } from "react";
 import { En_ExitingFormInterface } from "./../../../interfaces/En_ExitingForm";
-import { StudentInterface } from "./../../../interfaces/Student";
-import { DormInterface } from "./../../../interfaces/Dorm";
-import { RoomInterface } from "./../../../interfaces/Room";
-import {
-  CreateEn_ExitingForm,
-  GetListFormStudent,
-  GetListFormDorm,
-} from "./../../../services/https";
+import { CreateEn_ExitingForm, GetListFormStudent, GetListFormDorm } from "./../../../services/https";
+import "../../repair/index.css";
+const { Text } = Typography;
 
 export default function EnExitingFormCreate() {
-  interface StudentInfoRecord extends StudentInterface, DormInterface {
+  interface StudentInfoRecord {
     key: string | null; // Allow null
     dorm_name: string;
     StudentID: string;
@@ -47,11 +24,10 @@ export default function EnExitingFormCreate() {
   const formattedDate = today.toLocaleDateString();
 
   const [value, setValue] = useState(1);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
   const disabledDate = (current: any) => {
-    // Can not select days before today
+    // เลือกวันที่ก่อนหน้าไม่ได้
     return current && current.isBefore(today, "day");
   };
 
@@ -64,59 +40,40 @@ export default function EnExitingFormCreate() {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
 
-  const openNotification = (
-    type: "success" | "info" | "warning" | "error",
-    message: string,
-    description?: string
-  ) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "bottomRight",
-    });
-  };
-
   const onFinish = async (values: En_ExitingFormInterface) => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
       values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      openNotification(
-        "error",
-        "ไม่พบรหัสนักศึกษา",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
-      );
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบรหัสนักศึกษา",
+      });
       return;
     }
 
     try {
-      // สร้างรายการแจ้งซ่อม
       let res = await CreateEn_ExitingForm(values);
       console.log(res);
 
-      // ตรวจสอบผลลัพธ์จาก CreateRepair อย่างละเอียด
-      if (res && res.status === 201) {
-        // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
-        openNotification(
-          "success",
-          "บันทึกข้อมูลสำเร็จ",
-          "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
-        );
+      if (res && res.status === 201) { // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
         form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
       } else {
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาจองห้องพัก"
-        );
+        messageApi.open({
+          type: "error",
+          content: "กรุณาจองห้องพัก",
+        });
       }
     } catch (error) {
       console.error(error);
-      openNotification(
-        "error",
-        "ไม่สามารถแสดงข้อมูลได้",
-        "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาจองห้องพัก"
-      );
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
     }
   };
 
@@ -141,8 +98,8 @@ export default function EnExitingFormCreate() {
           // ถ้ามีหอและห้องพักแล้ว
           if (dataDorm && dataDorm.reservation) {
             const dormData = {
-              dorm_name: dataDorm.reservation.Dorm.dorm_name || "ไม่มีหอ",
-              room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
+              dorm_name: dataDorm.reservation.Dorm.dorm_name,
+              room_number: dataDorm.reservation.Room.room_number,
             };
 
             const combinedData = { ...studentData, ...dormData };
@@ -153,23 +110,23 @@ export default function EnExitingFormCreate() {
             const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
+            messageApi.open({
+              type: "error",
+              content: "กรุณาจองห้องพัก",
+            });
           }
         } else {
-          setErrorMessage("ไม่พบข้อมูลนักศึกษา");
-          openNotification(
-            "error",
-            "เกิดข้อผิดพลาด!",
-            "ไม่สามารถแสดงรหัสนักศึกษาได้"
-          );
+          messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลนักศึกษา",
+          });
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง"
-        );
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง",
+        });
       }
     };
 
@@ -178,13 +135,14 @@ export default function EnExitingFormCreate() {
     } else {
       messageApi.open({
         type: "error",
-        content: "Student ID not found.",
+        content: "ไม่พบข้อมูลนักศึกษา",
       });
     }
   }, []);
 
   return (
     <>
+      {contextHolder}
       <Card>
         <h2>แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืนนอกหอพัก</h2>
         <Divider />
