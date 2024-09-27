@@ -439,6 +439,8 @@ func seedOthers() {
 		other := entity.Other{
 			StudentID:            uint(i),
 			LatestGraduationFrom: "",
+			VehicleTaxDueDate:    nil,
+			Expiry:               nil,
 		}
 		db.FirstOrCreate(&other, entity.Other{StudentID: other.StudentID})
 	}

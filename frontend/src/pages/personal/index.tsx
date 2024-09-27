@@ -1,4 +1,4 @@
-import { EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
@@ -252,20 +252,7 @@ function Personal() {
       ),
       colSpan: 6, // Combine columns
     },
-    /*
-    {
-      title: "",
-      render: (record) => (
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => navigate(`/personal/edit/${record.ID}`)}
-        >
-          แก้ไขข้อมูล
-        </Button>
-      ),
-      colSpan: 0,
-    },*/
+  
   ];
 
 
@@ -278,12 +265,7 @@ function Personal() {
         </Col>
         <Col span={12} style={{ textAlign: "end", alignSelf: "center" }}>
           <Space>
-        {  /*  <Link to="/personal/create">
-              <Button type="primary" icon={<PlusOutlined />}>
-                สร้างข้อมูล
-              </Button>
-            </Link>
-            */}
+      
           {studentData && (
             <Link to={`/personal/edit/${studentData.ID}`}>
               <Button type="primary" icon={<EditOutlined />}>
