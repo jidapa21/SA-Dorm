@@ -8,50 +8,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetSudentID(c *gin.Context) {
-	db := config.DB()
-	var studentID entity.Students
-	db.First(&studentID, studentID.StudentID)
-
-}
-
-// POST /users
 func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
+	var reservation entity.Reservation
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ไม่มีรหัสนักศึกษา"})
+		return
+	}
+
+	db := config.DB()
+
+	db.Where("student_id = ?", studentID).First(&reservation)
+	if reservation.StudentID == "" {
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
+		return
+	}
 
 	if err := c.ShouldBindJSON(&repairing); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	db := config.DB()
-
-	// ค้นหา reservation ด้วย id
-	var reservation entity.Reservation
-	db.First(&reservation, repairing.ReservationID)
-	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation_ID not found"})
-		return
-	}
-
-	// ค้นหา dorm ด้วย id
-	var dorm entity.Dorm
-	db.First(&dorm, repairing.Reservation.DormID)
-	if dorm.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "dorm_ID not found"})
-		return
-	}
-
-	// ค้นหา room ด้วย id
-	var room entity.Room
-	db.First(&room, repairing.Reservation.RoomID)
-	if room.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "room_ID not found"})
-		return
-	}
-
 	rp := entity.Repairing{
-		Subject:          repairing.Subject,
+		Title:            repairing.Title,
+		Type:             "แจ้งซ่อม",
+		Date_Submission:  repairing.Date_Submission,
 		Detail:           repairing.Detail,
 		Image:            repairing.Image,
 		Location_Details: repairing.Location_Details,
@@ -59,8 +42,8 @@ func CreateRepair(c *gin.Context) {
 		Time_Slot:        repairing.Time_Slot,
 		Remarks:          repairing.Remarks,
 		Status:           "รอดำเนินการ",
-		ReservationID:    repairing.ReservationID,
-		Reservation:      reservation, // โยงความสัมพันธ์กับ Entity Reservation
+		ReservationID:    reservation.ID,
+		Reservation:      reservation,
 	}
 
 	if err := db.Create(&rp).Error; err != nil {
@@ -77,19 +60,18 @@ func GetRepair(c *gin.Context) {
 	var repairing entity.Repairing
 
 	db := config.DB()
-	if err := db.Preload("Reservation").First(&repairing, ID).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Room").Preload("Reservation.Student").Preload("Reservation.Dorm").First(&repairing, ID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Repairing not found or related data error"})
 		return
 	}
 
 	c.JSON(http.StatusOK, repairing)
 }
-
 func GetListRepairs(c *gin.Context) {
 	var repairings []entity.Repairing
 
 	db := config.DB()
-	if err := db.Preload("Reservation").Find(&repairings).Error; err != nil {
+	if err := db.Preload("Reservation").Preload("Reservation.Dorm").Preload("Reservation.Room").Preload("Reservation.Student").Find(&repairings).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "No repairings found or related data error"})
 		return
 	}
@@ -104,6 +86,13 @@ func UpdateRepair(c *gin.Context) {
 	}
 
 	db := config.DB()
+
+	// ดึง adminID จาก context
+	adminID, exists := c.Get("admin_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found in context"})
+		return
+	}
 
 	// Find the existing repair record
 	var existingRepair entity.Repairing
@@ -120,7 +109,10 @@ func UpdateRepair(c *gin.Context) {
 	}
 
 	// Update only the 'Status' field
-	if err := db.Model(&existingRepair).Update("Status", payload.Status).Error; err != nil {
+	if err := db.Model(&existingRepair).Updates(map[string]interface{}{
+		"Status":  payload.Status,
+		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
+	}).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
 		return
 	}

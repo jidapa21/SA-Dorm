@@ -8,7 +8,6 @@ const { Title } = Typography;
 
 interface TableRepairRecord extends RepairInterface {
   key: string;
-  date: string;
 }
 
 const Repairing: React.FC = () => {
@@ -20,10 +19,11 @@ const Repairing: React.FC = () => {
       try {
         const data = await GetListRepairs();
         if (data) {
-          const transformedData = data.map((item: RepairInterface, index: number) => ({
+          // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
+          const filteredData = data.filter((item: RepairInterface) => item.status !== 'เสร็จสิ้น');
+          const transformedData = filteredData.map((item: RepairInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
-            date: item.BuildingName || "Unknown",  // ใช้ชื่อหอที่มาจากฐานข้อมูล
           }));
           setRepairs(transformedData);
         }
@@ -32,7 +32,9 @@ const Repairing: React.FC = () => {
       }
     };
 
-    fetchRepairs();
+    fetchRepairs(); // เรียกข้อมูลครั้งแรก
+    const intervalId = setInterval(fetchRepairs, 3000); // รีเฟรชข้อมูลทุกๆ 3 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
 
   const handleDetailsClick = (repairId: string) => {
@@ -45,58 +47,64 @@ const Repairing: React.FC = () => {
 
   const columns = [
     {
-      title: 'รายการแจ้งซ่อม',
-      children: [
-        {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
-          ),
-        },
-        {
-          key: 'details',
-          render: (_: any, record: TableRepairRecord) => (
-            <div style={{ textAlign: 'center' }}>
-              <Button
-                type="primary"
-                onClick={() => handleDetailsClick(record.key)}
-                style={{ marginTop: '8px' }}
-              >
-                ดูรายละเอียด
-              </Button>
-            </div>
-          ),
-        },
-      ],
+      title: <div style={{ textAlign: 'center' }}>หัวข้อ</div>,
+      dataIndex: 'title',
+      key: 'title',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>หอ</div>,
+      dataIndex: ['reservation', 'Dorm', 'dorm_name'],
+      key: 'dorm_name',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>ห้อง</div>,
+      dataIndex: ['reservation', 'Room', 'room_number'],
+      key: 'room_number',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>สถานะ</div>,
+      dataIndex: 'status',
+      key: 'status',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>รายละเอียด</div>,
+      key: 'details',
+      render: (_: any, record: TableRepairRecord) => (
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            type="primary"
+            onClick={() => handleDetailsClick(record.key)}
+            style={{ marginTop: '8px' }}
+          >
+            ดูรายละเอียด
+          </Button>
+        </div>
+      ),
     },
   ];
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          marginBottom: '20px',
-        }}
-      >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
         <Title level={2} style={{ margin: 0, color: '#333' }}>
           รายการแจ้งซ่อม
         </Title>
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '600px',
-            height: '3px',
-            backgroundColor: '#1890ff',
-            marginTop: '5px',
-            borderRadius: '2px',
-          }}
-        />
+        <div style={{ width: '100%', maxWidth: '600px', height: '3px', backgroundColor: '#1890ff', marginTop: '5px', borderRadius: '2px' }} />
       </div>
+
       {selectedKey ? (
         <div>
           <Button
@@ -106,24 +114,17 @@ const Repairing: React.FC = () => {
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadRepairing repairId={selectedKey} />
+          <ReadRepairing ID={Number(selectedKey)} />
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Card
-            bordered={true}
-            style={{ width: '100%', maxWidth: '1100px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)', borderRadius: '8px', backgroundColor: '#FFFFFF' }}
-          >
-            <Table
-              columns={columns}
-              dataSource={repairs}
-              pagination={false}
-              bordered
-              showHeader={false}
-              style={{ backgroundColor: '#FFFFFF' }}
-            />
-          </Card>
-        </div>
+        <Table
+          dataSource={repairs}
+          columns={columns}
+          pagination={false}
+          bordered
+          style={{ marginBottom: '20px' }}
+          rowClassName={(_record, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+        />
       )}
     </div>
   );

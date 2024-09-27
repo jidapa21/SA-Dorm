@@ -1,19 +1,15 @@
 package entity
 
 import (
-
-	"time"
 	"gorm.io/gorm"
 )
+
 type Slip struct {
 	gorm.Model
-	Path    string `json:"path"`
-	Date	time.Time `json:"date"`
+	ID   uint   `gorm:"primaryKey;autoIncrement"`
+	Path string `gorm:"type:longtext" json:"path"`
 
-	AdminID		uint      `json:"admin_id"`
-	Admin		*Admins `gorm:"foreignKey: AdminID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"admin"`
-
-	ExpenseID	uint      `json:"ex_id"`
-	Expense		*Expense `gorm:"foreignKey: ExpenseID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"expense"`
-
+	// One-to-one relationship
+	ReservationID uint         `json:"reservation_id"`
+	Reservation   *Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
 }

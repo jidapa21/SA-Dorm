@@ -1,20 +1,31 @@
 package entity
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Expense struct {
 	gorm.Model
-	Remark string `json:"remark"`
-	Status string `json:"status"`
+	ID          uint      `gorm:"primaryKey;autoIncrement"`
+	Date        time.Time `json:"date"`
+	Status      string    `json:"status"`
+	TotalAmount float64   `json:"totalamount"`
 
-	RentFeeID uint     `json:"rent_id"`
-	RentFees   *RentFee `gorm:"foreignKey: RentFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
+	DormID uint  `json:"dorm_id"`
+	Dorm   *Dorm `gorm:"foreignKey: DormID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"Dorm"`
 
-	ElectricityFeeID uint     `json:"elec_id"`
-	ElectricityFees   *ElectricityFee `gorm:"foreignKey: ElectricityFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
+	ElectricityFeeID uint            `json:"elec_id"`
+	ElectricityFee   *ElectricityFee `gorm:"foreignKey: ElectricityFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
 
-	WaterFeeID uint     `json:"water_id"`
-	WaterFees   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
+	WaterFeeID uint      `json:"water_id"`
+	WaterFee   *WaterFee `gorm:"foreignKey: WaterFeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
 
-	//Slips []Slip `gorm:"foreignKey:ExpenseID"`
+	// One-to-one relationship
+	ReservationID uint        `json:"reservation_id"`
+	Reservation   Reservation `gorm:"foreignKey: ReservationID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"reservation"`
+
+	AdminID uint    `json:"admin_id"`
+	Admin   *Admins `gorm:"foreignKey:AdminID"`
 }

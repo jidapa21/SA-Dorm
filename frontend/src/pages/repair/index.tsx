@@ -1,108 +1,29 @@
-import {
-  Button,
-  Form,
-  Input,
-  Row,
-  Space,
-  Col,
-  Upload,
-  Card,
-  Divider,
-  message,
-  Modal,
-  Select,
-  Typography,
-  GetProp,
-  UploadFile,
-  UploadProps,
-  Spin,
-} from "antd";
-import { PlusOutlined, UploadOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
-import React, { useState, useEffect, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-const { Text } = Typography;
+import { Button, Space, Form, Input, Row, Col, Card, Divider, Typography, message, GetProp, UploadFile, UploadProps, Upload } from "antd";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { useState, useEffect } from "react";
 import ImgCrop from "antd-img-crop";
-
-import { StudentInterface } from "./../../interfaces/Student";
 import { RepairInterface } from "./../../interfaces/repairing";
-import { DormInterface } from "./../../interfaces/Dorm";
-import { RoomInterface } from "./../../interfaces/Room";
-import { ReservationInterface } from "./../../interfaces/Reservation";
-import { GetStudentsById, CreateRepair } from "./../../services/https";
+import { CreateRepair, GetListFormStudent, GetListFormDorm,} from "./../../services/https";
 import "./../repair/index.css";
-import Repairing from "./../adminpage/Repairing";
-
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & RepairInterface & DormInterface & RoomInterface;
+const { Text } = Typography;
 
 export default function RepairCreate() {
-  const navigate = useNavigate();
+  interface StudentInfoRecord {
+    key: string | null; // Allow null
+    dorm_name: string;
+    StudentID: string;
+    FirstName: string;
+    LastName: string;
+    room_number: number | string;
+  }
+
   const [messageApi, contextHolder] = message.useMessage();
-  const [studentData, setStudentData] = useState<StudentInterface | null>(null);
-  const [repairing, setRepairing] = useState<RepairInterface | null>(null);
-  const [reservationData, setReservationData] = useState<{
-    reservation: ReservationInterface | null;
-    student: StudentInterface | null;
-    dorm: DormInterface | null;
-    room: RoomInterface | null;
-  }>({
-    reservation: null,
-    student: null,
-    dorm: null,
-    room: null,
-  });
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const studentID = localStorage.getItem("studentID");
-  const studentDbID = localStorage.getItem("id");
-
-  const submitRepairRequest = async (repairData) => {
-    const studentID = localStorage.getItem("studentID");
-    const studentDbID = localStorage.getItem("id"); // ดึง ID ของนักศึกษา
-
-    const data = {
-      ...repairData,
-      student_id: studentID,
-      student_db_id: studentDbID, // ส่ง ID ของนักศึกษาไปใน request
-    };
-
-    try {
-      const res = await axios.post(`${apiUrl}/repair`, data);
-      if (res.status === 200) {
-        message.success("แจ้งซ่อมสำเร็จ");
-      } else {
-        message.error("การแจ้งซ่อมล้มเหลว");
-      }
-    } catch (error) {
-      message.error("เกิดข้อผิดพลาด");
-    }
-  };
-
-  const getRepairData = async (id: string) => {
-    try {
-      const response = await fetch(`/api/repairs/${id}`);
-      const data = await response.json();
-
-      // Extract reservation from data
-      const reservation = data.Reservation;
-      const student = reservation.Student;
-      const dorm = reservation.Dorm;
-      const room = reservation.Room;
-
-      setRepairing(data);
-      setReservationData({
-        reservation,
-        student,
-        dorm,
-        room,
-      });
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content: "Failed to fetch repair data.",
-      });
-    }
-  };
+  const [form] = Form.useForm();
+  const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -123,172 +44,282 @@ export default function RepairCreate() {
     imgWindow?.document.write(image.outerHTML);
   };
 
-  const showSuccessMessage = useCallback(() => {
-    messageApi.open({
-      type: "success",
-      content: "Successfully saved data",
-    });
-  }, [messageApi]);
+  const handleReset = () => {
+    form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
+    setFileList([]);
+  };
 
-  const showErrorMessage = useCallback(() => {
-    messageApi.open({
-      type: "error",
-      content: "An error occurred!",
-    });
-  }, [messageApi]);
+  const onFinish = async (values: RepairInterface) => {
+    values.image = fileList[0]?.thumbUrl || "";
 
-  const onFinish = async (values: repairData) => {
-    values.Image = fileList[0]?.thumbUrl || '';
-    values.ID = repairing?.ID;
-    let res = await CreateRepair(values);
-    if (res) {
-      showSuccessMessage();
-      setTimeout(() => navigate("/repair"), 2000);
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      showErrorMessage();
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบรหัสนักศึกษา",
+      });
+      return;
     }
-    const studentID = localStorage.getItem("studentID");
-    const studentDbID = localStorage.getItem("id"); // ดึง ID ของนักศึกษา
-
-    const data = {
-      ...repairData,
-      student_id: studentID,
-      student_db_id: studentDbID, // ส่ง ID ของนักศึกษาไปใน request
-    };
 
     try {
-      const res = await axios.post(`${apiUrl}/repair`, data);
-      if (res.status === 200) {
-        message.success("แจ้งซ่อมสำเร็จ");
+      let res = await CreateRepair(values);
+      console.log(res);
+
+      if (res && res.status === 201) { // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
+        form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+        setFileList([]);
       } else {
-        message.error("การแจ้งซ่อมล้มเหลว");
+        messageApi.open({
+          type: "error",
+          content: "กรุณาจองห้องพัก",
+        });
       }
     } catch (error) {
-      message.error("เกิดข้อผิดพลาด");
+      console.error(error);
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
     }
   };
 
   useEffect(() => {
-    if (studentID) {
-      getRepairData(studentID);  // Fetch repair data using studentId
+    const studentId = localStorage.getItem("id");
+    const fetchData = async () => {
+      try {
+        const dataStudent = await GetListFormStudent();
+        const dataDorm = await GetListFormDorm();
+        console.log("Received dataStudent:", dataStudent);
+        console.log("Received dataDorm:", dataDorm);
+
+        // ตรวจสอบว่ามีข้อมูล student หรือไม่
+        if (dataStudent) {
+          const studentData = {
+            key: studentId,
+            StudentID: dataStudent.student.student_id || "ไม่พบข้อมูล",
+            FirstName: dataStudent.student.first_name || "ไม่พบข้อมูล",
+            LastName: dataStudent.student.last_name || "ไม่พบข้อมูล",
+          };
+
+          // ถ้ามีหอและห้องพักแล้ว
+          if (dataDorm && dataDorm.reservation) {
+            const dormData = {
+              dorm_name: dataDorm.reservation.Dorm.dorm_name,
+              room_number: dataDorm.reservation.Room.room_number,
+            };
+
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
+            
+            // ถ้าไม่มีหอและห้องพัก
+          } else {
+            const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
+            messageApi.open({
+              type: "error",
+              content: "กรุณาจองห้องพัก",
+            });
+          }
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลนักศึกษา",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง",
+        });
+      }
+    };
+
+    if (studentId) {
+      fetchData();
     } else {
       messageApi.open({
         type: "error",
-        content: "Student ID not found.",
+        content: "ไม่พบข้อมูลนักศึกษา",
       });
     }
   }, []);
 
-    return (
-      <>
-        <Space direction="vertical">
-          {studentData ? (
-            <Card>
-              <h2>แจ้งซ่อม</h2>
-              <Divider />
-              <Form
-                name="repairDetails"
-                layout="vertical"
-                autoComplete="off"
-              >
-                <Space direction="vertical">
-                  {repairing && reservationData.reservation ? (
-                    <>
-                      {reservationData.student && (
-                        <>
-                          <Text>
-                            ผู้รับบริการ {studentID} {reservationData.student.FirstName} {reservationData.student.LastName}
-                          </Text>
-                        </>
-                      )}
-                      {reservationData.dorm && reservationData.room && (
-                        <>
-                          <Text>
-                            Dorm: {reservationData.dorm.ID} Room: {reservationData.room.RoomNumber}
-                          </Text>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <Text>Loading...</Text>
-                  )}
-                </Space>
-              </Form>
-  
-              <br />
-  
-              <Form
-                name="basic2"
-                layout="vertical"
-                onFinish={onFinish}
-                autoComplete="off"
-              >
-                <Row gutter={[16, 0]}>
-                  <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                    <Form.Item
-                      label="หัวข้อการขอรับบริการ"
-                      name="Subject"
-                      rules={[
-                        { required: true, message: "กรุณากรอกหัวข้อการขอรับบริการ !" },
-                      ]}
-                    >
-                      <Input placeholder="อ่างน้ำตัน" />
-                    </Form.Item>
-                  </Col>
-  
-                  <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                    <Form.Item
-                      label="ภาพประกอบ"
-                      name="Image"
-                      valuePropName="fileList"
-                    >
-                      <ImgCrop rotationSlider>
-                        <Upload
-                          fileList={fileList}
-                          onChange={onChange}
-                          onPreview={onPreview}
-                          beforeUpload={(file) => {
-                            setFileList([...fileList, file]);
-                            return false;
-                          }}
-                          maxCount={1}
-                          multiple={false}
-                          listType="picture"
-                        >
-                          <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Upload>
-                      </ImgCrop>
-                    </Form.Item>
-                  </Col>
-  
-                  {/* Other Form Items */}
-                  
-                  <Row justify="end">
-                    <Col style={{ marginTop: "40px" }}>
-                      <Form.Item>
-                        <Space>
-                          <Button htmlType="button" style={{ marginRight: "10px" }}>
-                            ยกเลิก
-                          </Button>
-                          <Button
-                            type="primary"
-                            htmlType="submit"
-                            icon={<PlusOutlined />}
-                          >
-                            ยืนยัน
-                          </Button>
-                        </Space>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Row>
-              </Form>
-            </Card>
-          ) : (
-            <Spin />
-          )}
-        </Space>
-      </>
-    );
-  }
-  
+  return (
+    <>
+      {contextHolder}
+      <Space direction="vertical">
+        <>
+          <Card>
+            <h2>แจ้งซ่อม</h2>
+            <Divider />
+            <Form name="StudentDetails" layout="vertical" autoComplete="off">
+              <Row justify="space-between" align="middle">
+                <Col>
+                  <Space direction="vertical">
+                    <Text>
+                      ผู้รับบริการ{" "}
+                      {student.length > 0 ? student[0].StudentID : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].FirstName : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
+                    </Text>
+                    <Text>
+                      อาคาร:{" "}
+                      {student.length > 0 ? student[0].dorm_name : "ไม่พบข้อมูล"}{" "}
+                      ห้อง:{" "}
+                      {student.length > 0  ? student[0].room_number : "ไม่พบข้อมูล"}
+                    </Text>
+                  </Space>
+                </Col>
+                <Col>
+                  <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+                </Col>
+              </Row>
+            </Form>
+
+            <br />
+
+            <Form
+              name="RepairDetails"
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="on"
+            >
+              <Row gutter={[16, 0]}>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="หัวข้อการขอรับบริการ"
+                    name="title"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกหัวข้อการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="อ่างน้ำตัน" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={24}>
+                  <Form.Item
+                    label="ภาพประกอบ"
+                    name="image"
+                    valuePropName="fileList"
+                  >
+                    <ImgCrop rotationSlider>
+                      <Upload
+                        fileList={fileList}
+                        onChange={onChange}
+                        onPreview={onPreview}
+                        beforeUpload={(file) => {
+                          setFileList([...fileList, file]);
+                          return false;
+                        }}
+                        maxCount={1}
+                        multiple={false}
+                        listType="picture"
+                      >
+                        <Button icon={<UploadOutlined />}>Upload</Button>
+                      </Upload>
+                    </ImgCrop>
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดการขอรับบริการ"
+                    name="detail"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดการขอรับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ทำเศษอาหารตก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="รายละเอียดสถานที่รับบริการ"
+                    name="location_details"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกรายละเอียดสถานที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ห้องน้ำรวมชั้น 1" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item label="หมายเหตุ" name="Remarks">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่องทางติดต่อ"
+                    name="contact"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่องทางติดต่อ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="ติดต่อเจ้าหน้าที่หน้าหอพัก" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+                  <Form.Item
+                    label="ช่วงเวลาที่รับบริการ"
+                    name="time_slot"
+                    rules={[
+                      {
+                        required: true,
+                        message: "กรุณากรอกช่วงเวลาที่รับบริการ !",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="9:00-16:00 น." />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row justify="end">
+                <Col style={{ marginTop: "40px" }}>
+                  <Form.Item>
+                    <Space>
+                      <Button
+                        htmlType="button"
+                        onClick={handleReset}
+                        style={{ marginRight: "10px" }}
+                      >
+                        ยกเลิก
+                      </Button>
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        icon={<PlusOutlined />}
+                      >
+                        ยืนยัน
+                      </Button>
+                    </Space>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </>
+      </Space>
+    </>
+  );
+}

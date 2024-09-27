@@ -3,28 +3,60 @@ package electricityfee
 import (
 	"net/http"
 
-	"dormitory.com/dormitory/entity"
 	"dormitory.com/dormitory/config"
+	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
 )
 
 // POST /create-electricity-fee
 func CreateElectricityFee(c *gin.Context) {
-	var electricityFee entity.ElectricityFee
+	var electricityfee entity.ElectricityFee
+	var sid entity.Students
+	var reservation entity.Reservation
+	var room entity.Room
 
-	if err := c.ShouldBindJSON(&electricityFee); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
 		return
 	}
 
 	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
 
-	if err := db.Create(&electricityFee).Error; err != nil {
+	db.Where("student_id = ?", sid.ID).First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&electricityfee); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "ElectricityFee created", "data": electricityFee})
+	db.First(&room, reservation.RoomID)
+	if room.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Dorm not found"})
+		return
+	}
+
+	rp := entity.ElectricityFee{
+		Amount:        electricityfee.Amount,
+		ReservationID: reservation.ID,
+		Reservation:   &reservation,
+	}
+
+	if err := db.Create(&rp).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Created success", "data": rp})
 }
 
 // GET /get-electricity-fee/:id
@@ -54,7 +86,7 @@ func ListElectricityFees(c *gin.Context) {
 	c.JSON(http.StatusOK, electricityFees)
 }
 
-// PATCH /update-electricity-fee/:id
+// PATCH /update-electricityfee/:id
 func UpdateElectricityFee(c *gin.Context) {
 	var electricityFee entity.ElectricityFee
 	ID := c.Param("id")
@@ -84,6 +116,7 @@ func UpdateElectricityFee(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "ElectricityFee updated successfully", "data": electricityFee})
 }
+
 // GET /get-latest-electricity-fee
 func GetLatestElectricityFee(c *gin.Context) {
 	var electricityFee entity.ElectricityFee
@@ -96,6 +129,7 @@ func GetLatestElectricityFee(c *gin.Context) {
 
 	c.JSON(http.StatusOK, electricityFee)
 }
+
 // PATCH /update-expense/:id
 func UpdateExpense(c *gin.Context) {
 	var expense entity.Expense
@@ -122,4 +156,3 @@ func UpdateExpense(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Expense updated successfully", "data": expense})
 }
-

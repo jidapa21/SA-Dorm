@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Input, Button, message, Space } from 'antd';
+import { Input, Button, message, Space, Typography } from 'antd';
 import { CreateAnnouncement } from "../../../services/https";
 
+const { Title } = Typography;
 const { TextArea } = Input;
 
 const Announcement: React.FC = () => {
-  const [Title, setTitle] = useState('');
-  const [Content, setContent] = useState('');
+  const [title, setTitle] = useState(''); // แก้ไขจาก Title เป็น title
+  const [content, setContent] = useState('');
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async () => {
-    if (!Title || !Content) {
+    if (!title || !content) {
       messageApi.open({
         type: 'error',
         content: 'กรุณากรอกข้อมูลให้ครบถ้วน',
@@ -18,7 +19,7 @@ const Announcement: React.FC = () => {
       return;
     }
     try {
-      const response = await CreateAnnouncement({ Title, Content });
+      const response = await CreateAnnouncement({ Title: title, Content: content });
 
       if (response.status === 200) {
         messageApi.open({
@@ -43,60 +44,38 @@ const Announcement: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Header with underline */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: '20px',
-          position: 'relative',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '25px',
-            position: 'relative',
-            paddingBottom: '10px',
-          }}
-        >
-          แจ้งข่าวสาร
-        </span>
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderBottom: '3px solid #000',
-          }}
-        />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+        <Title level={2} style={{ margin: 0, color: '#333' }}>
+        แจ้งข่าวสาร
+        </Title>
+        <div style={{ width: '100%', maxWidth: '600px', height: '3px', backgroundColor: '#1890ff', marginTop: '5px', borderRadius: '2px' }} />
       </div>
 
       {/* Title TextArea with label */}
       <div style={{ marginBottom: '24px' }}>
-        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>Title</label>
+        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>หัวข้อ</label>
         <TextArea
-          value={Title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter title here"
+          value={title} // แก้ไขจาก Title เป็น title
+          onChange={(e) => setTitle(e.target.value)} // แก้ไขจาก setTitle เป็น setTitle
+          placeholder="เพิ่มหัวข้อที่นี่"
           autoSize
           style={{ width: '100%' }}
         />
       </div>
 
-      {/* Announcement TextArea with label */}
       <div>
-        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>Announcement</label>
+        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>เนื้อหา</label>
         <TextArea
-          value={Content}
+          value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Enter announcement here"
+          placeholder="เพิ่มเนื้อหาที่นี่"
           autoSize={{ minRows: 3, maxRows: 10 }}
           style={{ width: '100%' }}
         />
       </div>
-      
+
       {contextHolder}
       <Space style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
         <Button 

@@ -18,6 +18,9 @@ function SignInStudentPages() {
       localStorage.setItem("token_type", res.data.token_type);
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("id", res.data.id);
+      localStorage.setItem("student_id", res.data.student_id);
+      console.log("Stored student_id:", localStorage.getItem("student_id"));    
+      localStorage.setItem("gender_id", res.data.gender_id === 1 ? "Male" : "Female");
       setTimeout(() => {
         location.href = "/";
       }, 2000);

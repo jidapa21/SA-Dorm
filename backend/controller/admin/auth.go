@@ -49,7 +49,7 @@ func SignInAdmin(c *gin.Context) {
 	}
 	// แปลง admin.ID เป็น string ก่อนส่งไปยัง GenerateToken
 	adminIDStr := strconv.Itoa(int(admin.ID))
-	signedToken, err := jwtWrapper.GenerateToken("", admin.Username, adminIDStr)
+	signedToken, err := jwtWrapper.GenerateToken("", admin.Username, adminIDStr, "")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error signing token"})
 		return
@@ -106,18 +106,36 @@ func GetAllAdmins(c *gin.Context) {
 	c.JSON(http.StatusOK, admins)
 }
 func DeleteAdmin(c *gin.Context) {
-    idStr := c.Param("id")
-    id, err := strconv.Atoi(idStr)
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
-        return
-    }
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
-    // ลบแอดมินที่มี ID ตรงกับที่ระบุ
-    if err := config.DB().Where("id = ?", id).Delete(&entity.Admins{}).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	// ลบแอดมินที่มี ID ตรงกับที่ระบุ
+	if err := config.DB().Where("id = ?", id).Delete(&entity.Admins{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{"message": "Admin deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Admin deleted successfully"})
+}
+func GetAdminByID(c *gin.Context) {
+	// รับค่า ID จากพารามิเตอร์เส้นทาง
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	var admin entity.Admins
+	// ค้นหาข้อมูลแอดมินตาม ID
+	if err := config.DB().Where("id = ?", id).First(&admin).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, admin)
 }

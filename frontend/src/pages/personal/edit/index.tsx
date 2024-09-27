@@ -2,7 +2,7 @@ import { Space, Button, Col, Row, Divider, Form, Input, Card, message, DatePicke
 import { EditOutlined } from "@ant-design/icons";
 //import { PersonalDetailInterface } from "../../../interfaces/PersonalDetails";
 import { useNavigate, Link ,useParams} from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { PersonalInterface } from "../../../interfaces/Personal";
 import { AddressInterface } from "../../../interfaces/Address";
 import { FamilyInterface } from "../../../interfaces/Family";
@@ -22,28 +22,8 @@ function PersonalChange() {
   const { id } = useParams<{ id: any }>();
   const [form] = Form.useForm();
 	
-	const [isOtherSelected, setIsOtherSelected] = useState(false);
 
-  const handleGuardianChange = (value: number | string) => {
-		setIsOtherSelected(value === 3); // If 'อื่นๆ (ระบุ)' is selected, set the state to true
-	
-		// Force validation update for all related fields when guardian changes
-		if (value === 3) {
-			form.validateFields([
-				"or_guardians_name",
-				"relationship",
-				"occupation_guardian",
-				"phone_guardian",
-			]);
-		} else {
-			form.resetFields([
-				"or_guardians_name",
-				"relationship",
-				"occupation_guardian",
-				"phone_guardian",
-			]);
-		}
-	};
+  
 	
 	const getStudentData = async (id: string) => {
 		try {
@@ -520,63 +500,57 @@ function PersonalChange() {
 									</Form.Item>
 								</Col>
 								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
-        <Form.Item
-          label="ผู้ปกครอง"
-          name="guardians_id"
-          rules={[{ required: true, message: "กรุณาเลือกผู้ปกครอง" }]}
-        >
-          <Select
-            defaultValue=""
-            style={{ width: "100%" }}
-            options={[
-              { value: "", label: "กรุณาเลือกผู้ปกครอง", disabled: true },
-              { value: 1, label: "มารดา" },
-              { value: 2, label: "บิดา" },
-              { value: 3, label: "อื่นๆ (ระบุ)" },
-            ]}
-            onChange={handleGuardianChange}
-          />
-        </Form.Item>
-      </Col>
-      <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-        <Form.Item
-          label="หรือผู้ปกครอง ชื่อ/สกุล"
-          name="or_guardians_name"
-          rules={[{ required: isOtherSelected, message: "กรุณากรอกชื่อผู้ปกครอง" }]}
-        >
-          <Input disabled={!isOtherSelected} />
-        </Form.Item>
-      </Col>
-      <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-        <Form.Item
-          label="เกี่ยวข้องเป็น"
-          name="relationship"
-          rules={[{ required: isOtherSelected, message: "กรุณากรอกความสัมพันธ์" }]}
-        >
-          <Input disabled={!isOtherSelected} />
-        </Form.Item>
-      </Col>
-      <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-        <Form.Item
-          label="อาชีพ"
-          name="occupation_guardian"
-          rules={[{ required: isOtherSelected, message: "กรุณากรอกอาชีพ" }]}
-        >
-          <Input disabled={!isOtherSelected} />
-        </Form.Item>
-      </Col>
-      <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-        <Form.Item
-          label="หมายเลขโทรศัพท์มือถือ"
-          name="phone_guardian"
-          rules={[
-            { required: isOtherSelected, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
-            { pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" },
-          ]}
-        >
-          <Input disabled={!isOtherSelected} />
-        </Form.Item>
-      </Col>
+									<Form.Item
+										label="ผู้ปกครอง"
+										name="guardians_id"
+										rules={[{ required: true, message: "กรุณาเลือกผู้ปกครอง",}]}
+									>
+									<Select
+										defaultValue=""
+										style={{ width: "100%" }}
+										options={[
+										{ value: "", label: "กรุณาเลือกผู้ปกครอง", disabled: true },
+										{ value: 1, label: "มารดา" },
+										{ value: 2, label: "บิดา" },
+										{ value: 3, label: "อื่นๆ (ระบุ)" },
+										]}
+									/>
+									</Form.Item>
+								</Col>
+								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
+									<Form.Item
+										label="หรือผู้ปกครอง ชื่อ/สกุล"
+										name="or_guardians_name"
+									>
+										<Input />
+									</Form.Item>
+								</Col>
+								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
+									<Form.Item
+										label="เกี่ยวข้องเป็น"
+										name="relationship"
+									>
+										<Input />
+									</Form.Item>
+								</Col>
+								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
+									<Form.Item
+										label="อาชีพ"
+										name="occupation_guardian"
+									>
+										<Input />
+									</Form.Item>
+								</Col>
+								<Col xs={24} sm={24} md={24} lg={24} xl={12}>
+									<Form.Item
+										label="หมายเลขโทรศัพท์มือถือ"
+										name="phone_guardian"
+										rules={[{ message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ" },
+														{ pattern: /^[0-9]{10}$/, message: "กรุณากรอกหมายเลขโทรศัพท์มือถือ (10 หลัก)" }]}
+									>
+										<Input />
+									</Form.Item>
+								</Col>
 					<Divider />
 					<h4 style={{ marginTop: -10, marginBottom: -10,color: '#061178' }}>4. ข้อมูลอื่นๆ</h4>
 					<Divider />

@@ -8,43 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-/*
-// POST /create-personal
-func CreatePersonal(c *gin.Context) {
-	var personal entity.Personal
-
-	// ดึงข้อมูล StudentID จากการเข้าสู่ระบบ (ตัวอย่าง: จาก JWT token หรือ session)
-	studentID := c.MustGet("student_id").(string) // สมมุติว่ามีการเก็บ StudentID ไว้ใน context
-
-	// bind เข้าตัวแปร personal
-	if err := c.ShouldBindJSON(&personal); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	db := config.DB()
-
-	// ตรวจสอบว่า Student มีอยู่หรือไม่
-	var student entity.Students
-	if err := db.Where("student_id = ?", studentID).First(&student).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-	// ตั้งค่า student_id ให้กับ Personal
-	personal.StudentID = student.StudentID
-
-	if err := db.Create(&personal).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"message": "Personal created successfully", "data": personal})
-}
-*/
 // GET /get-personal/:id
 func GetPersonal(c *gin.Context) {
 	ID := c.Param("id")

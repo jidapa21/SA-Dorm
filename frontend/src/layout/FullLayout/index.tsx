@@ -2,15 +2,33 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import "../../App.css";
-import { HistoryOutlined, HomeOutlined,WalletOutlined,SolutionOutlined,TeamOutlined ,ToolOutlined,FormOutlined,UserOutlined, DownOutlined, FacebookOutlined,} from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme, Button, message, Avatar,MenuProps, Dropdown, Space,Flex, Tag } from "antd";
+import {
+  HistoryOutlined,
+  ApartmentOutlined,
+  HomeOutlined,
+  WalletOutlined,
+  SolutionOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  FormOutlined,
+  UserOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
+import {
+  Breadcrumb,
+  Layout,
+  Menu,
+  theme,
+  Button,
+  message,
+  Avatar,
+  MenuProps,
+  Dropdown,
+  Space,
+} from "antd";
 import Homepages from "../../pages/homepage";
 import Paymentpages from "../../pages/payment";
-import MainDorm1 from "../../pages/dorm/mainDorm1";
-import MainDorm2 from "../../pages/dorm/mainDorm2";
-import MainDorm3 from "../../pages/dorm/mainDorm3";
-import MainDorm4 from "../../pages/dorm/mainDorm4";
-import Booking from "../../pages/dorm/Booking";
+import MainDorm from "../../pages/dorm/mainDorm";
 import Personal from "../../pages/personal";
 import Listpages from "../../pages/list";
 import Repairpages from "../../pages/repair";
@@ -21,8 +39,8 @@ import Statusgpages from "../../pages/status";
 import PersonalCreate from "../../pages/personal/create";
 import PersonalChange from "../../pages/personal/edit";
 import { GetStudentsById } from "../../services/https";
-const { Header, Content, Footer, Sider } = Layout;
 
+const { Header, Content, Footer, Sider } = Layout;
 
 const FullLayout: React.FC = () => {
   const page = localStorage.getItem("page");
@@ -33,10 +51,14 @@ const FullLayout: React.FC = () => {
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-   
+
+  const GenderStudent = localStorage.getItem("gender_id"); // เรียก Gender นักศึกษา (string)
+  console.log(`GenderStudent: ${GenderStudent}`); // ตรวจสอบค่าของ GenderStudent
+
   const setCurrentPage = (val: string) => {
     localStorage.setItem("page", val);
   };
+
   const Logout = () => {
     localStorage.clear();
     messageApi.success("ออกจากระบบสำเร็จ");
@@ -44,13 +66,14 @@ const FullLayout: React.FC = () => {
       location.href = "/";
     }, 2000);
   };
-  
   const getStudentData = async (id: string) => {
     try {
       const studentRes = await GetStudentsById(id);
       if (studentRes.status === 200) {
         setStudentId(studentRes.data.student_id);
-        setStudentName(`${studentRes.data.first_name} ${studentRes.data.last_name}`);
+        setStudentName(
+          `${studentRes.data.first_name} ${studentRes.data.last_name}`
+        );
       }
     } catch (error) {
       console.error("Error fetching student data", error);
@@ -63,9 +86,9 @@ const FullLayout: React.FC = () => {
     }
   }, []);
 
-  const items: MenuProps['items'] = [
+  const items: MenuProps["items"] = [
     {
-      key: '1',
+      key: "1",
       label: (
         <span>
           <UserOutlined style={{ marginRight: 8 }} /> {/* เพิ่มไอคอนผู้ใช้ */}
@@ -75,24 +98,18 @@ const FullLayout: React.FC = () => {
       disabled: true,
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: '2',
-      label: (
-        <Link to="/personal">
-          ข้อมูลส่วนตัว
-        </Link>
-      ), 
+      key: "2",
+      label: <Link to="/personal">ข้อมูลส่วนตัว</Link>,
     },
     {
-      key: '3',
-      label: 'ออกจากระบบ',
+      key: "3",
+      label: "ออกจากระบบ",
       onClick: Logout, // เรียกใช้ฟังก์ชัน Logout เมื่อคลิก
     },
-    
   ];
-  
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
@@ -117,8 +134,7 @@ const FullLayout: React.FC = () => {
                 marginTop: 20,
                 marginBottom: 20,
               }}
-            >
-            </div>
+            ></div>
             <div
               style={{
                 textAlign: "center",
@@ -126,21 +142,21 @@ const FullLayout: React.FC = () => {
                 marginTop: "10px",
                 fontWeight: "bold",
               }}
-            >
-            </div>
+            ></div>
             <div className="student-container">
-          <Avatar
-            size={64}
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#FFCC99" }} // Avatar background color
-          />
-          <div className="student-details">
-            <div className="student-id">{studentId}</div>
-            <div className="student-name">{studentName}</div>
-          </div>
-        </div>
+              <Avatar
+                size={64}
+                icon={<UserOutlined />}
+                style={{ backgroundColor: "#FFCC99" }} // Avatar background color
+              />
+              <div className="student-details">
+                <div className="student-id">{studentId}</div>
+                <div className="student-name">{studentName}</div>
+              </div>
+            </div>
             <Menu
               theme="dark"
+              style={{ backgroundColor: "#0c1327" }}
               defaultSelectedKeys={[page ? page : "homepage"]}
               mode="inline"
             >
@@ -149,7 +165,7 @@ const FullLayout: React.FC = () => {
                 onClick={() => setCurrentPage("homepage")}
               >
                 <Link to="/">
-                 <HomeOutlined /> 
+                  <HomeOutlined />
                   <span>หน้าหลัก</span>
                 </Link>
               </Menu.Item>
@@ -158,7 +174,7 @@ const FullLayout: React.FC = () => {
                 onClick={() => setCurrentPage("personal")}
               >
                 <Link to="/personal">
-                  <SolutionOutlined /> 
+                  <SolutionOutlined />
                   <span>ข้อมูลส่วนตัว</span>
                 </Link>
               </Menu.Item>
@@ -167,40 +183,43 @@ const FullLayout: React.FC = () => {
                 key="dorm-booking"
                 title={
                   <span>
-                   <FormOutlined /> 
+                    <ApartmentOutlined />
                     <span>จองหอพัก</span>
                   </span>
                 }
               >
-                <Menu.Item key="mainDorm1">
-                  <Link to="/dorm-booking/mainDorm1">
-                    <span>หอพักชาย 1</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm2">
-                  <Link to="/dorm-booking/mainDorm2">
-                    <span>หอพักชาย 2</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm3">
-                  <Link to="/dorm-booking/mainDorm3">
-                    <span>หอพักหญิง 3</span>
-                  </Link>
-                </Menu.Item>
-                <Menu.Item key="mainDorm4">
-                  <Link to="/dorm-booking/mainDorm4">
-                    <span>หอพักหญิง 4</span>
-                  </Link>
-                </Menu.Item>
+                {GenderStudent === "Male" ? (
+                  <>
+                    <Menu.Item key="mainDorm1">
+                      <Link to="/dorm-booking/mainDorm?dorm=1&NameDorm=หอพักชาย">
+                        <span>หอพักชาย 1</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="mainDorm2">
+                      <Link to="/dorm-booking/mainDorm?dorm=2&NameDorm=หอพักชาย">
+                        <span>หอพักชาย 2</span>
+                      </Link>
+                    </Menu.Item>
+                  </>
+                ) : (
+                  <>
+                    <Menu.Item key="mainDorm3">
+                      <Link to="/dorm-booking/mainDorm?dorm=3&NameDorm=หอพักหญิง">
+                        <span>หอพักหญิง 3</span>
+                      </Link>
+                    </Menu.Item>
+                    <Menu.Item key="mainDorm4">
+                      <Link to="/dorm-booking/mainDorm?dorm=4&NameDorm=หอพักหญิง">
+                        <span>หอพักหญิง 4</span>
+                      </Link>
+                    </Menu.Item>
+                  </>
+                )}
               </Menu.SubMenu>
 
-
-              <Menu.Item
-                key="list"
-                onClick={() => setCurrentPage("list")}
-              >
+              <Menu.Item key="list" onClick={() => setCurrentPage("list")}>
                 <Link to="/list">
-                  <TeamOutlined /> 
+                  <TeamOutlined />
                   <span>รายชื่อผู้พัก</span>
                 </Link>
               </Menu.Item>
@@ -213,12 +232,9 @@ const FullLayout: React.FC = () => {
                   <span>แจ้งยอดชำระ</span>
                 </Link>
               </Menu.Item>
-              <Menu.Item
-                key="repair"
-                onClick={() => setCurrentPage("repair")}
-              >
+              <Menu.Item key="repair" onClick={() => setCurrentPage("repair")}>
                 <Link to="/repair">
-                 <ToolOutlined /> 
+                  <ToolOutlined />
                   <span>แจ้งซ่อม</span>
                 </Link>
               </Menu.Item>
@@ -226,7 +242,7 @@ const FullLayout: React.FC = () => {
                 key="form"
                 title={
                   <span>
-                   <FormOutlined /> 
+                    <FormOutlined />
                     <span>แบบฟอร์ม</span>
                   </span>
                 }
@@ -247,12 +263,9 @@ const FullLayout: React.FC = () => {
                   </Link>
                 </Menu.Item>
               </Menu.SubMenu>
-              <Menu.Item
-                key="status"
-                onClick={() => setCurrentPage("status")}
-              >
+              <Menu.Item key="status" onClick={() => setCurrentPage("status")}>
                 <Link to="/status">
-                <HistoryOutlined />
+                  <HistoryOutlined />
                   <span>ติดตามสถานะ</span>
                 </Link>
               </Menu.Item>
@@ -263,61 +276,60 @@ const FullLayout: React.FC = () => {
           </Button>
         </div>
       </Sider>
-      <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ background: colorBgContainer, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
-      {/* ส่วนสำหรับแท็กโซเชียลมีเดีย */}
-      <Flex gap="4px 0" wrap>
-      <a href="https://www.facebook.com/SUTdorm" target="_blank" rel="noopener noreferrer">
-        <Tag icon={<FacebookOutlined />} color="#3b5999">
-          Facebook
-        </Tag>
-      </a>
-      {/* คุณสามารถเพิ่มแท็กอื่น ๆ ได้ที่นี่ */}
-    </Flex>
-      <Dropdown menu={{ items }}>
-        <a onClick={(e) => e.preventDefault()}>
-          <Space>
-          My Options
-            <DownOutlined />
-          </Space>
-        </a>
-      </Dropdown>
-      
-    </Header>
-    <Content style={{ margin: '0 16px' }}>
-      <Breadcrumb style={{ margin: '16px 0' }} />
-      <div
-        style={{
-          padding: 24,
-          minHeight: '100%',
-          background: colorBgContainer,
-        }}
+      <Layout>
+        <Header
+          style={{
+            background: colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 16px",
+          }}
+        >
+          {/* ส่วนสำหรับแท็กโซเชียลมีเดีย */}
+          <div style={{ marginLeft: "auto" }}>
+            <Dropdown menu={{ items }}>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  My Options
+                  <DownOutlined />
+                </Space>
+              </a>
+            </Dropdown>
+          </div>
+        </Header>
+        <Content style={{ margin: "0 16px" }}>
+          <Breadcrumb style={{ margin: "16px 0" }} />
+          <div
+            style={{
+              padding: 24,
+              minHeight: "100%",
+              background: colorBgContainer,
+            }}
           >
             <Routes>
               <Route path="/" element={<Homepages />} />
               <Route path="/personal" element={<Personal />} />
               <Route path="/personal/create" element={<PersonalCreate />} />
-             <Route path="/personal/edit/:id" element={<PersonalChange />} /> 
+              <Route path="/personal/edit/:id" element={<PersonalChange />} />
               <Route path="/payment" element={<Paymentpages />} />
-              <Route path="/dorm-booking/mainDorm1" element={<MainDorm1 />} />
-              <Route path="/dorm-booking/mainDorm2" element={<MainDorm2 />} />
-              <Route path="/dorm-booking/mainDorm3" element={<MainDorm3 />} />
-              <Route path="/dorm-booking/mainDorm4" element={<MainDorm4 />} />
-              <Route path="/dorm-booking/booking" element={<Booking />} />
+              <Route path="/dorm-booking/mainDorm" element={<MainDorm />} />
               <Route path="/list" element={<Listpages />} />
               <Route path="/repair" element={<Repairpages />} />
-              <Route path="/form/DelayedPayment" element={<DelayedPaymentpages />} />
+              <Route
+                path="/form/DelayedPayment"
+                element={<DelayedPaymentpages />}
+              />
               <Route path="/form/EnExiting" element={<EnExitingpages />} />
               <Route path="/form/Resigning" element={<Resigningpages />} />
               <Route path="/status" element={<Statusgpages />} />
             </Routes>
           </div>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
-          Dormitory
-        </Footer>
+        <Footer style={{ textAlign: "center" }}>Dormitory</Footer>
       </Layout>
     </Layout>
   );
 };
+
 export default FullLayout;

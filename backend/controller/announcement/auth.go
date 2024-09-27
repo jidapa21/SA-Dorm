@@ -155,17 +155,3 @@ func GetLatestAnnouncement(c *gin.Context) {
 
 	c.JSON(http.StatusOK, announcement)
 }
-
-/*
-func GetLatestAnnouncement(c *gin.Context) {
-	var announcement entity.Announcement
-	db := config.DB()
-	if err := db.Order("created_at desc").First(&announcement).Error; err != nil {
-		log.Printf("Error fetching latest announcement: %v", err)
-		c.JSON(http.StatusNotFound, gin.H{"error": "No announcement found"})
-		return
-	}
-	log.Printf("Sending announcement: %+v", announcement)
-	c.JSON(http.StatusOK, announcement)
-}
-*/

@@ -1,107 +1,149 @@
 import React, { useState, useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button,Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps,TableProps,GetProp} from 'antd';
-import Barcode from 'react-barcode'; // นำเข้า Barcode
-import { SlipInterface } from "../../interfaces/Slip";
-import {CreateSlip, GetListSlips, GetSlip, UpdateSlip } from "./../../services/https";
-import { Link, useNavigate, useParams } from "react-router-dom";
-//import qrcode from "../../assets/QR_code.png"
-//import barcode from "../../assets/Barcode.png"
+import { Tag, Button, Form, message, Upload, Modal, Table, QRCode, Space, Divider, UploadFile, UploadProps, TableProps, GetProp } from 'antd';
+import Barcode from 'react-barcode';
 import "./index.css";
+import { StudentInterface } from "./../../interfaces/Student";
+import { SlipInterface } from "../../interfaces/slip";
+import { DormInterface } from "./../../interfaces/Dorm";
+import { CreateSlip, ListExpense } from "../../services/https";
+import { WaterInterface } from '../../interfaces/Waterfee';
+import { ElectricityInterface } from '../../interfaces/Electricityfee';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+
+interface ExpenseData
+  extends StudentInterface,
+  WaterInterface,
+  DormInterface,
+  ElectricityInterface {
+
+  ID: number;
+  date: Date;
+  status: string;
+  totalamount: number;
+  remark: string;
+  dorm_id: number;
+  elec_id: number;
+  water_id: number;
+  student_id: string;
+}
+
 const Index: React.FC = () => {
 
+  //State Management
   const [text] = useState('');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ExpenseData, setExpenseData] = useState<ExpenseData[]>([]);
+  const showModal = () => { setIsModalOpen(true); };
+  const handleOk = () => { setIsModalOpen(false); };
+  const [messageApi, contextHolder] = message.useMessage();
+  const [fileList, setFileList] = useState<UploadFile[]>([]); // เก็บรายการไฟล์ที่ผู้ใช้อัปโหลด
+  const [isSlipUploaded, setIsSlipUploaded] = useState(false); // ตรวจสอบว่าผู้ใช้อัปโหลดสลิปไปแล้วหรือไม่ เพื่อป้องกันการอัปโหลดซ้ำ
+  const [paymentStatus, setPaymentStatus] = useState<string>(''); // สถานะการชำระเงิน
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-const props: UploadProps = {
-  name: 'file',
-  action: 'https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload',
-  headers: {
-    authorization: 'authorization-text',
-  },
-  onChange(info) {
-    if (info.file.status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (info.file.status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-};
-    interface DataType {
-        date: string;
-        list: string;
-        amount: string;
-        remark: string;
-      }
-      
-      const columns: TableProps<DataType>['columns'] = [
-        {
-          title: 'วันที่',
-          dataIndex: 'date',
-          key: 'date',
-        },
-        {
-          title: 'รายการ',
-          dataIndex: 'list',
-          key: 'list',
-        },
-        {
-          title: 'จำนวน',
-          dataIndex: 'amount',
-          key: 'amount',
-        },
-        {
-          title: 'หมายเหตุ',
-          key: 'remark',
-        },
-      ];
-      
-      const data: DataType[] = [
-        {
-            date: '02-05-65',
-            list: 'ค่าหอพัก',
-            amount: "2900.00",
-            remark: '',
-        },
-        {
-          date: '02-05-65',
-          list: 'ค่าไฟฟ้า',
-          amount: "165.00",
-          remark: ''
-        },
-        {
-            date: '02-05-65',
-            list: 'ค่าน้ำ',
-            amount: "100.00",
-            remark: ''
-        },
-      ];
-
-  // ฟังก์ชันคำนวณยอดรวม
   useEffect(() => {
-    const total = data.reduce((sum, record) => {
-      return sum + parseFloat(record.amount || '0');
-    }, 0);
-    setTotalAmount(total);
-  }, [data]);
+    const fetchExpenses = async () => {
+      try {
+        const response = await ListExpense();
+        console.log("Received data:", response);
+        if (response && response.data) {
+          const expense = response.data;
 
-  //model
-  const [slip, setSlip] = useState<SlipInterface>();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+          // ตั้งค่า paymentStatus ตามข้อมูลสถานะจากเซิร์ฟเวอร์
+          if (expense.some((data: any) => data.status === 'ชำระแล้ว')) {
+            setPaymentStatus('ชำระแล้ว');
+          } else {
+            setPaymentStatus('กำลังดำเนินการ');
+          }
+        }
+
+        if (response && response.data) {
+          const expense = response.data;
+          console.log("Expense data:", expense);
+
+          const CombinedData: ExpenseData[] = expense.map((data: any) => ({
+            ID: data.ID,
+            date: new Date(data.date),
+            totalamount: data.totalamount || 0,
+            dorm_id: data.Dorm.amount || 0,
+            elec_id: data.electricityfee.amount || 0,
+            water_id: data.waterfee.amount || 0,
+            reservation_id: data.reservation.student_id,
+            status: [data.status || "Unknown"],
+          }));
+          console.log("Expense data:", expense);
+
+          setExpenseData(CombinedData); // ตั้งค่า CombinedData ใน state
+
+        } else {
+          console.error("Unexpected data format:", response.data);
+          message.error('ไม่พบข้อมูลค่าใช้จ่าย');
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        message.error('กรุณาจองหอพักก่อนทำรายการ!');
+      }
+    };
+
+    fetchExpenses(); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+  }, []);
+
+  const columns: TableProps<ExpenseData>['columns'] = [
+    {
+      title: 'วันที่',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date: Date) => date ? new Date(date).toLocaleDateString() : 'Invalid Date',
+    },
+    {
+      title: 'ค่าหอพัก',
+      dataIndex: 'dorm_id',
+      key: 'dorm_id',
+      render: (dorm_id: number) => `${dorm_id.toFixed(2)} `,
+    },
+    {
+      title: 'ค่าไฟฟ้า',
+      dataIndex: 'elec_id',
+      key: 'elec_id',
+      render: (elec_id: number) => `${elec_id.toFixed(2)} `,
+    },
+    {
+      title: 'ค่าน้ำ',
+      dataIndex: 'water_id',
+      key: 'water_id',
+      render: (water_id: number) => `${water_id.toFixed(2)} `, 
+    },
+    {
+      title: "สถานะ",
+      key: "status",
+      dataIndex: "status", 
+      render: (status: string[]) => (
+        <>
+          {status.map((Status: string) => {
+            let color: string;
+            switch (Status) {
+              case "กำลังดำเนินการ":
+                color = "#1677ff";
+                break;
+              case "ชำระแล้ว":
+                color = "#52c41a";
+                break;
+              default:
+                color = "default";
+            }
+            return (
+              <Tag color={color} key={Status}>
+                {Status}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+  ];
+  console.log("Expense data state:", ExpenseData);
 
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
@@ -117,124 +159,161 @@ const props: UploadProps = {
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    const image = new Image();
-    image.src = src;
+    const path = new Image();
+    path.src = src;
     const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
+    imgWindow?.document.write(path.outerHTML);
   };
 
+  
   const onFinish = async (values: SlipInterface) => {
-    values.Path = fileList[0].thumbUrl;
-    values.ID = slip?.ID;
-    let res = await CreateSlip(values);
-    console.log(res);
-    if (res) {
+    // ตรวจสอบสถานะการชำระเงิน
+    if (paymentStatus === 'ชำระแล้ว') {
       messageApi.open({
-        type: "success",
-        content: "บันทึกข้อมูลสำเร็จ",
+        type: 'error',
+        content: 'คุณได้ชำระเงินแล้ว ไม่สามารถอัปโหลดสลิปได้อีก!',
       });
-      setTimeout(function () {
-        navigate("/repair");
-      }, 2000);
+      return; // ยกเลิกการบันทึก
+    }
+
+    if (isSlipUploaded) {
+      messageApi.open({
+        type: 'error',
+        content: 'คุณได้อัปโหลดสลิปไปแล้ว!',
+      });
+      return; // ยกเลิกการบันทึก
+    }
+
+    values.path = fileList[0]?.thumbUrl || "";
+
+    const studentId = localStorage.getItem("id");
+    if (!studentId) {
+      messageApi.open({
+        type: "error",
+        content: "Student ID ไม่พบข้อมูล.",
+      });
+      return;
+    }
+      let res = await CreateSlip(values);
+      if (res) {
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
+        setIsSlipUploaded(true); // เมื่ออัปโหลดสลิปเสร็จ ให้ตั้งค่าเป็น true เพื่อป้องกันการอัปโหลดซ้ำ
+        setFileList([]); // ล้างรายการไฟล์ที่อัปโหลด
     } else {
       messageApi.open({
         type: "error",
-        content: "เกิดข้อผิดพลาด !",
+        content: "เกิดข้อผิดพลาด",
       });
     }
   };
 
-  const navigate = useNavigate();
-  const [messageApi, contextHolder] = message.useMessage();
+  const beforeUpload: UploadProps['beforeUpload'] = (file) => {
+    // ตรวจสอบสถานะการชำระเงินก่อนอัปโหลดไฟล์
+    if (paymentStatus === 'ชำระแล้ว') {
+      messageApi.open({
+        type: 'error',
+        content: 'คุณได้ชำระเงินแล้ว ไม่สามารถอัปโหลดสลิปได้อีก!',
+      });
+      return Upload.LIST_IGNORE; // ป้องกันการอัปโหลดไฟล์
+    }
 
-return (
+    setFileList([...fileList, file]);
+    return false;
+  };
+
+
+  return (
     <>
       <br />
+      <Space style={{ display: 'flex', justifyContent: 'center' }}>
         <div className='text-container'>
-            <div className='text-1'>แจ้งยอดชำระ</div>
+          <div className='text-1'>แจ้งยอดชำระ</div>
         </div>
-        <Steps
-      progressDot
-      current={1}
-      items={[
-        {
-          title: 'ยังไม่ชำระเงิน',
-          description: '',
-        },
-        {
-          title: 'กำลังดำเนินการ',
-          description: '',
-        },
-        {
-          title: 'ชำระเงินเสร็จสิ้น',
-          description: '',
-        },
-      ]}
-    />
-    <Divider />
-        <div className='text-container'></div>  
-          <Table columns={columns} dataSource={data} pagination={false} />
-          <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
-            ยอดรวมทั้งหมด: {totalAmount.toFixed(2)} บาท
-          </div>
-          <br/>
-          <Button type="primary" onClick={showModal}>
-            ชำระเงินที่นี่
+      </Space>
+
+      <Divider />
+      <div className='text-container'></div>
+      <Table columns={columns} dataSource={ExpenseData.map(expense => ({ ...expense, key: expense.StudentID }))} 
+        pagination={false}/>
+        
+      <div style={{ marginTop: '20px', fontWeight: 'bold' }}>
+        ยอดรวมทั้งหมด: {ExpenseData.reduce((acc, expense) => acc + (expense.totalamount || 0), 0).toFixed(2)} บาท
+      </div>
+      <br />
+      <Button type="primary"  onClick={showModal}>
+        ชำระเงินที่นี่
+      </Button>
+      <Modal
+        title="ช่องทางการชำระเงิน"
+        open={isModalOpen}
+        footer={[
+          <Button key="ok"  type="primary" onClick={handleOk}>
+            Ok
           </Button>
-          <Modal 
-            title="ช่องทางการชำระเงิน" 
-            open={isModalOpen} 
-            footer={[
-                <Button key="ok" type="primary" onClick={handleOk}>
-                  Ok
+        ]}
+        closable={false}
+        className="modal-content"
+
+      >
+        <Space direction="vertical" align="center">
+          <p className="modal-text">ธนาคาร ABC 123-4567-890</p>
+          <QRCode value={text || '-'} />
+          {/* เพิ่ม Barcode */}
+          <Barcode
+            value="123456789012" 
+            format="CODE128" //รูปแบบของ Barcode
+            width={2}
+            height={60}
+          />
+        </Space>
+      </Modal>
+      <div className='text-container'>
+        <div className='text-7'>
+          <Form
+            name="basic"
+            layout="vertical"
+            onFinish={onFinish}
+            autoComplete="off"
+          >
+            <Form.Item>
+              <Space style={{ display: 'flex',justifyContent: '', marginTop: '20px' }}>
+                <Form.Item
+                  name="path"
+                  label="อัพโหลดเพียงครั้งเดียวเท่านั้น"
+                  valuePropName="fileList"
+                  getValueFromEvent={(e) => e.fileList}
+                  rules={[{ required: true, message: 'กรุณาอัพโหลดไฟล์ก่อน!' }]}
+                  
+                >
+                  <Upload
+                    fileList={fileList}
+                    onChange={onChange}
+                    onPreview={onPreview}
+                    beforeUpload={beforeUpload}
+                    maxCount={1}
+                    multiple={false}
+                    listType="picture"
+                  >
+                    <Button icon={<UploadOutlined />} >Upload</Button>
+                  </Upload>
+                </Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ backgroundColor: '#1890ff', color: 'white', borderColor: '#1890ff' }}
+                >
+                  ยืนยัน
                 </Button>
-              ]}
-              closable={false}
-              className="modal-content"
-              
-            >
-              <Space direction="vertical" align="center">
-              <p className="modal-text">ธนาคาร ABC 123-4567-890</p>
-                <QRCode value={text || '-'} /> 
-                {/* เพิ่ม Barcode */}
-              <Barcode
-                value="123456789012" // แทนที่ด้วยข้อมูล Barcode ของคุณ
-                format="CODE128" // กำหนดรูปแบบของ Barcode
-                width={2}
-                height={60}
-                />
+                {contextHolder}
               </Space>
-          </Modal>  
+            </Form.Item>
+          </Form>
 
-
-        <div className='text-container'>
-            <div className='text-6'>Upload หลักฐานการชำระเงินที่นี่</div>
         </div>
-        <div className='text-container'>
-            <div className='text-7'>
-            <Form
-              name="basic"
-              layout="vertical"
-              onFinish={onFinish}
-              autoComplete="off"
-              >
-              <Upload
-                  fileList={fileList}
-                  onChange={onChange}
-                  onPreview={onPreview}
-                  beforeUpload={(file) => {
-                    setFileList([...fileList, file]);
-                    return false;
-                  }}
-                  maxCount={1}
-                  multiple={false}
-                  listType="picture"
-              >
-                <Button icon={<UploadOutlined />} >Upload</Button>
-              </Upload>
-            </Form>
-          </div>
-        </div>
+      </div>
     </>
   );
 }

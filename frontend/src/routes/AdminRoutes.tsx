@@ -12,6 +12,7 @@ const ResigningForm = Loadable(lazy(() => import('../pages/adminpage/ResigningFo
 const RequestDelayingPayment = Loadable(lazy(() => import('../pages/adminpage/RequestDelayingPayment')));
 const PaymentConfirmation = Loadable(lazy(() => import('../pages/adminpage/PaymentConfirmation')));
 const AdminManagement = Loadable(lazy(() => import('../pages/adminpage/manageadmin')));
+const ManageStudents = Loadable(lazy(() => import('../pages/adminpage/ManageStudents')));
 
 
 const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
@@ -20,6 +21,10 @@ const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
       path: '/',
       element: isLoggedInAdmin ? <AdminLayout /> : <LoginAdmin />,
       children: [
+        {
+          path: '/',
+          element: <Announcement />,
+        },
         {
           path: 'Announcement',
           element: <Announcement />,
@@ -44,7 +49,8 @@ const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
           path: 'PaymentConfirmation',
           element: <PaymentConfirmation />,
         },
-        { path: '/AdminManagement', element: <AdminManagement /> },  
+        { path: '/AdminManagement', element: <AdminManagement /> },
+        { path: '/ManageStudents', element: <ManageStudents /> },  
       ],
     },
   ];
@@ -52,4 +58,3 @@ const AdminRoutes = (isLoggedInAdmin: boolean): RouteObject[] => {
 
 
 export default AdminRoutes;
-

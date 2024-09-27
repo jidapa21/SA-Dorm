@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm"
 )
 
-
 // POST /student-create
 func CreateStudent(c *gin.Context) {
 	var student entity.Students
@@ -161,4 +160,82 @@ func UpdateStudent(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Updated successful"})
+}
+
+func GetListFormStudent(c *gin.Context) {
+	var sid entity.Students
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		return
+	}
+
+	db := config.DB()
+	results := db.Where("student_id = ?", studentID).First(&sid)
+	if results.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"student": sid})
+}
+
+func GetListFormDorm(c *gin.Context) {
+	var reservation entity.Reservation
+
+	studentID := c.MustGet("student_id").(string)
+	if studentID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ไม่พบรหัสนักศึกษา"})
+		return
+	}
+
+	db := config.DB()
+
+	// ค้นหา Reservation และ Preload ความสัมพันธ์
+	db.Where("student_id = ?", studentID).Preload("Dorm").Preload("Room").First(&reservation)
+	if reservation.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีห้องพัก"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"reservation": reservation})
+}
+
+// GetStudentsByRoomID ดึงข้อมูลนักศึกษาจากห้อง
+func GetStudentsByRoomID(c *gin.Context) {
+	roomID := c.Param("room_id")
+
+	var reservations []entity.Reservation
+
+	db := config.DB()
+	// ดึงข้อมูลการจองจากฐานข้อมูล
+	if err := db.Where("room_id = ?", roomID).Preload("Dorm").Preload("Student").Find(&reservations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "ไม่พบข้อมูลนักศึกษา"})
+		return
+	}
+
+	// สร้าง slice ของข้อมูลนักศึกษา
+	var students []map[string]interface{} // ใช้ map เพื่อเก็บข้อมูลรวม
+
+	// สร้างข้อมูลนักศึกษาจากการจอง
+	for _, reservation := range reservations {
+		var student entity.Students
+		// ดึงข้อมูลนักศึกษาโดยใช้ StudentID
+		if err := db.Where("student_id = ?", reservation.StudentID).First(&student).Error; err == nil {
+			// สร้าง map สำหรับข้อมูลนักศึกษา
+			studentData := map[string]interface{}{
+				"student_id":  student.StudentID,
+				"first_name":  student.FirstName,
+				"last_name":   student.LastName,
+				"major":       student.Major,
+				"year":        student.Year,
+				"amount":      reservation.Dorm.Amount, // ดึงค่าห้องจาก Dorm
+				"room_number": reservation.Room.RoomNumber,
+			}
+			students = append(students, studentData)
+		}
+	}
+
+	c.JSON(http.StatusOK, students)
 }

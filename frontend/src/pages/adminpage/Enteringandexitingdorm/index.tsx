@@ -1,143 +1,150 @@
-import React, { useState } from 'react';
-import { Button, Table, Select } from 'antd';
-import ReadEnteringandexitingdorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index'; 
+import React, { useState, useEffect } from 'react';
+import { Button, Table, Typography, Card, Modal } from 'antd';
+import ReadEnteringAndExitingDorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index';
+import { ListEn_ExitingForm } from '../../../services/https';
+import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm";
 
-const { Option } = Select;
+const { Title } = Typography;
 
-interface RecordType {
+interface TableEn_ExitingFormInterfaceRecord extends En_ExitingFormInterface {
   key: string;
   date: string;
 }
 
-const Enteringandexitingdorm: React.FC = () => {
+const EnteringAndExitingDorm: React.FC = () => {
+  const [EnteringAndExitingDorm, setEnteringAndExitingDorm] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  const columns = [
-    {
-      title: '', // หัวข้อหลัก
-      children: [
-        {
-          dataIndex: 'date',
-          key: 'date',
-          render: (text: string) => (
-            <div style={{ textAlign: 'center' }}>{text}</div> 
-          ),
-        },
-        {
-          key: 'details',
-          render: (_: any, record: RecordType) => (
-            <div style={{ textAlign: 'center' }}>
-              <Button
-                type="link"
-                onClick={() => handleDetailsClick(record.key)}
-              >
-                ดูรายละเอียด
-              </Button>
-            </div>
-          ),
-        },
-        {
-          key: 'update',
-          render: (_: any, record: RecordType) => (
-            <div style={{ textAlign: 'center' }}>
-              <Select
-                defaultValue="อัพเดทสถานะ"
-                style={{ width: 120 }}
-                onChange={(value) => handleUpdateStatus(record.key, value)}
-              >
-                <Option value="pending">Pending</Option>
-                <Option value="inProgress">In Progress</Option>
-                <Option value="completed">Completed</Option>
-              </Select>
-            </div>
-          ),
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchEn_ExitingForm = async () => {
+      try {
+        const data = await ListEn_ExitingForm();
+        console.log('Data from API:', data);
+        if (data) {
+          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'เสร็จสิ้น');
+          const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
+            ...item,
+            key: item.ID?.toString() || index.toString(),
+          }));
+          console.log('Transformed Data:', transformedData);
+          setEnteringAndExitingDorm(transformedData);
+        }
+      } catch (error) {
+        console.error('Error fetching En_ExitingForm:', error);
+      }
+    };
 
-  const data: RecordType[] = [
-    {
-      key: '1',
-      date: '2024-08-01',
-    },
-    {
-      key: '2',
-      date: '2024-08-02',
-    },
-    {
-      key: '3',
-      date: '2024-08-03',
-    },
-  ];
+    fetchEn_ExitingForm();
+    const intervalId = setInterval(fetchEn_ExitingForm, 3000);
+    return () => clearInterval(intervalId);
+  }, []);
 
-  const handleDetailsClick = (key: string) => {
-    setSelectedKey(key); 
-  };
-
-  const handleUpdateStatus = (key: string, status: string) => {
-    console.log(`อัพเดทสถานะ ${status} สำหรับ:`, key);
+  const handleDetailsClick = (ID: string) => {
+    setSelectedKey(ID);
   };
 
   const handleBackClick = () => {
-    setSelectedKey(null); // กลับไปที่ตาราง
+    setSelectedKey(null);
   };
 
+  const columns = [
+    {
+      title: <div style={{ textAlign: 'center' }}>รหัสนักศึกษา</div>,
+      dataIndex: ['reservation', 'student', 'student_id'],
+      key: 'student_id',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>หอ</div>,
+      dataIndex: ['reservation', 'Dorm', 'dorm_name'],
+      key: 'dorm_name',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>ห้อง</div>,
+      dataIndex: ['reservation', 'Room', 'room_number'],
+      key: 'room_number',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text || "N/A"}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>สถานะ</div>,
+      dataIndex: 'status',
+      key: 'status',
+      render: (text: string) => (
+        <div style={{ textAlign: 'center', fontWeight: 'bold', color: '#4A4A4A' }}>{text}</div>
+      ),
+    },
+    {
+      title: <div style={{ textAlign: 'center' }}>รายละเอียด</div>,
+      key: 'details',
+      render: (_: any, record: TableEn_ExitingFormInterfaceRecord) => (
+        <div style={{ textAlign: 'center' }}>
+          <Button
+            type="primary"
+            onClick={() => handleDetailsClick(record.key)}
+            style={{ marginTop: '8px' }}
+          >
+            ดูรายละเอียด
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Header with underline */}
+    <div style={{ padding: '20px', backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       <div
         style={{
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
           marginBottom: '20px',
-          position: 'relative',
         }}
       >
-        <span
-          style={{
-            fontSize: '25px',
-            position: 'relative',
-            paddingBottom: '10px',
-          }}
-        >
-          รายการฟอร์มขออนุญาตเข้า-ออกหอพัก
-        </span>
+        <Title level={2} style={{ margin: 0, color: '#333' }}>
+          แบบฟอร์มขออนุญาตเข้า-ออกหอพักหลังเวลาปิดหอพัก/ค้างคืน
+        </Title>
         <div
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            borderBottom: '3px solid #000',
+            width: '100%',
+            maxWidth: '600px',
+            height: '3px',
+            backgroundColor: '#1890ff',
+            marginTop: '5px',
+            borderRadius: '2px',
           }}
         />
       </div>
       {selectedKey ? (
         <div>
           <Button
-            type="primary"
+            type="default"
             onClick={handleBackClick}
-            style={{ marginBottom: '16px' }}
+            style={{ marginBottom: '16px', borderColor: '#d9d9d9', color: '#1890ff' }}
           >
             กลับไปหน้าเดิม
           </Button>
-          <ReadEnteringandexitingdorm key={selectedKey} /> 
+          <ReadEnteringAndExitingDorm ID={Number(selectedKey)} />
         </div>
       ) : (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Table
-            columns={columns}
-            dataSource={data}
-            pagination={false}
-            bordered
-            showHeader={false} 
-            style={{ maxWidth: '1100px', width: '100%' }}
-          />
-        </div>
+            <Table
+              dataSource={EnteringAndExitingDorm}
+              columns={columns}
+              pagination={false}
+              bordered
+              style={{ marginBottom: '20px' }}
+              rowClassName={(_record, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+            />
       )}
     </div>
   );
 };
 
-export default Enteringandexitingdorm;
+export default EnteringAndExitingDorm;

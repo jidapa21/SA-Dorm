@@ -14,3 +14,4 @@ func GetAll(c *gin.Context) {
 	db.Find(&guardians)
 	c.JSON(http.StatusOK, &guardians)
 }
+

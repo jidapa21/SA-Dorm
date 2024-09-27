@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import './index.css';
 import { Layout, List, Card, Typography, message } from 'antd';
 import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { GetLatestAnnouncements } from '../../services/https';
@@ -14,7 +13,7 @@ const { Title, Text } = Typography;
 
 const App: React.FC = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementInterface[]>([]);
-  const [, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +23,7 @@ const App: React.FC = () => {
         if (response && Array.isArray(response)) {
           setAnnouncements(response);
         } else {
-          message.error('Error fetching announcements');
+          message.error('ยังไม่มีประกาศ');
         }
       } catch (error) {
         console.error('Fetch error:', error);

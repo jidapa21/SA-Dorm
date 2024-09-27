@@ -25,12 +25,12 @@ func Authorizes() gin.HandlerFunc {
 			return
 		}
 		clientToken = strings.TrimSpace(extractedToken[1])
-		
+
 		jwtWrapper := services.JwtWrapper{
 			SecretKey: "SvNQpBN8y3qlVrsGAYYWoJJk56LtzFHx",
 			Issuer:    "AuthService",
 		}
-		
+
 		claims, err := jwtWrapper.ValidateToken(clientToken)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
@@ -41,8 +41,9 @@ func Authorizes() gin.HandlerFunc {
 		studentID := claims.StudentID
 		adminID := claims.AdminID
 		username := claims.Username
+		exID := claims.ExID
 
-		if studentID == "" && adminID == "" && username == "" {
+		if studentID == "" && adminID == "" && username == "" && exID == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
 			return
 		}
@@ -56,6 +57,9 @@ func Authorizes() gin.HandlerFunc {
 		}
 		if username != "" {
 			c.Set("username", username)
+		}
+		if exID != "" {
+			c.Set("ex_id", exID)
 		}
 
 		c.Next()

@@ -1,215 +1,266 @@
-import {
-    Button,
-    Space,
-    Form,
-    Input,
-    Row,
-    Col,
-    DatePicker,
-    Card,
-    Divider,
-    Typography,
-    message,
-} from "antd";
+import { Button, Space, Form, Input, Row, Col, DatePicker, Card, Divider, InputNumber, Typography, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import type { ColumnsType } from "antd/es/table";
-import { Link, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
+import { useState, useEffect } from "react";
+import { DelayedPaymentFormInterface } from "./../../../interfaces/delayedpaymentform";
+import { CreateDelayedPaymentForm, GetListFormStudent, GetListFormDorm } from "../../../services/https";
+import "../../repair/index.css";
 const { Text } = Typography;
 
-import { DelayedPaymentFormInterface } from "../../../interfaces/delayedpaymentform";
-import { DelayedPaymentFormUI, GetDelayedPaymentForm, ListDelayedPaymentForms, UpdateDelayedPaymentForm } from "../../../services/https";
-import "../../repair/index.css";
-
 export default function DelayedPaymentFormCreate() {
+  const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm();
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString();
+  const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
-    const navigate = useNavigate();
-    const [messageApi] = message.useMessage();
-    const [form] = Form.useForm();
+  interface StudentInfoRecord {
+    key: string | null; // Allow null
+    dorm_name: string;
+    StudentID: string;
+    FirstName: string;
+    LastName: string;
+    room_number: number | string;
+  }
 
-    const onFinish = async (values: DelayedPaymentFormInterface) => {
-        let res = await DelayedPaymentFormUI(values);
-        console.log(res);
-        if (res) {
+  const disabledDate = (current: any) => {
+    // เลือกวันที่ก่อนหน้าไม่ได้
+    return current && current.isBefore(today, "day");
+  };
+
+  const handleReset = () => {
+    form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
+  };
+
+  const onFinish = async (values: DelayedPaymentFormInterface) => {
+    const studentId = localStorage.getItem("id");
+    if (studentId) {
+      values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบรหัสนักศึกษา",
+      });
+      return;
+    }
+
+    try {
+      let res = await CreateDelayedPaymentForm(values);
+      console.log(res);
+
+      if (res && res.status === 201) { // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
+        form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "กรุณาจองห้องพัก",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const studentId = localStorage.getItem("id");
+    const fetchData = async () => {
+      try {
+        const dataStudent = await GetListFormStudent();
+        const dataDorm = await GetListFormDorm();
+        console.log("Received dataStudent:", dataStudent);
+        console.log("Received dataDorm:", dataDorm);
+
+        // ตรวจสอบว่ามีข้อมูล student หรือไม่
+        if (dataStudent) {
+          const studentData = {
+            key: studentId,
+            StudentID: dataStudent.student.student_id || "ไม่พบข้อมูล",
+            FirstName: dataStudent.student.first_name || "ไม่พบข้อมูล",
+            LastName: dataStudent.student.last_name || "ไม่พบข้อมูล",
+          };
+
+          // ถ้ามีหอและห้องพักแล้ว
+          if (dataDorm && dataDorm.reservation) {
+            const dormData = {
+              dorm_name: dataDorm.reservation.Dorm.dorm_name,
+              room_number: dataDorm.reservation.Room.room_number,
+            };
+
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
+
+            // ถ้าไม่มีหอและห้องพัก
+          } else {
+            const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
+            const combinedData = { ...studentData, ...dormData };
+            setStudent([combinedData]);
             messageApi.open({
-                type: "success",
-                content: "บันทึกข้อมูลสำเร็จ",
+              type: "error",
+              content: "กรุณาจองห้องพัก",
             });
-            //form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
-            //setFileList([]); // รีเซ็ตไฟล์อัปโหลด
-            setTimeout(function () {
-                navigate("/repair");
-            }, 2000);
+          }
         } else {
-            messageApi.open({
-                type: "error",
-                content: "เกิดข้อผิดพลาด !",
-            });
+          messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลนักศึกษา",
+          });
         }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง",
+        });
+      }
     };
 
-    const formItemLayout = {
-        labelCol: {
-            xs: { span: 24 },
-            sm: { span: 6 },
-        },
-        wrapperCol: {
-            xs: { span: 24 },
-            sm: { span: 14 },
-        },
-    };
-    const columns: ColumnsType<DelayedPaymentFormInterface> = [
-        {
-            title: "ลำดับ",
-            dataIndex: "ID",
-            key: "id",
-        },
-        {
-            title: "หัวข้อการขอรับบริการ",
-            dataIndex: "Subject",
-            key: "subject",
-        },
-        {
-            title: "รายละเอียดการขอรับบริการ",
-            dataIndex: "Detail",
-            key: "detail",
-        },
-        {
-            title: "นามสกุล",
-            dataIndex: "Location_Details",
-            key: "location_details",
-        },
-        {
-            title: "เพศ",
-            dataIndex: "Contact",
-            key: "contact",
-        },
-        {
-            title: "อีเมล",
-            dataIndex: "Time_Slot",
-            key: "time_slot",
-        },
-        {
-            title: "วันเกิด",
-            dataIndex: "Remarks",
-            key: "remarks",
-            render: (record) => <p>{dayjs(record).format("dddd DD MMM YYYY")}</p>,
-        },
-        {
-            title: "จัดการ",
-            dataIndex: "Manage",
-            key: "manage",
-            render: (text, record, index) => (
-                <>
-                </>
-            ),
-        },
-    ]
-    return (
-        <>
-            <Card>
-                <h2>แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา</h2>
-                <Divider />
-                <Form
-                    name="basic"
-                    layout="vertical"
-                    //onFinish={onFinish}
-                    autoComplete="off"
-                >
-                    <Space direction="vertical">
-                        <Text>ผู้รับบริการ  B191563  กานต์รวี  นภารัตน์</Text>
-                        <Text>อาคาร  4  ห้อง  414A</Text>
-                    </Space>
-                </Form>
+    if (studentId) {
+      fetchData();
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบข้อมูลนักศึกษา",
+      });
+    }
+  }, []);
 
-                <br />
+  return (
+    <>
+      {contextHolder}
+      <Card>
+        <h2>แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา</h2>
+        <Divider />
+        <Form name="StudentDetails" layout="vertical" autoComplete="off">
+          <Row justify="space-between" align="middle">
+            <Col>
+              <Space direction="vertical">
+                <Text>
+                  ผู้รับบริการ{" "}
+                  {student.length > 0 ? student[0].StudentID : "ไม่พบข้อมูล"}{" "}
+                  {student.length > 0 ? student[0].FirstName : "ไม่พบข้อมูล"}{" "}
+                  {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
+                </Text>
+                <Text>
+                  อาคาร:{" "}
+                  {student.length > 0 ? student[0].dorm_name : "ไม่พบข้อมูล"}{" "}
+                  ห้อง:{" "}
+                  {student.length > 0 ? student[0].room_number : "ไม่พบข้อมูล"}
+                </Text>
+              </Space>
+            </Col>
+            <Col>
+              <Text>วันที่ปัจจุบัน: {formattedDate}</Text>
+            </Col>
+          </Row>
+        </Form>
 
-                <Form
-                    name="basic"
-                    layout="vertical"
-                    autoComplete="off"
-                >
-                    <Row gutter={64}>
-                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                            <Form.Item
-                                label="ค่าหอพัก"
-                                name="dorm_payment"
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
+        <br />
 
-                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                            <Form.Item
-                                label="ค่าไฟฟ้า"
-                                name="electricly_bill"
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-
-                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                            <Form.Item
-                                label="ค่าน้ำ"
-                                name="water_bill"
-                            >
-                                <Input />
-                            </Form.Item>
-                        </Col>
-
-                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                            <Form.Item
-                                label="เนื่องจาก"
-                                name="because_of"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "กรุณากรอกเหตุผลในการขอผ่อนผันชำระ !",
-                                    },
-                                ]}
-                            >
-                                <Input.TextArea />
-                            </Form.Item>
-                        </Col>
-
-                        <Col xs={24} sm={24} md={24} lg={24} xl={12}>
-                            <Form.Item
-                                label="ชำระภายในวันที่"
-                                name="due_date"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "กรุณาเลือกวัน/เดือน/ปี !",
-                                    },
-                                ]}
-                            >
-                                <DatePicker style={{ width: "100%" }} />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                    <Row justify="end">
-                        <Col style={{ marginTop: "40px" }}>
-                            <Form.Item>
-                                <Space>
-                                    <Link to="/DelayedPaymentForm">
-                                        <Button htmlType="button" style={{ marginRight: "10px" }}>
-                                            ยกเลิก
-                                        </Button>
-                                    </Link>
-                                    <Button
-                                        type="primary"
-                                        htmlType="submit"
-                                        icon={<PlusOutlined />}
-                                    >
-                                        ยืนยัน
-                                    </Button>
-                                </Space>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-
-                </Form>
-            </Card>
-        </>
-    );
+        <Form
+          name="DelayedPaymentForm"
+          form={form}
+          layout="horizontal"
+          onFinish={onFinish}
+          autoComplete="on"
+        >
+          <Row gutter={64}>
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              <Form.Item label="ค่าหอพัก" name="Dorm_Payment">
+                <InputNumber
+                  placeholder="2900.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
+              </Form.Item>
+            </Col>
+            <Row />
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              <Form.Item label="ค่าไฟฟ้า" name="Electricly_Bill">
+                <InputNumber
+                  placeholder="100.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
+              </Form.Item>
+            </Col>
+            <Row />
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              <Form.Item label="ค่าน้ำ" name="Water_Bill">
+                <InputNumber
+                  placeholder="50.00"
+                  style={{ width: "100%" }}
+                  step={0.01}
+                  min={0}
+                />
+              </Form.Item>
+            </Col>
+            <Row />
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              <Form.Item
+                label="เนื่องจาก"
+                name="Because_Of"
+                rules={[
+                  {
+                    required: true,
+                    message: "กรุณากรอกเหตุผลในการขอผ่อนผันชำระ !",
+                  },
+                ]}
+              >
+                <Input.TextArea placeholder="รายรับไม่พอจ่าย" />
+              </Form.Item>
+            </Col>
+            <Row />
+            <Col xs={24} sm={24} md={24} lg={24} xl={12}>
+              <Form.Item
+                label="ชำระภายในวันที่"
+                name="Due_Date"
+                rules={[
+                  {
+                    required: true,
+                    message: "กรุณาเลือกวัน/เดือน/ปี !",
+                  },
+                ]}
+              >
+                <DatePicker
+                  style={{ width: "100%" }}
+                  disabledDate={disabledDate}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row justify="end">
+            <Col style={{ marginTop: "40px" }}>
+              <Form.Item>
+                <Space>
+                  <Button
+                    htmlType="button"
+                    onClick={handleReset}
+                    style={{ marginRight: "10px" }}
+                  >
+                    ยกเลิก
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<PlusOutlined />}
+                  >
+                    ยืนยัน
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+    </>
+  );
 }

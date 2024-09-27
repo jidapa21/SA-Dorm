@@ -1,24 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Divider, Spin, Alert, Select } from "antd";
+import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
 import { GetRepair, UpdateRepair } from '../../../../services/https'; // Import your API functions
 import { RepairInterface } from "../../../../interfaces/repairing";
 
 const { Option } = Select;
 
-const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
+const ReadRepairing: React.FC<{ ID: number }> = ({ ID }) => {
   const [formValues, setFormValues] = useState<RepairInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | undefined>(undefined);
+  const [form] = Form.useForm(); // สร้าง form instance
 
   useEffect(() => {
     const fetchRepair = async () => {
       setLoading(true);
       try {
-        const response = await GetRepair(Number(repairId));
+        // ดึงข้อมูลจาก API
+        const response = await GetRepair(ID);
         if (response) {
+          console.log('Fetched data:', response); // Debug ข้อมูลที่ดึงมา
           setFormValues(response);
-          setStatus(response.Status);
+          form.setFieldsValue(response); // ตั้งค่าให้กับฟอร์มเมื่อได้ข้อมูลแล้ว
+          console.log('Form values set:', form.getFieldsValue()); // Debug ข้อมูลในฟอร์ม
         } else {
           setError('Failed to fetch repair details.');
         }
@@ -30,18 +33,18 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
     };
 
     fetchRepair();
-  }, [repairId]);
+  }, [ID, form]);
 
   const handleStatusChange = async (value: string) => {
     try {
-      await UpdateRepair(repairId, { Status: value });
-      setStatus(value); // อัปเดตสถานะหลังจากที่เปลี่ยน
+      await UpdateRepair(String (ID), { status: value });
+      form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
     } catch (error) {
       console.error('Error updating status:', error);
     }
   };
 
-  const imageUrl = formValues?.Image || 'https://via.placeholder.com/600x400';
+  const imageUrl = formValues?.image || 'https://via.placeholder.com/600x400';
 
   return (
     <div className="container" style={{ padding: '20px', backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
@@ -53,19 +56,39 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
         <Alert message={error} type="error" style={{ marginBottom: '20px' }} />
       ) : formValues ? (
         <Card title="แบบฟอร์มแจ้งซ่อม" bordered={false} style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '16px', color: '#666' }}>
-            <p>ผู้รับบริการ: B191563 มนัสเต สวัสดิกะ</p>
-            <p>อาคาร: 4 ห้อง: 414A</p>
-          </div>
-          <Divider />
           <Form
+            form={form}
             name="repairing-form"
             layout="vertical"
-            initialValues={formValues}
           >
+            <Row justify="space-between" align="top">
+              <Col>
+                <div style={{ marginBottom: '16px', color: '#666' }}>
+                </div>
+                <p>ผู้รับบริการ: {formValues?.reservation?.student?.student_id} {formValues?.reservation?.student?.first_name} {formValues?.reservation?.student?.last_name}</p>
+                <p>อาคาร: {formValues?.reservation?.Dorm?.dorm_name} ห้อง: {formValues?.reservation?.Room?.room_number}</p>
+              </Col>
+              <Col>
+                <Form.Item
+                  label="สถานะ"
+                  name="status"
+                >
+                  <Select
+                    value={form.getFieldValue("status")}
+                    style={{ width: '150px' }}
+                    onChange={handleStatusChange}
+                  >
+                    <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>รอการดำเนินการ</Option>
+                    <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>กำลังดำเนินการ</Option>
+                    <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>เสร็จสิ้น</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Divider />
             <Form.Item
               label="หัวข้อการขอรับบริการ"
-              name="subject"
+              name="title"
             >
               <Input readOnly />
             </Form.Item>
@@ -76,7 +99,7 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <img
                   src={imageUrl}
-                  alt="Image"
+                  alt="image"
                   style={{ width: '100%', maxWidth: '600px', maxHeight: '400px', objectFit: 'contain' }}
                 />
               </div>
@@ -89,13 +112,13 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
             </Form.Item>
             <Form.Item
               label="รายละเอียดสถานที่รับบริการ"
-              name="location_detail"
+              name="location_details"
             >
               <Input readOnly />
             </Form.Item>
             <Form.Item
               label="หมายเหตุ"
-              name="remark"
+              name="remarks"
             >
               <Input readOnly />
             </Form.Item>
@@ -110,20 +133,6 @@ const ReadRepairing: React.FC<{ repairId: string }> = ({ repairId }) => {
               name="time_slot"
             >
               <Input readOnly />
-            </Form.Item>
-            <Form.Item
-              label="สถานะ"
-              name="status"
-            >
-              <Select
-                value={status}
-                style={{ width: '100%' }} // ขยายความกว้างของ Select ให้เต็มที่
-                onChange={handleStatusChange}
-              >
-                <Option value="pending" style={{ backgroundColor: '#d9d9d9', color: '#333' }}>Pending</Option>
-                <Option value="inProgress" style={{ backgroundColor: '#faad14', color: '#333' }}>In Progress</Option>
-                <Option value="completed" style={{ backgroundColor: '#52c41a', color: '#fff' }}>Completed</Option>
-              </Select>
             </Form.Item>
           </Form>
         </Card>
