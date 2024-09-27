@@ -1,26 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Tag, Button, Form, message, Upload, Modal, Table, QRCode, Space, Divider, Steps, UploadFile, UploadProps, TableProps, GetProp, Input } from 'antd';
-import Barcode from 'react-barcode'; // นำเข้า Barcode
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { UploadOutlined } from '@ant-design/icons';
+import { Tag, Button, Form, message, Upload, Modal, Table, QRCode, Space, Divider, UploadFile, UploadProps, TableProps, GetProp } from 'antd';
+import Barcode from 'react-barcode';
 import "./index.css";
-import axios from 'axios';
-
 import { StudentInterface } from "./../../interfaces/Student";
 import { SlipInterface } from "../../interfaces/slip";
 import { DormInterface } from "./../../interfaces/Dorm";
-import { RoomInterface } from "./../../interfaces/Room";
-import { ReservationInterface } from "./../../interfaces/Reservation";
-import { CreateSlip, GetListSlips, GetSlip, UpdateSlip, CreateExpense, fetchExpenses, ListExpense } from "../../services/https";
-import Slip from "./../adminpage/PaymentConfirmation";
-import { ExpenseInterface } from '../../interfaces/Expense';
+import { CreateSlip, ListExpense } from "../../services/https";
 import { WaterInterface } from '../../interfaces/Waterfee';
 import { ElectricityInterface } from '../../interfaces/Electricityfee';
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
-type CombinedData = ReservationInterface & StudentInterface & SlipInterface & DormInterface & RoomInterface & ExpenseInterface;
-
-const { TextArea } = Input;
 
 
 interface ExpenseData
@@ -42,24 +32,17 @@ interface ExpenseData
 
 const Index: React.FC = () => {
 
-  const studentDbID = localStorage.getItem("id");
-
   const [text] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [totalamount, setTotalAmount] = useState<number>(0);
   const [ExpenseData, setExpenseData] = useState<ExpenseData[]>([]);
 
   const showModal = () => { setIsModalOpen(true); };
   const handleOk = () => { setIsModalOpen(false); };
 
-  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [student, setStudent] = useState<ExpenseData[]>([]);
-  //const response = await CreateSlip({Path});
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -73,7 +56,7 @@ const Index: React.FC = () => {
 
           const CombinedData: ExpenseData[] = expense.map((data: any) => ({
             ID: data.ID,
-            date: new Date(data.date), // ใช้ชื่อคุณสมบัติที่ถูกต้อง
+            date: new Date(data.date),
             totalamount: data.totalamount || 0,
             dorm_id: data.Dorm.amount || 0,
             elec_id: data.electricityfee.amount || 0,
@@ -83,22 +66,15 @@ const Index: React.FC = () => {
           }));
           console.log("Expense data:", expense);
 
-          const totalamount = ExpenseData.reduce((acc, expense) => acc + (expense.totalamount || 0), 0);
-
-          console.log("CombinedData:", CombinedData);
-          console.log(ExpenseData); // ตรวจสอบค่า ID ของแต่ละ expense
-          console.log("Response from ListExpense:", response.data);
-
-          console.log("CombinedData:", CombinedData);
           setExpenseData(CombinedData); // ตั้งค่า CombinedData ใน state
 
         } else {
           console.error("Unexpected data format:", response.data);
-          message.error('ไม่พบข้อมูลค่าใช้จ่าย หรือข้อมูลไม่อยู่ในรูปแบบที่คาดไว้');
+          message.error('ไม่พบข้อมูลค่าใช้จ่าย');
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+        message.error('กรุณาจองหอพักก่อนทำรายการ!');
       }
     };
 
@@ -110,38 +86,35 @@ const Index: React.FC = () => {
       title: 'วันที่',
       dataIndex: 'date',
       key: 'date',
-      render: (date: Date) => date ? new Date(date).toLocaleDateString() : 'Invalid Date', // แสดงวันที่
+      render: (date: Date) => date ? new Date(date).toLocaleDateString() : 'Invalid Date',
     },
     {
       title: 'ค่าหอพัก',
       dataIndex: 'dorm_id',
       key: 'dorm_id',
-      render: (dorm_id: number) => `${dorm_id.toFixed(2)} `, // แสดงจำนวนเงิน
+      render: (dorm_id: number) => `${dorm_id.toFixed(2)} `,
     },
     {
       title: 'ค่าไฟฟ้า',
       dataIndex: 'elec_id',
       key: 'elec_id',
-      render: (elec_id: number) => `${elec_id.toFixed(2)} `, // แสดงจำนวนเงิน
+      render: (elec_id: number) => `${elec_id.toFixed(2)} `,
     },
     {
       title: 'ค่าน้ำ',
       dataIndex: 'water_id',
       key: 'water_id',
-      render: (water_id: number) => `${water_id.toFixed(2)} `, // แสดงจำนวนเงิน
+      render: (water_id: number) => `${water_id.toFixed(2)} `, 
     },
     {
       title: "สถานะ",
       key: "status",
-      dataIndex: "status", // ตรวจสอบให้ตรงกับฟิลด์ในข้อมูล
+      dataIndex: "status", 
       render: (status: string[]) => (
         <>
           {status.map((Status: string) => {
             let color: string;
             switch (Status) {
-              case "รอดำเนินการ":
-                color = "#bfbfbf";
-                break;
               case "กำลังดำเนินการ":
                 color = "#1677ff";
                 break;
@@ -263,8 +236,8 @@ const Index: React.FC = () => {
           <QRCode value={text || '-'} />
           {/* เพิ่ม Barcode */}
           <Barcode
-            value="123456789012" // แทนที่ด้วยข้อมูล Barcode ของคุณ
-            format="CODE128" // กำหนดรูปแบบของ Barcode
+            value="123456789012" 
+            format="CODE128" //รูปแบบของ Barcode
             width={2}
             height={60}
           />

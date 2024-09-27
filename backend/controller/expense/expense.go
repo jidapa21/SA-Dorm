@@ -39,9 +39,9 @@ func CreateExpense(c *gin.Context) {
 	// ตรวจสอบประเภทของ Dorm ผ่าน Reservation
 	switch dorm.DormName {
 	case "หอพักชาย 1", "หอพักหญิง 3":
-		dorm.Amount = 6500.00 // ราคา 6500 สำหรับหอพักชาย 1 และหอพักหญิง 3
+		dorm.Amount = 6500.00
 	case "หอพักชาย 2", "หอพักหญิง 4":
-		dorm.Amount = 2900.00 // ราคา 2900 สำหรับหอพักชาย 2 และหอพักหญิง 4
+		dorm.Amount = 2900.00 
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dorm type"})
 		return
@@ -117,9 +117,6 @@ func ListExpense(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-
-	// ประมวลผลโทเค็นการเข้าถึงและตรวจสอบ
-	// (โค้ดสำหรับการตรวจสอบโทเค็น)
 
 	// ดึงรายการค่าใช้จ่าย
 	var reservation entity.Reservation
