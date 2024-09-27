@@ -72,15 +72,13 @@ func ListEn_ExitingForm(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, En_ExitingForm)
 }
 
-// PATCH /En_ExitingForm
 func UpdateEn_ExitingForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {
-		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+		Status string `json:"status"` // รับเฉพาะ status 
 	}
 
 	db := config.DB()
@@ -90,7 +88,7 @@ func UpdateEn_ExitingForm(c *gin.Context) {
 		return
 	}
 
-	// Find the existing En_ExitingForm record
+	// Find the existing En_ExitingForm
 	var existingexistingEn_ExitingForm entity.En_ExitingForm
 	result := db.First(&existingexistingEn_ExitingForm, id)
 	if result.Error != nil {
@@ -98,13 +96,12 @@ func UpdateEn_ExitingForm(c *gin.Context) {
 		return
 	}
 
-	// Bind the JSON payload to the `payload` object
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
 	}
 
-	// Update only the 'Status' field
+	// Update
 	if err := db.Model(&existingexistingEn_ExitingForm).Updates(map[string]interface{}{
 		"Status":  payload.Status,
 		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ

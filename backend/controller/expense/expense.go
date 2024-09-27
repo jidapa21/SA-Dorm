@@ -41,7 +41,7 @@ func CreateExpense(c *gin.Context) {
 	case "หอพักชาย 1", "หอพักหญิง 3":
 		dorm.Amount = 6500.00
 	case "หอพักชาย 2", "หอพักหญิง 4":
-		dorm.Amount = 2900.00 
+		dorm.Amount = 2900.00
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid dorm type"})
 		return
@@ -72,7 +72,7 @@ func CreateExpense(c *gin.Context) {
 
 	rp := entity.Expense{
 		Date:             expense.Date,
-		Status:          "กำลังดำเนินการ",
+		Status:           "กำลังดำเนินการ",
 		DormID:           dorm.ID,
 		Dorm:             &dorm,
 		WaterFeeID:       waterfee.ID,
@@ -144,9 +144,9 @@ func ListExpense(c *gin.Context) {
 }
 
 func UpDateExpense(c *gin.Context) {
-	reservationID := c.Param("reservationId") // รับค่า reservationId จากพารามิเตอร์ URL
+	reservationID := c.Param("reservationId") // รับค่า reservationId 
 	var payload struct {
-		Status string `json:"status"` // รับเฉพาะ status จาก JSON payload
+		Status string `json:"status"` // รับเฉพาะ status 
 	}
 
 	db := config.DB()
@@ -157,7 +157,7 @@ func UpDateExpense(c *gin.Context) {
 		return
 	}
 
-	// ค้นหา Expense record ที่มี reservation_id ตรงกัน
+	// ค้นหา Expense ที่มี reservation_id ตรงกัน
 	var existingExpense entity.Expense
 	result := db.Where("reservation_id = ?", reservationID).First(&existingExpense)
 	if result.Error != nil {
@@ -165,7 +165,6 @@ func UpDateExpense(c *gin.Context) {
 		return
 	}
 
-	// Bind JSON payload เข้าสู่ object `payload`
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
 		return
@@ -177,9 +176,10 @@ func UpDateExpense(c *gin.Context) {
 		return
 	}
 
-	// อัปเดตเฉพาะฟิลด์ 'Status'
+	// อัปเดต
 	if err := db.Model(&existingExpense).Updates(map[string]interface{}{
-		"Status": payload.Status,
+		"Status":  payload.Status,
+		"AdminID": adminID,
 	}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update status", "details": err.Error()})
 		return

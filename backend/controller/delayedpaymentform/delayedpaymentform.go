@@ -70,7 +70,7 @@ func GetDelayedPaymentForm(c *gin.Context) {
 	c.JSON(http.StatusOK, delayedpaymentform)
 }
 
-// GET /Repairings
+// GET /DelayedPaymentForm
 func ListDelayedPaymentForms(c *gin.Context) {
 	var delayedpaymentform []entity.DelayedPaymentForm
 
@@ -83,7 +83,7 @@ func ListDelayedPaymentForms(c *gin.Context) {
 	c.JSON(http.StatusOK, delayedpaymentform)
 }
 
-// PATCH /repairings
+// PATCH /DelayedPaymentForm
 func UpdateDelayedPaymentForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {
@@ -97,7 +97,7 @@ func UpdateDelayedPaymentForm(c *gin.Context) {
 		return
 	}
 
-	// Find the existing repair record
+	// Find the existing DelayedPaymentForm record
 	var existingDelayedPaymentForm entity.DelayedPaymentForm
 	result := db.First(&existingDelayedPaymentForm, id)
 	if result.Error != nil {
@@ -114,7 +114,7 @@ func UpdateDelayedPaymentForm(c *gin.Context) {
 	// Update only the 'Status' field
 	if err := db.Model(&existingDelayedPaymentForm).Updates(map[string]interface{}{
 		"Status":  payload.Status,
-		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
+		"AdminID": adminID,
 	}).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
 		return

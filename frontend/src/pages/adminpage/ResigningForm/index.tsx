@@ -30,7 +30,7 @@ const ResigningForm: React.FC = () => {
           setResigningForm(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching ResigningForm:', error);
+        console.error('เกิดข้อผิดพลาดในการเรียกแบบฟอร์มการลาออก:', error);
       }
     };
   

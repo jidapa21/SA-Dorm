@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Typography, Card, Modal } from 'antd';
+import { Button, Table, Typography } from 'antd';
 import ReadEnteringAndExitingDorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index';
 import { ListEn_ExitingForm } from '../../../services/https';
 import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm";
@@ -30,7 +30,7 @@ const EnteringAndExitingDorm: React.FC = () => {
           setEnteringAndExitingDorm(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching En_ExitingForm:', error);
+        console.error('เกิดข้อผิดพลาดในการเรียก:', error);
       }
     };
 

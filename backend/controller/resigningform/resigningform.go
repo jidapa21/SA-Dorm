@@ -64,7 +64,7 @@ func GetResigningForm(c *gin.Context) {
 	c.JSON(http.StatusOK, ResigningForm)
 }
 
-// GET /Repairings
+// GET /ResigningForm
 func ListResigningForm(c *gin.Context) {
 	var ResigningForm []entity.ResigningForm
 
@@ -77,7 +77,7 @@ func ListResigningForm(c *gin.Context) {
 	c.JSON(http.StatusOK, ResigningForm)
 }
 
-// PATCH /repairings
+
 func UpdateResigningForm(c *gin.Context) {
 	id := c.Param("id")
 	var payload struct {
@@ -91,7 +91,6 @@ func UpdateResigningForm(c *gin.Context) {
 		return
 	}
 
-	// Find the existing repair record
 	var existingResigningForm entity.ResigningForm
 	result := db.First(&existingResigningForm, id)
 	if result.Error != nil {
@@ -108,7 +107,7 @@ func UpdateResigningForm(c *gin.Context) {
 	// Update only the 'Status' field
 	if err := db.Model(&existingResigningForm).Updates(map[string]interface{}{
 		"Status":  payload.Status,
-		"AdminID": adminID, // บันทึก adminID ที่อัปเดตสถานะ
+		"AdminID": adminID,
 	}).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to update status"})
 		return

@@ -28,7 +28,7 @@ const Repairing: React.FC = () => {
           setRepairs(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching repairs:', error);
+        console.error('เกิดข้อผิดพลาดในการเรียกข้อมูลการซ่อม:', error);
       }
     };
 

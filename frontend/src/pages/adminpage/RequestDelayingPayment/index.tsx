@@ -29,7 +29,7 @@ const DelayingPayment: React.FC = () => {
           setDelayingPayment(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching DelayingPayment:', error);
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลการชำระเงินล่าช้า:', error);
       }
     };
 

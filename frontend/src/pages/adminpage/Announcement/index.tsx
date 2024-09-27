@@ -6,7 +6,7 @@ const { Title } = Typography;
 const { TextArea } = Input;
 
 const Announcement: React.FC = () => {
-  const [title, setTitle] = useState(''); // แก้ไขจาก Title เป็น title
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -57,8 +57,8 @@ const Announcement: React.FC = () => {
       <div style={{ marginBottom: '24px' }}>
         <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>หัวข้อ</label>
         <TextArea
-          value={title} // แก้ไขจาก Title เป็น title
-          onChange={(e) => setTitle(e.target.value)} // แก้ไขจาก setTitle เป็น setTitle
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="เพิ่มหัวข้อที่นี่"
           autoSize
           style={{ width: '100%' }}
