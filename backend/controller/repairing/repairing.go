@@ -19,6 +19,10 @@ func CreateRepair(c *gin.Context) {
 	}
 
 	db := config.DB()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 86c871755daf06bc943dcc9644a40a142c479b61
 	db.Where("student_id = ?", studentID).First(&reservation)
 	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})

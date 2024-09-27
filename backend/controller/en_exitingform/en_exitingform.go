@@ -38,7 +38,7 @@ func CreateEn_ExitingForm(c *gin.Context) {
 	}
 
 	ee := entity.En_ExitingForm{
-		Title:           "ฟอร์มขออนุญาติเข้า-ออกหอพัก",
+		Title:           "ฟอร์มขออนุญาตเข้า-ออกหอพัก",
 		Type:            "ฟอร์มเอกสาร",
 		Date_Submission: en_exitingform.Date_Submission,
 		Request:         en_exitingform.Request,

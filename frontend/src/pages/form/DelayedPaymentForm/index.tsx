@@ -220,7 +220,7 @@ export default function DelayedPaymentFormCreate() {
             <Col xs={24} sm={24} md={24} lg={24} xl={12}>
               <Form.Item label="ค่าหอพัก" name="Dorm_Payment">
                 <InputNumber
-                  placeholder="2400.00"
+                  placeholder="2900.00"
                   style={{ width: "100%" }}
                   step={0.01}
                   min={0}
