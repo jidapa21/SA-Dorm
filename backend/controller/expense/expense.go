@@ -154,6 +154,12 @@ func UpDateExpense(c *gin.Context) {
 
 	db := config.DB()
 
+	adminID, exists := c.Get("admin_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Admin ID not found in context"})
+		return
+	}
+
 	// ค้นหา Expense record ที่มี reservation_id ตรงกัน
 	var existingExpense entity.Expense
 	result := db.Where("reservation_id = ?", reservationID).First(&existingExpense)
