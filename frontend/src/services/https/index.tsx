@@ -852,29 +852,6 @@ async function UpdateDorm(id: number) {
     .then((res) => res)
     .catch((e) => e.response);
 }
-/*async function GetAmountByID(id: number) {
-  const requestOptions = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  const res = await fetch(`${apiUrl}/dormsAmount/${id}`, requestOptions)
-    .then((response) => {
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        console.error("Error fetching amount:", response.statusText);
-        return false;
-      }
-    })
-    .catch((error) => {
-      console.error("Fetch error:", error);
-      return false;
-    });
-  return res;
-}*/
-
 
 //------------Room------------//
 async function GetRoom(id: number) {

@@ -10,7 +10,6 @@ import (
 
 func CreateResigningForm(c *gin.Context) {
 	var resigningform entity.ResigningForm
-	var sid entity.Students
 	var reservation entity.Reservation
 
 	studentID := c.MustGet("student_id").(string)
@@ -20,18 +19,13 @@ func CreateResigningForm(c *gin.Context) {
 	}
 
 	db := config.DB()
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "หารหัสนักศึกษาไม่เจอ"})
-		return
-	}
-
-	// ดึงข้อมูล reservation โดยใช้ StudentsID
-	db.Where("student_id = ?", sid.StudentID).First(&reservation)
+	
+	db.Where("student_id = ?", studentID).First(&reservation)
 	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}
+	
 	if err := c.ShouldBindJSON(&resigningform); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
