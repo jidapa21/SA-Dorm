@@ -145,8 +145,7 @@ const Index: React.FC = () => {
               case "กำลังดำเนินการ":
                 color = "#1677ff";
                 break;
-              case "อนุมัติ":
-              case "เสร็จสิ้น":
+              case "ชำระแล้ว":
                 color = "#52c41a";
                 break;
               default:

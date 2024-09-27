@@ -1,47 +1,19 @@
-import {
-  Button,
-  Space,
-  Form,
-  Input,
-  Row,
-  Col,
-  DatePicker,
-  Card,
-  Divider,
-  notification,
-  InputNumber,
-  Typography,
-  message,
-} from "antd";
+import { Button, Space, Form, Input, Row, Col, DatePicker, Card, Divider, InputNumber, Typography, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect, useCallback } from "react";
-import dayjs from "dayjs";
+import { useState, useEffect } from "react";
+import { DelayedPaymentFormInterface } from "./../../../interfaces/delayedpaymentform";
+import { CreateDelayedPaymentForm, GetListFormStudent, GetListFormDorm } from "../../../services/https";
+import "../../repair/index.css";
 const { Text } = Typography;
 
-import { DelayedPaymentFormInterface } from "./../../../interfaces/delayedpaymentform";
-import { StudentInterface } from "./../../../interfaces/Student";
-import { DormInterface } from "./../../../interfaces/Dorm";
-import { RoomInterface } from "./../../../interfaces/Room";
-import {
-  CreateDelayedPaymentForm,
-  GetListFormStudent,
-  GetListFormDorm,
-} from "../../../services/https";
-import "../../repair/index.css";
-
 export default function DelayedPaymentFormCreate() {
-  const navigate = useNavigate();
-  const [messageApi] = message.useMessage();
+  const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
-
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
-  interface StudentInfoRecord extends StudentInterface, DormInterface {
+  interface StudentInfoRecord {
     key: string | null; // Allow null
     dorm_name: string;
     StudentID: string;
@@ -51,7 +23,7 @@ export default function DelayedPaymentFormCreate() {
   }
 
   const disabledDate = (current: any) => {
-    // Can not select days before today
+    // เลือกวันที่ก่อนหน้าไม่ได้
     return current && current.isBefore(today, "day");
   };
 
@@ -59,59 +31,40 @@ export default function DelayedPaymentFormCreate() {
     form.resetFields(); // รีเซ็ตข้อมูลฟอร์ม
   };
 
-  const openNotification = (
-    type: "success" | "info" | "warning" | "error",
-    message: string,
-    description?: string
-  ) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "bottomRight",
-    });
-  };
-
   const onFinish = async (values: DelayedPaymentFormInterface) => {
     const studentId = localStorage.getItem("id");
     if (studentId) {
       values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      openNotification(
-        "error",
-        "ไม่พบรหัสนักศึกษา",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
-      );
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบรหัสนักศึกษา",
+      });
       return;
     }
 
     try {
-      // สร้างรายการแจ้งซ่อม
       let res = await CreateDelayedPaymentForm(values);
       console.log(res);
 
-      // ตรวจสอบผลลัพธ์จาก CreateRepair อย่างละเอียด
-      if (res && res.status === 201) {
-        // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
-        openNotification(
-          "success",
-          "บันทึกข้อมูลสำเร็จ",
-          "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
-        );
+      if (res && res.status === 201) { // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
         form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
       } else {
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาจองห้องพัก"
-        );
+        messageApi.open({
+          type: "error",
+          content: "กรุณาจองห้องพัก",
+        });
       }
     } catch (error) {
       console.error(error);
-      openNotification(
-        "error",
-        "ไม่สามารถแสดงข้อมูลได้",
-        "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาจองห้องพัก"
-      );
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
     }
   };
 
@@ -136,8 +89,8 @@ export default function DelayedPaymentFormCreate() {
           // ถ้ามีหอและห้องพักแล้ว
           if (dataDorm && dataDorm.reservation) {
             const dormData = {
-              dorm_name: dataDorm.reservation.Dorm.dorm_name || "ไม่มีหอ",
-              room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
+              dorm_name: dataDorm.reservation.Dorm.dorm_name,
+              room_number: dataDorm.reservation.Room.room_number,
             };
 
             const combinedData = { ...studentData, ...dormData };
@@ -148,23 +101,23 @@ export default function DelayedPaymentFormCreate() {
             const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
+            messageApi.open({
+              type: "error",
+              content: "กรุณาจองห้องพัก",
+            });
           }
         } else {
-          setErrorMessage("ไม่พบข้อมูลนักศึกษา");
-          openNotification(
-            "error",
-            "เกิดข้อผิดพลาด!",
-            "ไม่สามารถแสดงรหัสนักศึกษาได้"
-          );
+          messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลนักศึกษา",
+          });
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง"
-        );
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง",
+        });
       }
     };
 
@@ -173,13 +126,14 @@ export default function DelayedPaymentFormCreate() {
     } else {
       messageApi.open({
         type: "error",
-        content: "Student ID not found.",
+        content: "ไม่พบข้อมูลนักศึกษา",
       });
     }
   }, []);
 
   return (
     <>
+      {contextHolder}
       <Card>
         <h2>แบบฟอร์มขอผ่อนผันการชำระค่าหอพักนักศึกษา/ค่าไฟฟ้า/ค่าน้ำประปา</h2>
         <Divider />
