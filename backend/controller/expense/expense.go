@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"dormitory.com/dormitory/config"
-	//"dormitory.com/dormitory/controller/dorm"
 	"dormitory.com/dormitory/entity"
 	"github.com/gin-gonic/gin"
 )
@@ -146,20 +145,6 @@ func ListExpense(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": expenses})
 
 }
-
-/*
-// ListExpense - ดึงรายการค่าใช้จ่ายทั้งหมด
-func ListExpense(c *gin.Context) {
-	var expenses []entity.Expense
-
-	db := config.DB()
-	if err := db.Find(&expenses).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No expenses found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": expenses})
-}*/
 
 func UpDateExpense(c *gin.Context) {
 	reservationID := c.Param("reservationId") // รับค่า reservationId จากพารามิเตอร์ URL

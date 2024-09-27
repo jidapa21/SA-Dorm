@@ -21,7 +21,7 @@ const EnteringAndExitingDorm: React.FC = () => {
         const data = await ListEn_ExitingForm();
         console.log('Data from API:', data);
         if (data) {
-          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'completed');
+          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'เสร็จสิ้น');
           const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),

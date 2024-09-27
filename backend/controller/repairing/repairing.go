@@ -10,7 +10,6 @@ import (
 
 func CreateRepair(c *gin.Context) {
 	var repairing entity.Repairing
-	var sid entity.Students
 	var reservation entity.Reservation
 
 	studentID := c.MustGet("student_id").(string)
@@ -20,13 +19,7 @@ func CreateRepair(c *gin.Context) {
 	}
 
 	db := config.DB()
-	results := db.Where("student_id = ?", studentID).First(&sid)
-	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "หารหัสนักศึกษาไม่เจอ"})
-		return
-	}
-
-	db.Where("student_id ?", sid.StudentID).First(&reservation)
+	db.Where("student_id = ?", studentID).First(&reservation)
 	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return

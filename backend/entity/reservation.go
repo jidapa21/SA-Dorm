@@ -20,16 +20,6 @@ type Reservation struct {
 	RoomID 		uint	`json:"room_id"`
 	Room		Room  	`gorm:"foreignKey:RoomID"`
 
-	/*
-		RentFeeID uint      `json:"rent_id"`
-		RentFee   Students `gorm:"foreignKey: rent_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"rentfee"`
-
-		WaterFeeID uint      `json:"water_id"`
-		WaterFee   Students `gorm:"foreignKey: water_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"waterfee"`
-
-		ElectricityFeeID uint      `json:"elec_id"`
-		ElectricityFee   Students `gorm:"foreignKey: elec_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"electricityfee"`
-	*/
 	Repairings          []Repairing          `gorm:"foreignKey:ReservationID"`
 	DelayedPaymentForms []DelayedPaymentForm `gorm:"foreignKey:ReservationID"`
 	En_ExitingForms     []En_ExitingForm     `gorm:"foreignKey:ReservationID"`

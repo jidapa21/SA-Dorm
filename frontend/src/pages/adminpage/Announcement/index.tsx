@@ -55,23 +55,22 @@ const Announcement: React.FC = () => {
 
       {/* Title TextArea with label */}
       <div style={{ marginBottom: '24px' }}>
-        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>Title</label>
+        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>หัวข้อ</label>
         <TextArea
           value={title} // แก้ไขจาก Title เป็น title
           onChange={(e) => setTitle(e.target.value)} // แก้ไขจาก setTitle เป็น setTitle
-          placeholder="Enter title here"
+          placeholder="เพิ่มหัวข้อที่นี่"
           autoSize
           style={{ width: '100%' }}
         />
       </div>
 
-      {/* Announcement TextArea with label */}
       <div>
-        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>Announcement</label>
+        <label style={{ display: 'block', fontSize: '18px', marginBottom: '8px' }}>เนื้อหา</label>
         <TextArea
-          value={content} // ใช้ content
+          value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="Enter announcement here"
+          placeholder="เพิ่มเนื้อหาที่นี่"
           autoSize={{ minRows: 3, maxRows: 10 }}
           style={{ width: '100%' }}
         />

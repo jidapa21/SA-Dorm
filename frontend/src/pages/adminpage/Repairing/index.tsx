@@ -19,8 +19,8 @@ const Repairing: React.FC = () => {
       try {
         const data = await GetListRepairs();
         if (data) {
-          // กรองข้อมูลที่มีสถานะ "completed"
-          const filteredData = data.filter((item: RepairInterface) => item.status !== 'completed');
+          // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
+          const filteredData = data.filter((item: RepairInterface) => item.status !== 'เสร็จสิ้น');
           const transformedData = filteredData.map((item: RepairInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),

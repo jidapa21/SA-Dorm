@@ -6,18 +6,16 @@ import {
   ToolOutlined,
   FormOutlined,
   CheckCircleOutlined,
-  UsergroupAddOutlined,
-  UserOutlined
 } from '@ant-design/icons'; // นำเข้าไอคอนจาก Ant Design
 import './index.css';
-import Logo from '../../assets/logo.png';
+import Logo from '../../assets/admin-logo.png';
 import AdminRoutes from '../../routes/AdminRoutes';
 import { GetAdminByID } from '../../services/https'; // นำเข้าฟังก์ชัน GetAdminByID
 
 const { Content,Sider } = Layout;
 const { Title } = Typography;
 
-const AdminLayout: React.FC = () => {
+  const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<string[]>(['1']);
   const [messageApi, contextHolder] = message.useMessage();
@@ -124,12 +122,6 @@ const AdminLayout: React.FC = () => {
           </Menu.SubMenu>
           <Menu.Item key="paymentConfirmation" icon={<CheckCircleOutlined />}>
             <Link to="/PaymentConfirmation">ยืนยันการชำระ</Link>
-          </Menu.Item>
-          <Menu.Item key="adminManagement" icon={<UserOutlined />}>
-            <Link to="/AdminManagement">จัดการแอดมิน</Link>
-          </Menu.Item>
-          <Menu.Item key="manageStudents" icon={<UsergroupAddOutlined />}>
-            <Link to="/ManageStudents">จัดการนักศึกษา</Link>
           </Menu.Item>
         </Menu>
         <div className="logout-container">
