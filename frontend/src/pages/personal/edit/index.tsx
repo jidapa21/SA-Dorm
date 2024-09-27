@@ -96,11 +96,11 @@ function PersonalChange() {
 					personal_vehicles: otherRes.data.personal_vehicles,
 					color: otherRes.data.color,
 					plate_no: otherRes.data.plate_no,
-					vehicle_tax_due_date: dayjs(otherRes.data.vehicle_tax_due_date),
+					vehicle_tax_due_date: otherRes.data.vehicle_tax_due_date ? dayjs(otherRes.data.vehicle_tax_due_date) : null,
 					province_vehicle: otherRes.data.province_vehicle,
 					licenses_id: otherRes.data.license?.ID,
 					type: otherRes.data.type,
-					expiry: dayjs(otherRes.data.expiry),
+					expiry: otherRes.data.expiry ? dayjs(otherRes.data.expiry) : null,
 				});
 			} else {
 				// ถ้าไม่ได้รับข้อมูลจาก API
