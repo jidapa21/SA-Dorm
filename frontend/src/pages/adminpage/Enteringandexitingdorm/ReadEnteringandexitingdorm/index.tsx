@@ -19,7 +19,11 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
         const response = await GetEn_ExitingForm(ID);
         if (response) {
           setFormValues(response);
-          form.setFieldsValue(response); // Set values to the form
+          form.setFieldsValue({
+            ...response,
+            date_request: dayjs(response.date_request).format("DD/MM/YYYY") // Format date here
+        });
+        
         } else {
           setError('ไม่สามารถดึงข้อมูลรายละเอียดการชำระเงินล่าช้าได้');
         }
@@ -98,7 +102,7 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
               label="วันที่ขออนุญาติ"
               name="date_request"
             >
-            <Input value={dayjs().format('DD/MM/YYYY')} readOnly />
+            <Input value={dayjs(formValues.date_request).format("DD/MM/YYYY")} readOnly />
           </Form.Item>
           </Form>
           <Divider />

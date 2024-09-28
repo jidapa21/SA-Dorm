@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Typography, Card } from 'antd';
+import { Button, Table, Typography } from 'antd';
 import ReadDelayingPayment from './ReadRequestDelayingPayment/index';
 import { ListDelayedPaymentForms } from '../../../services/https';
 import { DelayedPaymentFormInterface } from "../../../interfaces/delayedpaymentform";
@@ -15,36 +15,39 @@ const DelayingPayment: React.FC = () => {
   const [DelayingPayment, setDelayingPayment] = useState<TableRequestDelayingPaymentRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchDelayingPayment = async () => {
-      try {
-        const data = await ListDelayedPaymentForms();
-        if (data) {
-          // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
-          const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'เสร็จสิ้น');
-          const transformedData = filteredData.map((item: DelayedPaymentFormInterface, index: number) => ({
-            ...item,
-            key: item.ID?.toString() || index.toString(),
-          }));
-          setDelayingPayment(transformedData);
-        }
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลการชำระเงินล่าช้า:', error);
+  const fetchDelayingPayment = async () => {
+    try {
+      const data = await ListDelayedPaymentForms();
+      if (data) {
+        // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
+        const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'เสร็จสิ้น');
+        const transformedData = filteredData.map((item: DelayedPaymentFormInterface, index: number) => ({
+          ...item,
+          key: item.ID?.toString() || index.toString(),
+        }));
+        setDelayingPayment(transformedData);
       }
-    };
-
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการดึงข้อมูลการชำระเงินล่าช้า:', error);
+    }
+  };
+  
+  useEffect(() => {
     fetchDelayingPayment(); // เรียกข้อมูลครั้งแรก
-
+  
     // ตั้งค่า setInterval
-    const intervalId = setInterval(fetchDelayingPayment, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+    const intervalId = setInterval(fetchDelayingPayment, 5000); // รีเฟรชข้อมูลทุกๆ 5 วินาที
     return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
+  
   const handleDetailsClick = (ID: string) => {
     setSelectedKey(ID);
   };
 
   const handleBackClick = () => {
     setSelectedKey(null);
+    // เรียกข้อมูลใหม่หลังจากกลับ
+    fetchDelayingPayment(); // ให้แน่ใจว่าฟังก์ชันนี้สามารถเข้าถึงได้
   };
 
   const columns = [

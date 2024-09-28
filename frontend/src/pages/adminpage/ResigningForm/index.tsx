@@ -15,27 +15,28 @@ const ResigningForm: React.FC = () => {
   const [ResigningForm, setResigningForm] = useState<TableResigningFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchResigningForm = async () => {
-      try {
-        const data = await ListResigningForm();
-        console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
-        if (data) {
-          const filteredData = data.filter((item: ResigningFormInterface) => item.status !== 'เสร็จสิ้น')
-          const transformedData = filteredData.map((item: ResigningFormInterface, index: number) => ({
-            ...item,
-            key: item.ID?.toString() || index.toString(),
-          }));
-          console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
-          setResigningForm(transformedData);
-        }
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการเรียกแบบฟอร์มการลาออก:', error);
+  const fetchResigningForm = async () => {
+    try {
+      const data = await ListResigningForm();
+      console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
+      if (data) {
+        const filteredData = data.filter((item: ResigningFormInterface) => item.status !== 'เสร็จสิ้น');
+        const transformedData = filteredData.map((item: ResigningFormInterface, index: number) => ({
+          ...item,
+          key: item.ID?.toString() || index.toString(),
+        }));
+        console.log('Transformed Data:', transformedData); // ตรวจสอบข้อมูลหลังการแปลง
+        setResigningForm(transformedData);
       }
-    };
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการเรียกแบบฟอร์มการลาออก:', error);
+    }
+  };
   
-    fetchResigningForm();
-    const intervalId = setInterval(fetchResigningForm, 3000); // รีเฟรชข้อมูลทุกๆ 30 วินาที
+  useEffect(() => {
+    fetchResigningForm(); // เรียกข้อมูลเมื่อคอมโพเนนต์โหลด
+  
+    const intervalId = setInterval(fetchResigningForm, 5000); // รีเฟรชข้อมูลทุกๆ 5 วินาที
     return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []); 
   const handleDetailsClick = (ID: string) => {
@@ -43,6 +44,7 @@ const ResigningForm: React.FC = () => {
   };
 
   const handleBackClick = () => {
+    fetchResigningForm();
     setSelectedKey(null);
   };
 

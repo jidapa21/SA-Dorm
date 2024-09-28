@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
 import { GetDelayedPaymentForm,UpdateDelayedPaymentForm } from '../../../../services/https';
 import { DelayedPaymentFormInterface } from "../../../../interfaces/delayedpaymentform";
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
@@ -18,7 +19,10 @@ const ReadRequestDelayingPayment: React.FC<{ ID: number }> = ({ ID }) => {
         const response = await GetDelayedPaymentForm(ID);
         if (response) {
           setFormValues(response);
-          form.setFieldsValue(response); // Set values to the form
+          form.setFieldsValue({
+            ...response,
+            due_date: dayjs(response.due_date).format("DD/MM/YYYY") // Format date here
+          });
         } else {
           setError('ไม่สามารถดึงข้อมูลรายละเอียดการชำระเงินล่าช้าได้');
         }
@@ -111,7 +115,7 @@ const ReadRequestDelayingPayment: React.FC<{ ID: number }> = ({ ID }) => {
               label="ชำระภายในวันที่"
               name="due_date"
             >
-              <Input readOnly />
+             <Input value={dayjs(formValues.due_date).format("DD/MM/YYYY")} readOnly />
             </Form.Item>
           </Form>
         </Card>

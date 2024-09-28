@@ -14,35 +14,37 @@ const Repairing: React.FC = () => {
   const [repairs, setRepairs] = useState<TableRepairRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchRepairs = async () => {
-      try {
-        const data = await GetListRepairs();
-        if (data) {
-          // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
-          const filteredData = data.filter((item: RepairInterface) => item.status !== 'เสร็จสิ้น');
-          const transformedData = filteredData.map((item: RepairInterface, index: number) => ({
-            ...item,
-            key: item.ID?.toString() || index.toString(),
-          }));
-          setRepairs(transformedData);
-        }
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการเรียกข้อมูลการซ่อม:', error);
+  const fetchRepairs = async () => {
+    try {
+      const data = await GetListRepairs();
+      if (data) {
+        // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
+        const filteredData = data.filter((item: RepairInterface) => item.status !== 'เสร็จสิ้น');
+        const transformedData = filteredData.map((item: RepairInterface, index: number) => ({
+          ...item,
+          key: item.ID?.toString() || index.toString(),
+        }));
+        setRepairs(transformedData);
       }
-    };
-
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการเรียกข้อมูลการซ่อม:', error);
+    }
+  };
+  
+  useEffect(() => {
     fetchRepairs(); // เรียกข้อมูลครั้งแรก
-    const intervalId = setInterval(fetchRepairs, 3000); // รีเฟรชข้อมูลทุกๆ 3 วินาที
+  
+    const intervalId = setInterval(fetchRepairs, 5000); // รีเฟรชข้อมูลทุกๆ 5 วินาที
     return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
-
+  
   const handleDetailsClick = (repairId: string) => {
     setSelectedKey(repairId);
   };
 
   const handleBackClick = () => {
     setSelectedKey(null);
+    fetchRepairs(); // เรียกข้อมูลใหม่หลังจากกลับ
   };
 
   const columns = [

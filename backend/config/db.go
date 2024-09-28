@@ -184,7 +184,7 @@ func SetupDatabase() {
 		Password:  adminHashedPassword2,
 	}
 
-	db.FirstOrCreate(&AdminUser2, entity.Admins{Username: "Jetsadaphon"})
+	db.FirstOrCreate(&AdminUser2, entity.Admins{Username: "admin2"})
 	adminHashedPassword3, err := HashPassword("admin3")
 	if err != nil {
 		log.Fatalf("Error hashing password: %v", err)
@@ -197,7 +197,7 @@ func SetupDatabase() {
 		Password:  adminHashedPassword3,
 	}
 
-	db.FirstOrCreate(&AdminUser3, entity.Admins{Username: "Jetsadaphon"})
+	db.FirstOrCreate(&AdminUser3, entity.Admins{Username: "admin3"})
 
 	date_repairing, _ := time.Parse("2006-03-02", "2024-05-06")
 	repairing := &entity.Repairing{

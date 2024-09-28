@@ -99,17 +99,18 @@ const { Title } = Typography;
         collapsed={collapsed}
         onCollapse={setCollapsed}
         className="custom-sider"
-      >
-        <div style={{ textAlign: 'center', padding: '16px' }}>
-          <img src={Logo} alt="Logo" style={{ width: collapsed ? '40%' : '60%' }} />
-          {!collapsed && (
-            <div style={{ marginTop: '16px' }}>
-              <Title level={4} className="admin-name" style={{ color: 'white', margin: 0 }}>
-                {adminName || 'Admin'}
-              </Title>
-            </div>
-          )}
-        </div>
+            >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px',marginTop: '17px' }}>
+        <img src={Logo} alt="Logo" style={{ width: collapsed ? '40%' : '60%', transition: 'width 0.3s' }} />
+        {!collapsed && (
+          <div style={{ marginTop: '20px', textAlign: 'center' , marginBlockEnd: '17px' }}>
+            <Title level={4} className="admin-name" style={{ color: 'white', margin: 0 }}>
+              {adminName || 'Admin'}
+            </Title>
+          </div>
+        )}
+      </div>
+
         <Menu className="custom-menu" mode="inline" selectedKeys={selectedKeys}>
           <Menu.Item key="1" icon={<BellOutlined />}>
             <Link to="/Announcement">แจ้งข่าวสาร</Link>

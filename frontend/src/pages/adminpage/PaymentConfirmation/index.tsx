@@ -3,7 +3,6 @@ import { Table, Button, Modal, message, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { FileImageOutlined } from '@ant-design/icons';
 import { Getslipcompleted, Updateexpense } from '../../../services/https';
-import { SlipInterface } from "../../../interfaces/slip";
 import dayjs from 'dayjs';
 const { Title } = Typography;
 
@@ -25,36 +24,31 @@ const PaymentConfirmation: React.FC = () => {
   const [paymentData, setPaymentData] = useState<PaymentData[]>([]);
 
   // ดึงข้อมูลสลิปจาก API เมื่อคอมโพเนนต์โหลด
-  useEffect(() => {
-    const fetchSlips = async () => {
-      try {
-        const slips = await Getslipcompleted();
-        if (slips && slips.length > 0) {
-          // ตรวจสอบโครงสร้างข้อมูลก่อน
-          const formattedData = slips.map((slip: any) => ({
-            key: slip.ID,
-            time: dayjs(slip.Slip.CreatedAt).format('DD/MM/YYYY HH:mm:ss'), // ฟอร์แมตวันที่
-            amount: slip.Expense.totalamount, // ใช้ slip.Expense.totalamount แทน
-            slip: slip.Slip.path, // ใช้ slip.Slip.path แทน
-            reservationId: slip.Slip.reservation_id,
-            confirmed: slip.Slip.confirmed,
+  const fetchSlips = async () => {
+    try {
+      const slips = await Getslipcompleted();
+      if (slips && slips.length > 0) {
+        const formattedData = slips.map((slip: any) => ({
+          key: slip.ID,
+          time: dayjs(slip.Slip.CreatedAt).format('DD/MM/YYYY HH:mm:ss'),
+          amount: slip.Expense.totalamount,
+          slip: slip.Slip.path,
+          reservationId: slip.Slip.reservation_id,
+          confirmed: slip.Slip.confirmed,
         }));
         console.log(formattedData);
-          setPaymentData(formattedData);
-        } else {
-          message.error('ไม่มีข้อมูลสลิปที่พร้อมใช้งาน');
-        }
-      } catch (error) {
-        message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+        setPaymentData(formattedData);
       }
-    };
-    
+    } catch (error) {
+      message.error('เกิดข้อผิดพลาดในการดึงข้อมูล');
+    }
+  };
 
+  useEffect(() => {
     fetchSlips();
-    const intervalId = setInterval(fetchSlips, 3000); // รีเฟรชข้อมูลทุก 3 วินาที
-    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
+    const intervalId = setInterval(fetchSlips, 2000); // รีเฟรชข้อมูลทุก 2 วินาที
+    return () => clearInterval(intervalId); // เคลียร์ interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
-
   const handleViewSlip = (url: string) => {
     if (url) {
       setCurrentImage(url);
@@ -91,11 +85,8 @@ const PaymentConfirmation: React.FC = () => {
         }
 
         await Updateexpense(currentRecord.reservationId, { status: 'ชำระแล้ว' });
-
-        const updatedData = paymentData.filter((item) => item.key !== currentRecord.key);
-        setPaymentData(updatedData);
-        
-        message.success(`ยืนยันการชำระเงินสำหรับรายการ ${currentRecord.key} สำเร็จ`);
+        await fetchSlips();
+        message.success(`ยืนยันการชำระเงินสำเร็จ`);
         setConfirmModalVisible(false);
     } catch (error) {
         message.error('เกิดข้อผิดพลาดในการยืนยัน');

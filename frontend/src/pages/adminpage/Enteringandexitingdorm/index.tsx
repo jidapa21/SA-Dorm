@@ -15,28 +15,29 @@ const EnteringAndExitingDorm: React.FC = () => {
   const [EnteringAndExitingDorm, setEnteringAndExitingDorm] = useState<TableEn_ExitingFormInterfaceRecord[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchEn_ExitingForm = async () => {
-      try {
-        const data = await ListEn_ExitingForm();
-        console.log('Data from API:', data);
-        if (data) {
-          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'เสร็จสิ้น');
-          const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
-            ...item,
-            key: item.ID?.toString() || index.toString(),
-          }));
-          console.log('Transformed Data:', transformedData);
-          setEnteringAndExitingDorm(transformedData);
-        }
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการเรียก:', error);
+  const fetchEn_ExitingForm = async () => {
+    try {
+      const data = await ListEn_ExitingForm();
+      console.log('Data from API:', data);
+      if (data) {
+        const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'เสร็จสิ้น');
+        const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
+          ...item,
+          key: item.ID?.toString() || index.toString(),
+        }));
+        console.log('Transformed Data:', transformedData);
+        setEnteringAndExitingDorm(transformedData);
       }
-    };
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการเรียก:', error);
+    }
+  };
 
-    fetchEn_ExitingForm();
-    const intervalId = setInterval(fetchEn_ExitingForm, 3000);
-    return () => clearInterval(intervalId);
+  useEffect(() => {
+    fetchEn_ExitingForm(); // เรียกข้อมูลครั้งแรก
+
+    const intervalId = setInterval(fetchEn_ExitingForm, 5000); // รีเฟรชข้อมูลทุกๆ 5 วินาที
+    return () => clearInterval(intervalId); // ล้าง interval เมื่อคอมโพเนนต์ถูกทำลาย
   }, []);
 
   const handleDetailsClick = (ID: string) => {
