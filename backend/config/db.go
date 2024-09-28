@@ -193,7 +193,7 @@ func SetupDatabase() {
 		Type:             "แจ้งซ่อม",
 		Date_Submission:  date_repairing,
 		Detail:           "ทำเศษอาหารตก",
-		Image:            "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+		Image:            "https://f.ptcdn.info/033/071/000/qh847b3ie6yKoynFNDDL-o.jpg",
 		Location_Details: "ห้องน้ำชั้น 1 หอ 4",
 		Contact:          "097-153-1219",
 		Time_Slot:        "09:00-16:00 น.",

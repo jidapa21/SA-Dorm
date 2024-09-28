@@ -1,7 +1,6 @@
 package status
 
 import (
-	"fmt"
 	"net/http"
 
 	"dormitory.com/dormitory/config"
@@ -11,9 +10,8 @@ import (
 
 // GET /list-status
 func GetListStatus(c *gin.Context) {
-
-	var sid entity.Students
 	var reservation entity.Reservation
+
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
@@ -23,15 +21,8 @@ func GetListStatus(c *gin.Context) {
 	// เชื่อมต่อกับฐานข้อมูล
 	db := config.DB()
 
-	results := db.Where("student_id = ?", studentID).First(&sid)
+	results := db.Where("student_id = ?", studentID).First(&reservation)
 	if results.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Student not found"})
-		return
-	}
-
-	db.Where("student_id = ?", sid.StudentID).First(&reservation)
-	fmt.Println("Reservation ID:", reservation.ID)
-	if reservation.StudentID == "" {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีการจองห้อง"})
 		return
 	}
