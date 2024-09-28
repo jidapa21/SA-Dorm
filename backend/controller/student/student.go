@@ -210,10 +210,9 @@ func GetListFormDorm(c *gin.Context) {
 	})
 }
 
-// GetStudentsByRoomID ดึงข้อมูลนักศึกษาจากห้อง
+// ดึงข้อมูลนักศึกษาจากห้อง
 func GetStudentsByRoomID(c *gin.Context) {
     roomID := c.Param("room_id")
-
     var reservations []entity.Reservation
 
     db := config.DB()
@@ -238,12 +237,11 @@ func GetStudentsByRoomID(c *gin.Context) {
                 "last_name":  student.LastName,
                 "major":      student.Major,
                 "year":       student.Year,
-                "amount":     reservation.Dorm.Amount, // ดึงค่าห้องจาก Dorm
+                "amount":     reservation.Dorm.Amount,
 				"room_number":reservation.Room.RoomNumber,
             }
             students = append(students, studentData)
         }
     }
-
     c.JSON(http.StatusOK, students)
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// POST /CreateReservation
+// สร้างการจอง
 func CreateReservation(c *gin.Context) {
 	var reservation entity.Reservation
 
@@ -55,44 +55,10 @@ func CreateReservation(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create reservation"})
 		return
 	}
-
 	c.JSON(http.StatusCreated, gin.H{"message": "Reservation created successfully", "data": reservation})
 }
 
-// DELETE /delete-student/:id
-func DeleteReservation(c *gin.Context) {
-	id := c.Param("id")
-	db := config.DB()
-	if tx := db.Exec("DELETE FROM students WHERE id = ?", id); tx.RowsAffected == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id not found"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Deleted successfully"})
-}
-
-// PATCH /update-student
-func UpdateReservation(c *gin.Context) {
-	var reservation entity.Reservation
-	id := c.Param("id")
-
-	db := config.DB()
-	result := db.First(&reservation, id)
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "id not found"})
-		return
-	}
-	if err := c.ShouldBindJSON(&reservation); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request, unable to map payload"})
-		return
-	}
-	result = db.Save(&reservation)
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Updated successfully"})
-}
-
+//ดึงข้อมูลการจองจาก room id
 func GetReservationsByRoomID(c *gin.Context) {
 	roomID := c.Param("roomID")
 	db := config.DB()
@@ -105,6 +71,7 @@ func GetReservationsByRoomID(c *gin.Context) {
 	c.JSON(http.StatusOK, reservations)
 }
 
+//ดึงข้อมูลจาก StudentID
 func GetReservationsByStudentID(c *gin.Context) {
 	studentID := c.Param("studentID")   // รับ studentID จาก URL
 	fmt.Println("studentID", studentID) // 2
@@ -115,7 +82,6 @@ func GetReservationsByStudentID(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Reservations not found"})
 		return
 	}
-
 	c.JSON(http.StatusOK, reservations)
 }
 
@@ -140,6 +106,5 @@ func GetUserRoom(c *gin.Context) {
 			"dorm_name":   reservation.Dorm.DormName,
 		})
 	}
-
 	c.JSON(http.StatusOK, result)
 }

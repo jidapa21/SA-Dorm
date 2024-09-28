@@ -25,7 +25,7 @@ const Listpages: React.FC = () => {
 
       try {
         const roomData = await GetUserRoom(studentID);
-        console.log(roomData);
+        console.log("roomData : ",roomData);
 
         if (Array.isArray(roomData) && roomData.length > 0) {
           const { room_id, room_number, dorm_name } = roomData[0];
