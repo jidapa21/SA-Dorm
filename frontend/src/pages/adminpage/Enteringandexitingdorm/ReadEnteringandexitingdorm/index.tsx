@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Divider, Spin, Alert, Select, Row, Col } from "antd";
 import { GetEn_ExitingForm,UpdateEn_ExitingForm } from '../../../../services/https';
 import { En_ExitingFormInterface } from "../../../../interfaces/En_ExitingForm";
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 
@@ -9,7 +10,7 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
   const [formValues, setFormValues] = useState<En_ExitingFormInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [form] = Form.useForm(); // Create form instance
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const fetchEn_ExitingForm = async () => {
@@ -20,10 +21,10 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
           setFormValues(response);
           form.setFieldsValue(response); // Set values to the form
         } else {
-          setError('Failed to fetch delayed payment details.');
+          setError('ไม่สามารถดึงข้อมูลรายละเอียดการชำระเงินล่าช้าได้');
         }
       } catch (e) {
-        setError('An error occurred while fetching delayed payment details.');
+        setError('เกิดข้อผิดพลาดขณะเรียกรายละเอียดการชำระเงินล่าช้า');
       } finally {
         setLoading(false);
       }
@@ -36,7 +37,7 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
       await UpdateEn_ExitingForm( String (ID) , { status: value });
       form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ:', error);
     }
   };
   return (
@@ -71,9 +72,9 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
                   style={{ width: '150px' }}
                   onChange={handleStatusChange}
                   >
-                  <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
-                  <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
-                  <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                  <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>รอการดำเนินการ</Option>
+                  <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>กำลังดำเนินการ</Option>
+                  <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>เสร็จสิ้น</Option>
                </Select>
                 </Form.Item>
               </Col>
@@ -97,8 +98,8 @@ const ReadEnteringAndExitingDorm: React.FC<{ ID: number }> = ({ ID }) => {
               label="วันที่ขออนุญาติ"
               name="date_request"
             >
-              <Input readOnly />
-            </Form.Item>
+            <Input value={dayjs().format('DD/MM/YYYY')} readOnly />
+          </Form.Item>
           </Form>
           <Divider />
         </Card>

@@ -20,8 +20,8 @@ const DelayingPayment: React.FC = () => {
       try {
         const data = await ListDelayedPaymentForms();
         if (data) {
-          // กรองข้อมูลที่มีสถานะ "completed"
-          const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'completed');
+          // กรองข้อมูลที่มีสถานะ "เสร็จสิ้น"
+          const filteredData = data.filter((item: DelayedPaymentFormInterface) => item.status !== 'เสร็จสิ้น');
           const transformedData = filteredData.map((item: DelayedPaymentFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
@@ -29,7 +29,7 @@ const DelayingPayment: React.FC = () => {
           setDelayingPayment(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching DelayingPayment:', error);
+        console.error('เกิดข้อผิดพลาดในการดึงข้อมูลการชำระเงินล่าช้า:', error);
       }
     };
 

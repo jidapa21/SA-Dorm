@@ -21,7 +21,7 @@ const ResigningForm: React.FC = () => {
         const data = await ListResigningForm();
         console.log('Data from API:', data); // ตรวจสอบข้อมูลที่ได้จาก API
         if (data) {
-          const filteredData = data.filter((item: ResigningFormInterface) => item.status !== 'completed')
+          const filteredData = data.filter((item: ResigningFormInterface) => item.status !== 'เสร็จสิ้น')
           const transformedData = filteredData.map((item: ResigningFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
@@ -30,7 +30,7 @@ const ResigningForm: React.FC = () => {
           setResigningForm(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching ResigningForm:', error);
+        console.error('เกิดข้อผิดพลาดในการเรียกแบบฟอร์มการลาออก:', error);
       }
     };
   

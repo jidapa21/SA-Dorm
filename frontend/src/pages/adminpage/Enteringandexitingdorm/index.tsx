@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Table, Typography, Card, Modal } from 'antd';
+import { Button, Table, Typography } from 'antd';
 import ReadEnteringAndExitingDorm from '../Enteringandexitingdorm/ReadEnteringandexitingdorm/index';
 import { ListEn_ExitingForm } from '../../../services/https';
 import { En_ExitingFormInterface } from "../../../interfaces/En_ExitingForm";
@@ -21,7 +21,7 @@ const EnteringAndExitingDorm: React.FC = () => {
         const data = await ListEn_ExitingForm();
         console.log('Data from API:', data);
         if (data) {
-          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'completed');
+          const filteredData = data.filter((item: En_ExitingFormInterface) => item.status !== 'เสร็จสิ้น');
           const transformedData = filteredData.map((item: En_ExitingFormInterface, index: number) => ({
             ...item,
             key: item.ID?.toString() || index.toString(),
@@ -30,7 +30,7 @@ const EnteringAndExitingDorm: React.FC = () => {
           setEnteringAndExitingDorm(transformedData);
         }
       } catch (error) {
-        console.error('Error fetching En_ExitingForm:', error);
+        console.error('เกิดข้อผิดพลาดในการเรียก:', error);
       }
     };
 

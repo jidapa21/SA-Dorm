@@ -81,7 +81,6 @@ func GetListSlips(c *gin.Context) {
 	c.JSON(http.StatusOK, slips)
 }
 
-// PATCH /slip
 func UpdateSlip(c *gin.Context) {
 	var slip entity.Slip
 	id := c.Param("id")
@@ -109,7 +108,7 @@ func UpdateSlip(c *gin.Context) {
 func GetSlipsWithUncompletedStatus(c *gin.Context) {
     db := config.DB()
 
-    // เรียกใช้งานฟังก์ชันที่ดึงข้อมูล slip ที่สถานะไม่เป็น 'complet'
+    //ดึงข้อมูล slip ที่สถานะไม่เป็น 'complet'
     slips, err := getSlipsWithUncompletedStatusFromDB(db)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch slips"})

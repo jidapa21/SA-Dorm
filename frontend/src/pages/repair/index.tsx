@@ -1,40 +1,15 @@
-import {
-  Button,
-  Form,
-  Input,
-  Row,
-  Space,
-  Col,
-  Upload,
-  Card,
-  Divider,
-  message,
-  notification,
-  Typography,
-  GetProp,
-  UploadFile,
-  UploadProps,
-} from "antd";
+import { Button, Space, Form, Input, Row, Col, Card, Divider, Typography, message, GetProp, UploadFile, UploadProps, Upload } from "antd";
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
-import React, { useState, useEffect, useCallback } from "react";
-const { Text } = Typography;
+import { useState, useEffect } from "react";
 import ImgCrop from "antd-img-crop";
-
 import { RepairInterface } from "./../../interfaces/repairing";
-import { StudentInterface } from "./../../interfaces/Student";
-import { DormInterface } from "./../../interfaces/Dorm";
-import { RoomInterface } from "./../../interfaces/Room";
-import {
-  CreateRepair,
-  GetListFormStudent,
-  GetListFormDorm,
-} from "./../../services/https";
+import { CreateRepair, GetListFormStudent, GetListFormDorm,} from "./../../services/https";
 import "./../repair/index.css";
-
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+const { Text } = Typography;
 
 export default function RepairCreate() {
-  interface StudentInfoRecord extends StudentInterface, DormInterface {
+  interface StudentInfoRecord {
     key: string | null; // Allow null
     dorm_name: string;
     StudentID: string;
@@ -46,11 +21,8 @@ export default function RepairCreate() {
   const [messageApi, contextHolder] = message.useMessage();
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
-
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [form] = Form.useForm();
-
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [student, setStudent] = useState<StudentInfoRecord[]>([]);
 
   const onChange: UploadProps["onChange"] = ({ fileList: newFileList }) => {
@@ -77,18 +49,6 @@ export default function RepairCreate() {
     setFileList([]);
   };
 
-  const openNotification = (
-    type: "success" | "info" | "warning" | "error",
-    message: string,
-    description?: string
-  ) => {
-    notification[type]({
-      message: message,
-      description: description,
-      placement: "bottomRight",
-    });
-  };
-
   const onFinish = async (values: RepairInterface) => {
     values.image = fileList[0]?.thumbUrl || "";
 
@@ -96,43 +56,36 @@ export default function RepairCreate() {
     if (studentId) {
       values.date_submission = new Date(); // เพิ่มวันที่ปัจจุบัน
     } else {
-      openNotification(
-        "error",
-        "ไม่พบรหัสนักศึกษา",
-        "ไม่สามารถส่งข้อมูลได้เนื่องจากไม่พบรหัสนักศึกษา"
-      );
+      messageApi.open({
+        type: "error",
+        content: "ไม่พบรหัสนักศึกษา",
+      });
       return;
     }
 
     try {
-      // สร้างรายการแจ้งซ่อม
       let res = await CreateRepair(values);
-      console.log(res); // เพิ่ม console เพื่อตรวจสอบ res
+      console.log(res);
 
-      // ตรวจสอบผลลัพธ์จาก CreateRepair อย่างละเอียด
-      if (res && res.status === 201) {
-        // ตรวจสอบว่ามีสถานะ HTTP 200 แสดงว่าคำขอสำเร็จ
-        openNotification(
-          "success",
-          "บันทึกข้อมูลสำเร็จ",
-          "ข้อมูลของคุณได้ถูกบันทึกเรียบร้อยแล้ว"
-        );
+      if (res && res.status === 201) { // ตรวจสอบว่ามีสถานะ HTTP 201 แสดงว่าคำขอสำเร็จ
+        messageApi.open({
+          type: "success",
+          content: "บันทึกข้อมูลสำเร็จ",
+        });
         form.resetFields(); // รีเซ็ตฟอร์มหลังบันทึกข้อมูลสำเร็จ
         setFileList([]);
       } else {
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาจองห้องพัก"
-        );
+        messageApi.open({
+          type: "error",
+          content: "กรุณาจองห้องพัก",
+        });
       }
     } catch (error) {
       console.error(error);
-      openNotification(
-        "error",
-        "ไม่สามารถแสดงข้อมูลได้",
-        "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาจองห้องพัก"
-      );
+      messageApi.open({
+        type: "error",
+        content: "เกิดข้อผิดพลาด !",
+      });
     }
   };
 
@@ -157,35 +110,35 @@ export default function RepairCreate() {
           // ถ้ามีหอและห้องพักแล้ว
           if (dataDorm && dataDorm.reservation) {
             const dormData = {
-              dorm_name: dataDorm.reservation.Dorm.dorm_name || "ไม่มีหอ",
-              room_number: dataDorm.reservation.Room.room_number || "ไม่มีห้อง",
+              dorm_name: dataDorm.reservation.Dorm.dorm_name,
+              room_number: dataDorm.reservation.Room.room_number,
             };
 
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
-
+            
             // ถ้าไม่มีหอและห้องพัก
           } else {
             const dormData = { dorm_name: "ไม่มีหอ", room_number: "ไม่มีห้อง" };
             const combinedData = { ...studentData, ...dormData };
             setStudent([combinedData]);
+            messageApi.open({
+              type: "error",
+              content: "กรุณาจองห้องพัก",
+            });
           }
         } else {
-          setErrorMessage("ไม่พบข้อมูลนักศึกษา");
-          openNotification(
-            "error",
-            "เกิดข้อผิดพลาด!",
-            "ไม่สามารถแสดงรหัสนักศึกษาได้"
-          );
+          messageApi.open({
+            type: "error",
+            content: "ไม่พบข้อมูลนักศึกษา",
+          });
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setErrorMessage("เกิดข้อผิดพลาดในการดึงข้อมูล");
-        openNotification(
-          "error",
-          "เกิดข้อผิดพลาด!",
-          "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง"
-        );
+        messageApi.open({
+          type: "error",
+          content: "เกิดข้อผิดพลาดในการดึงข้อมูล กรุณาลองใหม่อีกครั้ง",
+        });
       }
     };
 
@@ -194,13 +147,14 @@ export default function RepairCreate() {
     } else {
       messageApi.open({
         type: "error",
-        content: "Student ID not found.",
+        content: "ไม่พบข้อมูลนักศึกษา",
       });
     }
   }, []);
 
   return (
     <>
+      {contextHolder}
       <Space direction="vertical">
         <>
           <Card>
@@ -212,23 +166,15 @@ export default function RepairCreate() {
                   <Space direction="vertical">
                     <Text>
                       ผู้รับบริการ{" "}
-                      {student.length > 0
-                        ? student[0].StudentID
-                        : "ไม่พบข้อมูล"}{" "}
-                      {student.length > 0
-                        ? student[0].FirstName
-                        : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].StudentID : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].FirstName : "ไม่พบข้อมูล"}{" "}
                       {student.length > 0 ? student[0].LastName : "ไม่พบข้อมูล"}
                     </Text>
                     <Text>
                       อาคาร:{" "}
-                      {student.length > 0
-                        ? student[0].dorm_name
-                        : "ไม่พบข้อมูล"}{" "}
+                      {student.length > 0 ? student[0].dorm_name : "ไม่พบข้อมูล"}{" "}
                       ห้อง:{" "}
-                      {student.length > 0
-                        ? student[0].room_number
-                        : "ไม่พบข้อมูล"}
+                      {student.length > 0  ? student[0].room_number : "ไม่พบข้อมูล"}
                     </Text>
                   </Space>
                 </Col>

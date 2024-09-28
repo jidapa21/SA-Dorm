@@ -179,9 +179,7 @@ func GetListFormStudent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"student": sid,
-	})
+	c.JSON(http.StatusOK, gin.H{"student": sid,})
 }
 
 func GetListFormDorm(c *gin.Context) {
@@ -189,25 +187,20 @@ func GetListFormDorm(c *gin.Context) {
 
 	studentID := c.MustGet("student_id").(string)
 	if studentID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "student_id cannot be empty"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ไม่พบรหัสนักศึกษา"})
 		return
 	}
 
 	db := config.DB()
 
 	// ค้นหา Reservation และ Preload ความสัมพันธ์
-	db.Where("student_id = ?", studentID).
-		Preload("Dorm").
-		Preload("Room").
-		First(&reservation)
+	db.Where("student_id = ?", studentID).Preload("Dorm").Preload("Room").First(&reservation)
 	if reservation.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Reservation not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "ไม่มีห้องพัก"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"reservation": reservation,
-	})
+	c.JSON(http.StatusOK, gin.H{"reservation": reservation,})
 }
 
 // ดึงข้อมูลนักศึกษาจากห้อง

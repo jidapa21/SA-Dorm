@@ -21,10 +21,10 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
           setFormValues(response);
           form.setFieldsValue(response); // Set values to the form
         } else {
-          setError('Failed to fetch resignation form details.');
+          setError('ไม่สามารถเรียกรายละเอียดแบบฟอร์มการลาออก');
         }
       } catch (e) {
-        setError('An error occurred while fetching resignation form details.');
+        setError('เกิดข้อผิดพลาดขณะดึงรายละเอียดแบบฟอร์มการลาออก');
       } finally {
         setLoading(false);
       }
@@ -38,7 +38,7 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
       await UpdateResigningForm( ID, { status: value });
       form.setFieldsValue({ Status: value }); // Update form when status changes
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ', error);
     }
   };
 
@@ -76,9 +76,9 @@ const ReadResignationForm: React.FC<{ ID: number }> = ({ ID }) => {
                     style={{ width: '150px' }}
                     onChange={handleStatusChange}
                   >
-                    <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>Pending</Option>
-                    <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>In Progress</Option>
-                    <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>Completed</Option>
+                    <Option value="รอการดำเนินการ" style={{ backgroundColor: '#0000', color: '#333' }}>รอการดำเนินการ</Option>
+                    <Option value="กำลังดำเนินการ" style={{ backgroundColor: '#0000', color: '#faad14' }}>กำลังดำเนินการ</Option>
+                    <Option value="เสร็จสิ้น" style={{ backgroundColor: '#0000', color: '#52c41a' }}>เสร็จสิ้น</Option>
                   </Select>
                 </Form.Item>
               </Col>

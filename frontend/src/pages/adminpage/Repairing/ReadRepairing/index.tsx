@@ -23,10 +23,10 @@ const ReadRepairing: React.FC<{ ID: number }> = ({ ID }) => {
           form.setFieldsValue(response); // ตั้งค่าให้กับฟอร์มเมื่อได้ข้อมูลแล้ว
           console.log('Form values set:', form.getFieldsValue()); // Debug ข้อมูลในฟอร์ม
         } else {
-          setError('Failed to fetch repair details.');
+          setError('เรียกรายละเอียดการซ่อมไม่สำเร็จ');
         }
       } catch (e) {
-        setError('An error occurred while fetching repair details.');
+        setError('เกิดข้อผิดพลาดขณะเรียกรายละเอียดการซ่อมแซม');
       } finally {
         setLoading(false);
       }
@@ -40,7 +40,7 @@ const ReadRepairing: React.FC<{ ID: number }> = ({ ID }) => {
       await UpdateRepair(String (ID), { status: value });
       form.setFieldsValue({ Status: value }); // อัปเดตฟอร์มเมื่อสถานะเปลี่ยน
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error('เกิดข้อผิดพลาดในการอัปเดตสถานะ:', error);
     }
   };
 
