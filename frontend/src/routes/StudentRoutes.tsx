@@ -6,7 +6,6 @@ const MainPages = Loadable(lazy(() => import("../pages/authentication/LoginStude
 const Homepages = Loadable(lazy(() => import("../pages/homepage")));
 const Payment = Loadable(lazy(() => import("../pages/payment")));
 const MainDorm = Loadable(lazy(() => import("../pages/dorm/mainDorm")));
-//const Booking = Loadable(lazy(() => import("../pages/dorm/Booking")));  
 const List = Loadable(lazy(() => import("../pages/list")));
 const Repair = Loadable(lazy(() => import("../pages/repair")));
 const DelayedPayment = Loadable(lazy(() => import("../pages/form/DelayedPaymentForm")));

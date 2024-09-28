@@ -25,6 +25,7 @@ func ConnectionDB() {
 	fmt.Println("connected database")
 	db = database
 }
+
 func SetupDatabase() {
 	db.AutoMigrate(
 		&entity.Students{},

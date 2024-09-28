@@ -17,10 +17,8 @@ dayjs.locale('th');
 interface CombinedData extends PersonalInterface, StudentInterface ,AddressInterface, FamilyInterface, OtherInteface{} // Combining both interfaces
 
 function Personal() {
-  //const navigate = useNavigate();
   const [studentData, setStudentData] = useState<CombinedData | null>(null); // Store combined data
   const [messageApi, contextHolder] = message.useMessage();
-  //const myId = localStorage.getItem("id");
   // ฟอร์แมตวันที่ในรูปแบบ "วัน (วันที่ เดือน ปี)"
   const formattedDate = dayjs('1995-07-28').format('DD MMMM YYYY');
   console.log(formattedDate); // Output: "วันเสาร์ 28 กรกฎาคม 1995"
@@ -81,11 +79,6 @@ function Personal() {
   }, []);
 
   const columns: ColumnsType<CombinedData> = [
-  /*  {
-      title: "ลำดับ",
-      dataIndex: "ID",
-      key: "id",
-    },*/
     {
       //title: "ข้อมูลนักศึกษา",
       key: "student_info",

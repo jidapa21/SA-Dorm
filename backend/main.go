@@ -53,23 +53,22 @@ func main() {
 		router.GET("/list-student", student.ListStudent)
 		router.GET("/get-student/:id", student.GetStudent)
 		router.DELETE("/delete-student/:id", student.DeleteStudent)
+		
 		// CreatePersonalDetails Route
 		router.POST("/create-personal-detail", personaldetails.CreatePersonalDetails)
 		// Personal Route
-		//router.POST("/create-personal", personal.CreatePersonal)
 		router.GET("/get-personal/:id", personal.GetPersonal)
 		router.PUT("/update-personal/:id", personal.UpdatePersonal)
 		// Address Route
 		router.GET("/get-address/:id", address.GetAddress)
 		router.PUT("/update-address/:id", address.UpdateAddress)
-
 		// Family Route
 		router.GET("/get-family/:id", family.GetFamily)
 		router.PUT("/update-family/:id", family.UpdateFamily)
-
 		// Other Route
 		router.GET("/get-other/:id", other.GetOther)
 		router.PUT("/update-other/:id", other.UpdateOther)
+
 
 		// Repair Route
 		router.GET("/get-list-formstudent", student.GetListFormStudent)
