@@ -139,8 +139,6 @@ const ModalTest: React.FC<ReviewModalProps> = ({
         totalamount: room.Dorm.amount, // ใช้ค่า amount จากข้อมูลหอพักเป็น totalamount
         date: new Date(), // วันที่การใช้จ่าย
       };
-    
-
       await CreateExpense(expenseData); // เรียกฟังก์ชันสร้างค่าใช้จ่าย
 
       await updateReservationsCount();

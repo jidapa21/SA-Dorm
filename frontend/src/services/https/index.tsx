@@ -15,7 +15,6 @@ import { AnnouncementInterface } from "../../interfaces/Announcement";
 import { AadminInterface } from "../../interfaces/Admin";
 import { GenderInterface } from "../../interfaces/gender";
 import { ExpenseInterface } from "../../interfaces/Expense"; // ปรับเส้นทางให้ตรงกับที่อยู่จริง
-import { RentInterface } from "../../interfaces/Rentfee";
 import { ElectricityInterface } from "../../interfaces/Electricityfee";
 import { WaterInterface } from "../../interfaces/Waterfee";
 import { DormInterface } from "../../interfaces/Dorm";
