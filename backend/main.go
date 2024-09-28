@@ -8,7 +8,6 @@ import (
 	"dormitory.com/dormitory/controller/admin"
 	announcement "dormitory.com/dormitory/controller/announcement"
 	"dormitory.com/dormitory/controller/delayedpaymentform"
-	"dormitory.com/dormitory/controller/dorm"
 	"dormitory.com/dormitory/controller/electricityfee"
 	"dormitory.com/dormitory/controller/en_exitingform"
 	"dormitory.com/dormitory/controller/expense"
@@ -140,26 +139,18 @@ func main() {
 		router.GET("/get-electricityfee/:id", electricityfee.GetElectricityFee)
 		router.GET("/list-electricityfees", electricityfee.ListElectricityFees)
 		router.PATCH("update-electricityfee/:id", electricityfee.UpdateElectricityFee)
-
-		// Dorm
-		router.GET("/GetDorm/:id", dorm.GetDorm)
-		router.GET("/ListDorms", dorm.ListDorms)
-		router.PUT("/UpdateDorm/:id", dorm.UpdateDorm)
+		
 		// Room
-		router.GET("/GetRoom/:id", room.GetRoom)
-		router.GET("/ListRoom", room.ListRoom)
-		router.DELETE("/DeleteRoom/:id", room.DeleteRoom)
-		router.PUT("/UpdateRoom/:id", room.UpdateRoom)
-		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetByIdFloor)
+		router.PUT("/UpdateRoom/:id", room.UpdateRoom) //
+		router.GET("/rooms/floor/:floor_id/dorm/:dorm_id", room.GetRoomsByFloorAndDorm) //
+		
 		// Reservation
-		router.POST("/CreateReservation", reservation.CreateReservation)
-		router.DELETE("/DeleteReservation/:id", reservation.DeleteReservation)
-		router.PUT("/UpdateReservation/:id", reservation.UpdateReservation)
-		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID)
-		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID)
-		router.GET("/reservations/:room_id/dorm", dorm.GetDormByRoomID)
-		router.GET("/check-user-room/:userID", reservation.GetUserRoom)
-		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID)
+		router.POST("/CreateReservation", reservation.CreateReservation) //
+		router.GET("/reservations/room/:roomID", reservation.GetReservationsByRoomID) //
+		router.GET("/check-user-room/:userID", reservation.GetUserRoom) //
+		router.GET("/reservations/student/:studentID", reservation.GetReservationsByStudentID) //
+
+		router.GET("/reservations/:room_id/students", student.GetStudentsByRoomID) //
 
 	}
 

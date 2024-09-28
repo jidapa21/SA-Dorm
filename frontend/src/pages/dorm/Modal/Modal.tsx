@@ -14,6 +14,7 @@ import { RoomInterface } from "../../../interfaces/Room";
 import { ExpenseInterface } from '../../../interfaces/Expense';
 import axios from "axios";
 import "./Bsub.css";
+
 interface ReviewModalProps {
   isVisible: boolean;
   handleCancel: () => void;
@@ -21,8 +22,8 @@ interface ReviewModalProps {
   dorm_id: number;
   room_id: number;
   updateReservationsCount: () => Promise<void>;
-  amount: number;
 }
+
 const ModalTest: React.FC<ReviewModalProps> = ({
   isVisible,
   handleCancel,
@@ -31,13 +32,13 @@ const ModalTest: React.FC<ReviewModalProps> = ({
   room_id,
   updateReservationsCount,
 }) => {
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<any[]>([]); //เก็บข้อมูลนักศึกษาในรูปแบบอาเรย์โดยเป็นประเภทอะไรก็ได้
   const [loading, setLoading] = useState<boolean>(true);
   const [reservedStudentIDs, setReservedStudentIDs] = useState<Set<number>>(new Set());
+  //เก็บ ID ของนักเรียนที่จองห้องในรูปแบบของ Set ซึ่งจะช่วยให้สามารถจัดเก็บค่า ID ที่ไม่ซ้ำกันได้
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState<boolean>(true);
   const studentID = localStorage.getItem("student_id"); // เรียก ID นักศึกษา (string)
-  //const studentID = SID ? parseInt(SID, 10) : null; // แปลงเป็น number หรือ null
-  const columns: TableProps<any>["columns"] = [
+  const columns: TableProps<any>["columns"] = [ //ประกาศคอลัมน์สำหรับตาราง
     { title: "รหัสนักศึกษา", dataIndex: "StudentID", key: "StudentID" },
     { title: "ชื่อ - นามสกุล", dataIndex: "name", key: "name" },
     { title: "สำนัก", dataIndex: "major", key: "major" },
@@ -47,25 +48,25 @@ const ModalTest: React.FC<ReviewModalProps> = ({
 
   const fetchStudents = async () => {
     setLoading(true);
-    setStudents([]);
-    setReservedStudentIDs(new Set());
+    setStudents([]); // รีเซ็ตข้อมูลนักศึกษาให้เป็นอาเรย์ว่าง
+    setReservedStudentIDs(new Set()); //รีเซ็ต Set ที่เก็บ ID ของนักเรียนที่จองห้องให้ว่าง
     if (room && room.ID) {
       try {
-        const result = await GetStudentsByRoomID(room.ID);
+        const result = await GetStudentsByRoomID(room.ID); //ดึงข้อมูลนักศึกษาที่จองห้องนี้
         console.log(`Fetching dorm with amount: ${room.Dorm.amount}`);
         console.log(`Fetching dorm with room_id: ${room.ID}`);
-        if (Array.isArray(result)) {
-          const formattedStudents = result.map((student) => ({
+        if (Array.isArray(result)) { //สอบว่าผลลัพธ์เป็นอาเรย์หรือไม่
+          const formattedStudents = result.map((student) => ({ //ใช้ map เพื่อฟอร์แมตข้อมูลนักศึกษาให้มีโครงสร้างที่ต้องการ
             StudentID: student.student_id || "ไม่ระบุ",
             name: `${student.first_name || "ไม่ระบุ"} ${student.last_name || "ไม่ระบุ"}`,
             major: student.major || "ไม่ระบุ",
             year: student.year || "ไม่ระบุ",
             amount: room.Dorm.amount || "ไม่ระบุ",
           }));
-          setStudents(formattedStudents);
-          const reservedIDs = new Set(result.map((student) => student.StudentID));
+          setStudents(formattedStudents); //อัปเดตสถานะนักศึกษาเป็นข้อมูลที่ฟอร์แมตแล้ว
+          const reservedIDs = new Set(result.map((student) => student.StudentID)); //สร้าง Set ที่เก็บ ID ของนักศึกษา
           setReservedStudentIDs(reservedIDs);
-          setIsConfirmButtonDisabled(reservedIDs.has(studentID)); // ใช้ studentID ที่เป็นสตริง
+          setIsConfirmButtonDisabled(reservedIDs.has(studentID)); //ปิดหรือเปิดปุ่มยืนยันขึ้นอยู่กับว่านักศึกษาได้จองห้องแล้วหรือไม่
         } else {
           setIsConfirmButtonDisabled(false);
         }
@@ -79,23 +80,22 @@ const ModalTest: React.FC<ReviewModalProps> = ({
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (isVisible) {
       fetchStudents();
     }
-  }, [room, isVisible]);
+  }, [room, isVisible]); //ติดตามการเปลี่ยนแปลง เปลี่ยนตาม room หรือ isVisible
 
   const handleConfirm = async () => {
     if (!room) {
       message.error("ข้อมูลห้องไม่ถูกต้อง");
       return;
     }
-
     if (studentID === null) {
       message.error("ไม่พบ ID นักศึกษา");
       return;
     }
-
     try {
       // ตรวจสอบว่านักเรียนมีการจองอยู่แล้วหรือไม่
       const studentReservations = await GetReservationsByStudentID(String(studentID));
@@ -110,9 +110,9 @@ const ModalTest: React.FC<ReviewModalProps> = ({
         message.error("ห้องนี้จองเต็มแล้ว");
         return;
       }
+
       const today = new Date();
       const reservationDate = new Date(today.setHours(today.getHours() + 7)); // เพิ่ม 7 ชั่วโมง
-
       // เตรียมข้อมูลสำหรับการจองใหม่
       const reservationData: ReservationInterface = {
         ID: undefined,
@@ -121,15 +121,16 @@ const ModalTest: React.FC<ReviewModalProps> = ({
         dorm_id: dorm_id,
         room_id: room_id,
       };
-
-
+      
       await CreateReservation(reservationData);
-
       // เตรียมข้อมูลสำหรับการอัปเดตห้อง
       const roomData: RoomInterface = {
-        ...room,
-        dorm_status: room.dorm_status, // อัปเดตตามความจำเป็น
+        ...room, // คัดลอกข้อมูลทั้งหมดจาก room เดิม
+        available: reservations.length >= 3 ? 0 : room.available - 1,
+        dorm_status: reservations.length >= 2 ? "ห้องเต็ม" : "ห้องว่าง",
       };
+      console.log("roomData before update:", roomData);
+      console.log("reservations.length:", reservations.length);
 
       await UpdateRoom(room_id, roomData); // ส่งทั้งสองอาร์กิวเมนต์
       message.success("จองห้องสำเร็จ!");
@@ -142,7 +143,6 @@ const ModalTest: React.FC<ReviewModalProps> = ({
       await CreateExpense(expenseData); // เรียกฟังก์ชันสร้างค่าใช้จ่าย
 
       await updateReservationsCount();
-
       // Close the modal after a short delay
       setTimeout(() => handleCancel(), 1000);
     } catch (error) {
