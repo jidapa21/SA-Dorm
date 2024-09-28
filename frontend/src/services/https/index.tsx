@@ -832,8 +832,34 @@ async function GetWaterFee() {
   return res;
 }
 
+//------------Dorm------------//
+async function GetDorm(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function ListDorms(data: DormInterface) {
+  return await axios
+    .post(`${apiUrl}/ListDorms`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateDorm(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateDorm/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 
 //------------Room------------//
+async function GetRoom(id: number) {
+  return await axios
+    .get(`${apiUrl}/GetRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 async function GetRoomsByFloorAndDorm(floorId: number, dormId: number) {
   try {
     const response = await axios.get(`${apiUrl}/rooms/floor/${floorId}/dorm/${dormId}`, requestOptions);
@@ -846,15 +872,37 @@ async function GetRoomsByFloorAndDorm(floorId: number, dormId: number) {
   }
 }
 
+async function ListRoom(data: RoomInterface) {
+  return await axios
+    .post(`${apiUrl}/ListRoom`, data, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function DeleteRoom(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteRoom/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
 async function UpdateRoom(id: number, data: RoomInterface) {
   return await axios
     .put(`${apiUrl}/UpdateRoom/${id}`, data, requestOptions)
     .then((res) => res)
     .catch((e) => e.response);
 }
-
-
 //------------Reservation------------//
+/*export const CreateReservation = async (data: ReservationInterface) => {
+  try {
+      const response = await axios.post(`${apiUrl}/CreateReservation`, data);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          throw new Error(error.response?.data.message || "Error creating reservation");
+      }
+      throw new Error("Error creating reservation");
+  }
+};*/
+
 async function CreateReservation(data: ReservationInterface) {
   try {
     const response = await axios.post(`${apiUrl}/CreateReservation`, data, requestOptions);
@@ -874,7 +922,6 @@ async function CreateReservation(data: ReservationInterface) {
     }
   }
 };
-
 async function GetReservationsByRoomID(roomID: number) {
   try {
     const response = await axios.get(`${apiUrl}/reservations/room/${roomID}`, requestOptions);
@@ -886,6 +933,7 @@ async function GetReservationsByRoomID(roomID: number) {
     return { error: "An unknown error occurred" };
   }
 }
+
 
 // ฟังก์ชันใหม่สำหรับดึงข้อมูลการจองของนักเรียน
 async function GetReservationsByStudentID(studentID: string): Promise<any> {
@@ -899,6 +947,19 @@ async function GetReservationsByStudentID(studentID: string): Promise<any> {
     return { error: "An unknown error occurred" };
   }
 }
+async function DeleteReservation(id: number) {
+  return await axios
+    .delete(`${apiUrl}/DeleteReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+async function UpdateReservation(id: number) {
+  return await axios
+    .put(`${apiUrl}/UpdateReservation/${id}`, requestOptions)
+    .then((res) => res)
+    .catch((e) => e.response);
+}
+
 
 async function GetStudentsByRoomID(roomID: number) {
   try {
@@ -911,7 +972,17 @@ async function GetStudentsByRoomID(roomID: number) {
     return { error: "An unknown error occurred" };
   }
 }
-
+async function GetDormByRoomID(roomID : number) {
+  try {
+      const response = await axios.get(`${apiUrl}/reservations/${roomID}/dorm`, requestOptions);
+      return response.data;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          return { error: error.response ? error.response.data : "An error occurred" };
+      }
+      return { error: "An unknown error occurred" };
+  }
+}
 async function GetUserRoom(userID: string) {
   try {
     const response = await axios.get(
@@ -929,6 +1000,26 @@ async function GetUserRoom(userID: string) {
   }
 }
 
+async function getStudentGender(studentId: string): Promise<string> {
+  try {
+    // ทำการเรียก API เพื่อนำข้อมูลเพศของนักเรียน
+    const response = await fetch(`/api/students/${studentId}/gender`);
+
+    // ตรวจสอบว่า API ตอบกลับด้วยสถานะที่ถูกต้อง
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // แปลงข้อมูลการตอบกลับเป็น JSON
+    const data = await response.json();
+
+    // ส่งคืนข้อมูลเพศ
+    return data.gender; // ค่าที่ส่งคืนเป็น "male" หรือ "female"
+  } catch (error) {
+    console.error("Error fetching student gender:", error);
+    throw error; // โยนข้อผิดพลาดเพื่อให้สามารถจัดการได้ที่ชั้นสูงกว่า
+  }
+}
 
 export {
   SignInStudent,
@@ -1004,12 +1095,24 @@ export {
   ListWaterFees,
   CreateWaterFee,
   GetWaterFee,
-  //------------Room------------//
-  UpdateRoom,
-  GetRoomsByFloorAndDorm,
+//------------Dorm------------//
+GetDorm,
+ListDorms,
+UpdateDorm,
+//GetAmountByID,
+//------------Room------------//
+GetRoom,
+ListRoom,
+DeleteRoom,
+UpdateRoom,
+GetRoomsByFloorAndDorm,
   //------------Reservation------------//
+  DeleteReservation,
+  UpdateReservation,
   GetReservationsByRoomID,
   GetUserRoom,
+  getStudentGender,
   GetReservationsByStudentID,
   CreateReservation,
+  GetDormByRoomID
 };
